@@ -11,7 +11,6 @@ data["datesold"] = data["datesold"].map(datetime.datetime.toordinal)
 data = data[data["propertyType"] == "house"]
 data = data.drop(["postcode", "propertyType"], axis=1)
 
-
 def timeseries_train_test_split(X, y, test_size):
     test_index = int(len(X) * (1 - test_size))
 
@@ -22,16 +21,9 @@ def timeseries_train_test_split(X, y, test_size):
 
     return X_train, X_test, y_train, y_test
 
-
-def calc_accuracy(prediction, y_test):
-    df = prediction * y_test
-    return df[df > 0].count() / y_test.count()
-
-
 def train_test_model(data, num_lags):
     for i in range(1, num_lags + 1):
         data["lag_{}".format(i)] = data.price.shift(i)
-
 
     data["delta"] = data.price - data.lag_1
     data["delta"] = (np.sign(data["delta"]) + 1) // 2
@@ -49,8 +41,11 @@ def train_test_model(data, num_lags):
 
     cnf_matrix = metrics.confusion_matrix(y_test, prediction)
     accuracy = (cnf_matrix[0][0] + cnf_matrix[1][1]) / y_test.count()
-    print("num_lags =", num_lags, " accuracy =", accuracy)
+    return accuracy
 
 
+df = pd.DataFrame({"num_lags": [], "accuracy": []})
 for num_lags in range(1, 50):
-    train_test_model(data, num_lags)
+    accuracy = train_test_model(data, num_lags)
+    df.loc[len(df)] = [num_lags, accuracy]
+df.to_csv("accuracies.csv")
