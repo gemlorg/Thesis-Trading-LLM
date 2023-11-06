@@ -15,36 +15,22 @@ def timeseries_train_test_split(X, y, test_size):
 
     return X_train, X_test, y_train, y_test
 
-#let us say that a lag represent an average price throughout the last 4 weeks.
-#let us try to predict the price in the next k weeks. 
+
+# let us say that a lag represent an average price throughout the last 4 weeks.
+# let us try to predict the price in the next k weeks.
+
 
 def train_test_model(data, num_lags):
-
     for i in range(0, num_lags + 1):
         data["lag_{}".format(i)] = data.price.rolling(30).mean()
         data["lag_{}".format(i)] = data["lag_{}".format(i)].shift(1 + 30 * i)
-        
-        
+
     data = data.dropna()
+    y = data["lag_0"] - data["lag_1"]
+    y = y.apply(lambda x: (np.sign(x) + 1) // 2)
+    X = data.drop(["lag_0", "price"], axis=1)
 
-
-    data["delta"] = data["lag_0"] - data["lag_1"]
-
-    data["delta"] = (np.sign(data["delta"]) + 1) // 2
-    
-
-
-    
-    data = data.drop("price", axis=1).dropna()
-
-    y = data.delta
-    X = data.drop(["delta", "lag_0"], axis=1)
-
-
-
-    X_train, X_test, y_train, y_test = timeseries_train_test_split(
-        X, y, test_size=0.3)
-    
+    X_train, X_test, y_train, y_test = timeseries_train_test_split(X, y, test_size=0.3)
 
     model = LogisticRegression(random_state=0)
     model.fit(X_train, y_train)
@@ -53,12 +39,13 @@ def train_test_model(data, num_lags):
 
     return model.score(X_test, y_test)
 
-#it would be harder to implement the model had we assumed
+
+# it would be harder to implement the model had we assumed
 #  that the number of bedrooms can be arbitrary
 num_bedrooms = 3
 file_path = "../data/raw_sales.csv"
 data = pd.read_csv(file_path, parse_dates=["datesold"])
-data.sort_values(by='datesold', inplace=True)
+data.sort_values(by="datesold", inplace=True)
 
 data["datesold"] = data["datesold"].map(datetime.datetime.toordinal)
 
