@@ -1,9 +1,19 @@
 import pandas as pd
 import numpy as np
 from sklearn.linear_model import LogisticRegression
+from datetime import datetime
 from sklearn import metrics
 import datetime
+import os
+import pandas as pd
+import os
+from sklearn.svm import SVR
+from datetime import datetime
+from sklearn.metrics import mean_squared_error, r2_score
+import matplotlib.pyplot as plt
+from itertools import product
 
+from utils import *
 
 
 
@@ -40,14 +50,15 @@ def train_test_model(data, num_lags):
     return model.score(X_test, y_test)
 
 
-file_path = "../data/raw_sales.csv"
+
+
+file_path = os.path.join(os.path.dirname(__file__), "../data/raw_sales.csv")
 data = pd.read_csv(file_path, parse_dates=["datesold"])
-data["datesold"] = data["datesold"].map(datetime.datetime.toordinal)
+# print(data.head())
+
+data = load_and_preprocess_data(file_path, date_format="%Y-%m-%d %H:%M:%S")
 
 
-data = data[data["propertyType"] == "house"]
-data = data[data["bedrooms"] == 3]
-data = data.drop(["postcode", "propertyType"], axis=1)
 
 df = pd.DataFrame({"num_lags": [], "accuracy": []})
 for num_lags in range(1, 100):

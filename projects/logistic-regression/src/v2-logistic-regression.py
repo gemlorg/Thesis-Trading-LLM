@@ -4,6 +4,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn import metrics
 import matplotlib.pyplot as plt
 import datetime
+import os
 
 
 def timeseries_train_test_split(X, y, test_size):
@@ -88,7 +89,7 @@ def train_draw_model(d, num_lags, truedate):
 # it would be harder to implement the model had we assumed
 #  that the number of bedrooms can be arbitrary
 num_bedrooms = 3
-file_path = "../data/raw_sales.csv"
+file_path = os.path.join(os.path.dirname(__file__), "../data/raw_sales.csv")
 data = pd.read_csv(file_path, parse_dates=["datesold"])
 data.sort_values(by="datesold", inplace=True)
 
@@ -98,6 +99,9 @@ data["datesold"] = data["datesold"].map(datetime.datetime.toordinal)
 
 data = data[(data["propertyType"] == "house") & (data["bedrooms"] == num_bedrooms)]
 data = data.drop(["postcode", "propertyType", "bedrooms"], axis=1)
+
+
+
 
 
 # prob shouldn't edit.
