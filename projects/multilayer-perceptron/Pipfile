@@ -10,8 +10,6 @@ verify_ssl = true
 
 [packages]
 scikit-learn = "*"
-numpy = "*"
-pandas = "*"
 torch = {index = "pytorch",version = "==2.1.1"}
 torchvision = {index ="pytorch", version= "==0.16.1"}
 torchaudio = {index ="pytorch", version= "==2.1.1"}

@@ -16,7 +16,6 @@ def add_lags_columns(data, num_lags, price_column):
     for i in range(1, num_lags + 1):
         data["lag_{}".format(i)] = data[price_column].shift(i)
     data = data.dropna()
-    print(data.head())
     return data
 
 

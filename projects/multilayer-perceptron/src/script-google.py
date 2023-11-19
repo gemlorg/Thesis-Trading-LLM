@@ -1,21 +1,25 @@
 import pandas as pd
-import numpy as np
 import os
 from datetime import datetime
 import torch
 import torch.nn as nn
+import csv
 
 data_path = os.path.join(
     os.path.dirname(__file__), "../data/google-stock-dataset-Daily.csv"
 )
+csv_results_path = os.path.join(
+    os.path.dirname(__file__), "../results/mlp-results-google.csv"
+)
 
-num_lags = 30
+num_lags = 60
 
-def add_lags_columns(data, num_lags, price_column):
+
+def add_lags_columns(data, num_lags, exclude_columns):
     lag_columns = []
     for i in range(1, num_lags + 1):
         for col in data.columns:
-            if "Date" not in col and "lag" not in col:
+            if col not in exclude_columns and "lag" not in col:
                 lag_col_name = "{}_lag_{}".format(col, i)
                 lag_columns.append(data[col].shift(i).rename(lag_col_name))
 
@@ -38,7 +42,7 @@ def get_data(date_format="%Y-%m-%d", date_column="Date", price_column="Price"):
     )
     # columns_to_keep = [date_column, price_column]
     # data = data[columns_to_keep]
-    data = add_lags_columns(data, num_lags, price_column)
+    data = add_lags_columns(data, num_lags, [date_column])
     data = compute_price_deltas(data, price_column)
     data = data.drop([price_column], axis=1)
     return data
@@ -64,20 +68,106 @@ def split_data(data, test_size, target_column="price_delta"):
     return X_train, y_train, X_test, y_test
 
 
+def create_model_with_layers(in_features, out_features, num_layers, hidden_size):
+    layers = []
+    layers.append(nn.Linear(in_features, hidden_size))
+    layers.append(nn.ReLU())
+
+    for _ in range(num_layers - 1):
+        layers.append(nn.Linear(hidden_size, hidden_size))
+        layers.append(nn.ReLU())
+
+    layers.append(nn.Linear(hidden_size, out_features))
+    layers.append(nn.Sigmoid())
+
+    return layers
+
+
 def train_and_evaluate_mlp(
     mlp_model, loss_fn, optimizer, num_epochs, X_train, y_train, X_test, y_test
 ):
-    for n in range(num_epochs):
+    for epoch in range(num_epochs):
         y_pred = mlp_model(X_train)
         loss = loss_fn(y_pred, y_train)
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
 
-    y_pred = mlp_model(X_test)
+    y_train_pred = mlp_model(X_train)
+    accuracy_train = (y_train_pred.round() == y_train).float().mean().item()
 
-    accuracy = (y_pred.round() == y_test).float().mean().item()
-    return accuracy
+    y_test_pred = mlp_model(X_test)
+    accuracy_test = (y_test_pred.round() == y_test).float().mean().item()
+
+    return accuracy_train, accuracy_test
+
+
+def evaluate_models(
+    model_architectures,
+    loss_fns,
+    learning_rates,
+    num_epochs,
+    X_train,
+    y_train,
+    X_test,
+    y_test,
+):
+    results_list = []
+
+    for model_architecture in model_architectures:
+        for loss_fn in loss_fns:
+            for learning_rate in learning_rates:
+                mlp_model = nn.Sequential(*model_architecture)
+                optimizer = torch.optim.Adam(mlp_model.parameters(), lr=learning_rate)
+
+                accuracy_train, accuracy_test = train_and_evaluate_mlp(
+                    mlp_model,
+                    loss_fn,
+                    optimizer,
+                    num_epochs,
+                    X_train,
+                    y_train,
+                    X_test,
+                    y_test,
+                )
+
+                results_list.append(
+                    {
+                        "Model Architecture": str(model_architecture),
+                        "Loss Function": str(loss_fn),
+                        "Learning Rate": learning_rate,
+                        "Accuracy Train": accuracy_train,
+                        "Accuracy Test": accuracy_test,
+                    }
+                )
+
+                print(
+                    "model_architecture = {}, loss_fn = {}, learning_rate = {}, accuracy_train = {}, accuracy_test = {}".format(
+                        model_architecture,
+                        loss_fn,
+                        learning_rate,
+                        accuracy_train,
+                        accuracy_test,
+                    )
+                )
+
+    return results_list
+
+
+def save_results_to_csv(results_list, csv_results_path):
+    with open(csv_results_path, "w", newline="") as csvfile:
+        fieldnames = [
+            "Model Architecture",
+            "Loss Function",
+            "Learning Rate",
+            "Accuracy Train",
+            "Accuracy Test",
+        ]
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        writer.writeheader()
+
+        for result in results_list:
+            writer.writerow(result)
 
 
 data = get_data()
@@ -86,19 +176,54 @@ out_features = 1
 
 X_train, y_train, X_test, y_test = split_data(data, 0.3)
 
-mlp_model = nn.Sequential(
-    nn.Linear(in_features, 30),
-    nn.ReLU(),
-    nn.Linear(30, 20),
-    nn.ReLU(),
-    nn.Linear(20, out_features),
-    nn.Sigmoid(),
+
+model_architectures = [
+    [
+        nn.Linear(in_features, 30),
+        nn.ReLU(),
+        nn.Linear(30, 20),
+        nn.ReLU(),
+        nn.Linear(20, out_features),
+        nn.Sigmoid(),
+    ],
+    [
+        nn.Linear(in_features, 50),
+        nn.ReLU(),
+        nn.Linear(50, 40),
+        nn.ReLU(),
+        nn.Linear(40, 30),
+        nn.ReLU(),
+        nn.Linear(30, 20),
+        nn.ReLU(),
+        nn.Linear(20, out_features),
+        nn.Sigmoid(),
+    ],
+]
+
+num_layers = 10
+hidden_size = 20
+dynamic_model = create_model_with_layers(
+    in_features, out_features, num_layers, hidden_size
 )
-loss_fn = nn.BCELoss()
-optimizer = torch.optim.Adam(mlp_model.parameters(), lr=0.001)
+model_architectures.append(dynamic_model)
+
+loss_fns = [
+    nn.BCELoss(),
+    nn.CrossEntropyLoss(),
+]
+
+learning_rates = [0.001, 0.01, 0.1]
 num_epochs = 1000
 
-accuracy = train_and_evaluate_mlp(
-    mlp_model, loss_fn, optimizer, num_epochs, X_train, y_train, X_test, y_test
+results_list = evaluate_models(
+    model_architectures,
+    loss_fns,
+    learning_rates,
+    num_epochs,
+    X_train,
+    y_train,
+    X_test,
+    y_test,
 )
-print("accuracy =", accuracy)
+
+save_results_to_csv(results_list, csv_results_path)
