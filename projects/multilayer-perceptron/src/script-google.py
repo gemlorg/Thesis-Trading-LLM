@@ -5,37 +5,39 @@ from datetime import datetime
 import torch
 import torch.nn as nn
 
-data_path = os.path.join(os.path.dirname(__file__), "../data/raw_sales.csv")
+data_path = os.path.join(
+    os.path.dirname(__file__), "../data/google-stock-dataset-Daily.csv"
+)
 
-num_lags = 50
-in_features = num_lags + 1
-out_features = 1
-
+num_lags = 30
 
 def add_lags_columns(data, num_lags, price_column):
+    lag_columns = []
     for i in range(1, num_lags + 1):
-        data["lag_{}".format(i)] = data[price_column].shift(i)
+        for col in data.columns:
+            if "Date" not in col and "lag" not in col:
+                lag_col_name = "{}_lag_{}".format(col, i)
+                lag_columns.append(data[col].shift(i).rename(lag_col_name))
+
+    data = pd.concat([data] + lag_columns, axis=1)
     data = data.dropna()
-    print(data.head())
     return data
 
 
-def compute_price_deltas(data, price_column):
-    data["price_delta"] = data[price_column] - data["lag_1"]
-    data["price_delta"] = (np.sign(data["price_delta"]) + 1) // 2
+def compute_price_deltas(data, price_column):  # TODO: categories instead of 0/1
+    data["price_delta"] = (
+        (data[price_column] - data["{}_lag_1".format(price_column)]) > 0
+    ).astype(int)
     return data
 
 
-def get_data(date_column="datesold", price_column="price"):
+def get_data(date_format="%Y-%m-%d", date_column="Date", price_column="Price"):
     data = pd.read_csv(data_path)
     data[date_column] = data[date_column].apply(
-        lambda x: int(datetime.strptime(x, "%Y-%m-%d %H:%M:%S").timestamp())
+        lambda x: int(datetime.strptime(x, date_format).timestamp())
     )
-    data = data[(data["propertyType"] == "house") & (data["bedrooms"] == 3)]
-
-    columns_to_keep = [date_column, price_column]
-    data = data[columns_to_keep]
-
+    # columns_to_keep = [date_column, price_column]
+    # data = data[columns_to_keep]
     data = add_lags_columns(data, num_lags, price_column)
     data = compute_price_deltas(data, price_column)
     data = data.drop([price_column], axis=1)
@@ -79,6 +81,8 @@ def train_and_evaluate_mlp(
 
 
 data = get_data()
+in_features = len(data.columns) - 1
+out_features = 1
 
 X_train, y_train, X_test, y_test = split_data(data, 0.3)
 
