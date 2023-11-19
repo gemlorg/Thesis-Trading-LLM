@@ -12,15 +12,15 @@ csv_results_path = os.path.join(
     os.path.dirname(__file__), "../results/mlp-results-google.csv"
 )
 
-num_lags = 60
+
 
 
 def add_lags_columns(data, num_lags, exclude_columns):
     lag_columns = []
     for i in range(1, num_lags + 1):
         for col in data.columns:
-            if col not in exclude_columns and "lag" not in col:
-                lag_col_name = "{}_lag_{}".format(col, i)
+            if col not in exclude_columns and "lag" not in col and col == "Price":
+                lag_col_name = "{}_lag_{}".format(col, i) #was col
                 lag_columns.append(data[col].shift(i).rename(lag_col_name))
 
     data = pd.concat([data] + lag_columns, axis=1)
@@ -35,7 +35,7 @@ def compute_price_deltas(data, price_column):  # TODO: categories instead of 0/1
     return data
 
 
-def get_data(date_format="%Y-%m-%d", date_column="Date", price_column="Price"):
+def get_data(num_lags, date_format="%Y-%m-%d", date_column="Date", price_column="Price"):
     data = pd.read_csv(data_path)
     data[date_column] = data[date_column].apply(
         lambda x: int(datetime.strptime(x, date_format).timestamp())
@@ -111,6 +111,9 @@ def evaluate_models(
     y_train,
     X_test,
     y_test,
+    num_lags,
+    num_layers,
+    hidden_size
 ):
     results_list = []
 
@@ -138,6 +141,9 @@ def evaluate_models(
                         "Learning Rate": learning_rate,
                         "Accuracy Train": accuracy_train,
                         "Accuracy Test": accuracy_test,
+                        "Num Lags": num_lags,
+                        "Num Layers": int(len(model_architecture) / 2),
+                        "Hidden Size": model_architecture[0].out_features
                     }
                 )
 
@@ -162,6 +168,9 @@ def save_results_to_csv(results_list, csv_results_path):
             "Learning Rate",
             "Accuracy Train",
             "Accuracy Test",
+            "Num Lags",
+            "Num Layers",
+            "Hidden Size"
         ]
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         writer.writeheader()
@@ -170,60 +179,74 @@ def save_results_to_csv(results_list, csv_results_path):
             writer.writerow(result)
 
 
-data = get_data()
-in_features = len(data.columns) - 1
-out_features = 1
-
-X_train, y_train, X_test, y_test = split_data(data, 0.3)
 
 
-model_architectures = [
-    [
-        nn.Linear(in_features, 30),
-        nn.ReLU(),
-        nn.Linear(30, 20),
-        nn.ReLU(),
-        nn.Linear(20, out_features),
-        nn.Sigmoid(),
-    ],
-    [
-        nn.Linear(in_features, 50),
-        nn.ReLU(),
-        nn.Linear(50, 40),
-        nn.ReLU(),
-        nn.Linear(40, 30),
-        nn.ReLU(),
-        nn.Linear(30, 20),
-        nn.ReLU(),
-        nn.Linear(20, out_features),
-        nn.Sigmoid(),
-    ],
-]
 
-num_layers = 10
-hidden_size = 20
-dynamic_model = create_model_with_layers(
-    in_features, out_features, num_layers, hidden_size
-)
-model_architectures.append(dynamic_model)
+num_lags_options = [1, 5, 10 , 13, 25, 40, 50]
+num_layers_options = [1, 5, 10,  20]
+hidden_size_options = [1,  5, 10,  20]
 
-loss_fns = [
-    nn.BCELoss(),
-    nn.CrossEntropyLoss(),
-]
 
-learning_rates = [0.001, 0.01, 0.1]
-num_epochs = 1000
+results_list = []
+# print(data.head())
 
-results_list = evaluate_models(
-    model_architectures,
-    loss_fns,
-    learning_rates,
-    num_epochs,
-    X_train,
-    y_train,
-    X_test,
-    y_test,
-)
+for num_lags in num_lags_options:
+    data = get_data(num_lags)
+    in_features = len(data.columns) - 1
+    out_features = 1
+    X_train, y_train, X_test, y_test = split_data(data, 0.3 - 0.001 * num_lags)
+    # print(data.head())
+    model_architectures = [
+        [
+            nn.Linear(in_features, 30),
+            nn.ReLU(),
+            nn.Linear(30, 20),
+            nn.ReLU(),
+            nn.Linear(20, out_features),
+            nn.Sigmoid(),
+        ],
+        [
+            nn.Linear(in_features, 50),
+            nn.ReLU(),
+            nn.Linear(50, 40),
+            nn.ReLU(),
+            nn.Linear(40, 30),
+            nn.ReLU(),
+            nn.Linear(30, 20),
+            nn.ReLU(),
+            nn.Linear(20, out_features),
+            nn.Sigmoid(),
+        ],
+    ]
+
+    for num_layers in num_layers_options:
+        for hidden_size in hidden_size_options:
+            print("TESTING FOR num_lags=" + str(num_lags) + " num_layers=" + str(num_layers) + " hidden_size=" + str(hidden_size))
+            dynamic_model = create_model_with_layers(
+                in_features, out_features, num_layers, hidden_size
+            )
+            model_architectures.append(dynamic_model)
+
+        loss_fns = [
+                nn.BCELoss(),
+                nn.CrossEntropyLoss(),
+            ]
+
+        learning_rates = [0.001, 0.01, 0.1]
+        num_epochs = 100
+
+        results_list += evaluate_models(
+                model_architectures,
+                loss_fns,
+                learning_rates,
+                num_epochs,
+                X_train,
+                y_train,
+                X_test,
+                y_test,
+                num_lags,
+                num_layers,
+                hidden_size
+            )
 
 save_results_to_csv(results_list, csv_results_path)
