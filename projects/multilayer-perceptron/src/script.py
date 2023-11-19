@@ -1,13 +1,13 @@
 import pandas as pd
 import numpy as np
 import os
-import datetime
+from datetime import datetime
 import torch
 import torch.nn as nn
 
 data_path = os.path.join(os.path.dirname(__file__), "../data/raw_sales.csv")
 
-num_lags = 4
+num_lags = 50
 in_features = num_lags + 1
 out_features = 1
 
@@ -26,8 +26,10 @@ def compute_price_deltas(data, price_column):
 
 
 def get_data(date_column="datesold", price_column="price"):
-    data = pd.read_csv(data_path, parse_dates=[date_column])
-    data[date_column] = data[date_column].map(datetime.datetime.toordinal)
+    data = pd.read_csv(data_path)
+    data[date_column] = data[date_column].apply(
+        lambda x: int(datetime.strptime(x, "%Y-%m-%d %H:%M:%S").timestamp())
+    )
     data = data[(data["propertyType"] == "house") & (data["bedrooms"] == 3)]
 
     columns_to_keep = [date_column, price_column]
