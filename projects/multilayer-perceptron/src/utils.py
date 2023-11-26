@@ -1,10 +1,19 @@
 import pandas as pd
 import os
 from datetime import datetime
+
 import torch
 import torch.nn as nn
-import csv
+import torch.nn.functional as F
+import torch.optim as optim
+from torchvision import datasets, transforms
+
 import numpy as np
+import matplotlib.pyplot as plt
+     
+import csv
+import utils 
+from sklearn.preprocessing import minmax_scale, scale
 
 def add_lags_columns(data, num_lags, exclude_columns):
     lag_columns = []
@@ -63,6 +72,15 @@ def split_data(data, test_size, target_column="price_delta"):
 
     return X_train, y_train, X_test, y_test
 
+def get_layers(in_features, out_features, num_layers, hidden_size):
+    layers = []
+    layers.append(in_features)
+    for _ in range(num_layers):
+        layers.append(hidden_size)
+    layers.append(out_features)
+    print(layers)
+    return layers
+
 def create_model_with_layers(in_features, out_features, num_layers, hidden_size):
     layers = []
     layers.append(nn.Linear(in_features, hidden_size))
@@ -80,62 +98,46 @@ def create_model_with_layers(in_features, out_features, num_layers, hidden_size)
 def sigmoid(z):
     return 1/(1 + np.exp(-z))
 
-def train_and_evaluate_mlp(
-    mlp_model, loss_fn, optimizer, num_epochs, X_train, y_train, X_test, y_test, b_size=10
-):
-    # X_train = torch.tensor(X_train.values, dtype=torch.float32)
-    # y_train = torch.tensor(y_train.values, dtype=torch.float32)
-    trainset = torch.utils.data.TensorDataset(X_train, y_train)
-    trainloader = torch.utils.data.DataLoader(trainset, batch_size=b_size, shuffle=True)
-    for epoch in range(num_epochs):
-        
-        
-        current_loss = 0.0
-        if int(epoch % 1) == 0:
-            print(f'Starting epoch {epoch+1}')
-            y_train_pred = mlp_model(X_train)
-            accuracy_train = (y_train_pred.round() == y_train).float().mean().item()
-            
-            print("Accuracy train: {}".format(accuracy_train))
 
-        for i, data in enumerate(trainloader, 0):
-      
-            # Get inputs
-            inputs, targets = data
-            
-            # Zero the gradients
-            optimizer.zero_grad()
-            
-            # Perform forward pass
-            outputs = mlp_model(inputs)
-            
-            # Compute loss
-            loss = loss_fn(outputs, targets)
-            
-            # Perform backward pass
-            loss.backward()
-            
-            # Perform optimization
-            optimizer.step()
-            
-            # Print statistics
-            current_loss += loss.item()
 
-            # print('Loss after mini-batch %5d: %.3f' %
-            #             (i + 1, current_loss / 500))
-            # current_loss = 0.0
-            # if i % 500 == 499:
-        
-        
-        
+def train(
+    model, optimizer, epoch, train_loader, loss_fn, b_size=10,  silent=False, log_interval=1):
+    
+    model.train()
+    logs = []
+    for batch_idx, (data, target) in enumerate(train_loader):
+        # data, target = data.to(device), target.to(device)
+        print(data.shape)
 
-        # y_pred = mlp_model(X_train)
-        # loss = loss_fn(y_pred, y_train)
-        # optimizer.zero_grad()
-        # loss.backward()
-        # optimizer.step()
+        print(target.shape)
+        optimizer.zero_grad()
+        output = model(data)
+        loss = F.nll_loss(output, target)
+        loss.backward()
+        optimizer.step()
+        if batch_idx % log_interval == 0:
+            if not silent:
+                print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
+                    epoch, batch_idx * len(data), len(train_loader.dataset),
+                    100. * batch_idx / len(train_loader), loss.item()))
+            logs.append(loss.item())
+    return logs
 
-        y_test_pred = mlp_model(X_test)
-        accuracy_test = (y_test_pred.round() == y_test).float().mean().item()
+def test(model, test_loader, loss_fn, silent=False):
+    model.eval()
+    test_loss = 0
+    correct = 0
+    with torch.no_grad():
+        for data, target in test_loader:
 
-    return accuracy_train, accuracy_test
+            output = model(data)
+            test_loss += loss_fn(output, target).item()  # sum up batch loss
+            pred = output.argmax(dim=1, keepdim=True)  # get the index of the max log-probability
+            correct += pred.eq(target.view_as(pred)).sum().item()
+
+    test_loss /= len(test_loader.dataset)
+    if not silent:
+        print('\nTest set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
+            test_loss, correct, len(test_loader.dataset),
+            100. * correct / len(test_loader.dataset)))
+    return correct / len(test_loader.dataset)
