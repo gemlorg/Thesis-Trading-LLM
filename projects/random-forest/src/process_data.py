@@ -2,8 +2,10 @@ import os
 import datetime
 import pandas as pd
 import numpy as np
+import csv
 
 data_path = os.path.join(os.path.dirname(__file__), "../data/raw_sales.csv")
+csv_path = os.path.join(os.path.dirname(__file__), "../results/rf-results-sales.csv")
 
 
 def add_lags_columns(data, num_lags, price_column):
@@ -47,3 +49,19 @@ def split_data(data, test_size, target_column="price_delta"):
     y_test = data_test[target_column]
 
     return X_train, y_train, X_test, y_test
+
+
+def save_results_to_csv(results_list, csv_results_path=csv_path):
+    with open(csv_results_path, "w", newline="") as csvfile:
+        fieldnames = [
+            "num_lags",
+            "n_estimators",
+            "max_features",
+            "criterion",
+            "accuracy",
+        ]
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        writer.writeheader()
+
+        for result in results_list:
+            writer.writerow(result)
