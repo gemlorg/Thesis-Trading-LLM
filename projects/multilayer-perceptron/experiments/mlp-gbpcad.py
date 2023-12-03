@@ -19,7 +19,7 @@ torch.manual_seed(42)
 num_lags = 15
 
 data = utils.get_data(data_path, num_lags, date_column="barTimestamp", price_column="close", date_format="%Y-%m-%d %H:%M:%S")
-data = data.iloc[:8000]
+data = data.iloc[:2000]
 data.drop(["id", "provider", "insertTimestamp", "dayOfWeek"], axis=1, inplace=True)
 # print(data.head())
 
@@ -38,17 +38,17 @@ data[cols] = minmax_scale(data[cols] )
 train_loader, test_loader = utils.get_data_loaders(data, cols, target)
 
 # architecture = utils.get_layers(len(cols), len(target), num_layers=3, hidden_size=50)
-architecture = [len(cols), 64, 16, len(target)]
+architecture = [len(cols), 128,16 , len(target)]
 # print(architecture)
 loss_fn = nn.BCEWithLogitsLoss(reduction="mean")
 model = mlp.Net(architecture).to(device)
 lr = 0.000004
-momentum = 0.9
+momentum = 0.4
 # print(architecture)
 optimizer = optim.SGD(model.parameters(), lr=lr, momentum=momentum)
 # optimizer = optim.Adam(model.parameters(), lr=lr)
 log_interval = 1000
-epochs = 400
+epochs = 2000
 
 # # use mlp
 
