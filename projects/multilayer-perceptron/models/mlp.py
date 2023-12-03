@@ -85,13 +85,13 @@ def train_and_evaluate_mlp(
     device,
     model,
     optimizer,
-    loss_fn,
-    reduction,
     log_interval,
     epochs,
-    silent,
     train_loader,
     test_loader,
+    reduction="mean",
+    loss_fn=torch.nn.BCEWithLogitsLoss(),
+    silent=False,
 ):
     # (
     #     device,
