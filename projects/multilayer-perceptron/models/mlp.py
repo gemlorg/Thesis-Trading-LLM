@@ -49,7 +49,7 @@ def train(
     return logs
 
 
-def test(model, device, test_loader, loss_fn, reduction, silent=False):
+def test(model, device, test_loader, loss_fn, silent=False):
     model.eval()
     test_loss = 0
     correct = 0
@@ -57,7 +57,7 @@ def test(model, device, test_loader, loss_fn, reduction, silent=False):
         for data, target in test_loader:
             data, target = data.to(device), target.to(device)
             output = model(data)
-            test_loss += loss_fn(output, target, reduction=reduction).item()
+            test_loss += loss_fn(output, target).item()
             pred = (output >= 0.5).float()
             correct += pred.eq(target.view_as(pred)).sum().item()
 
@@ -74,13 +74,6 @@ def test(model, device, test_loader, loss_fn, reduction, silent=False):
     return correct / len(test_loader.dataset)
 
 
-# device = torch.device("cuda" if use_cuda else "cpu")
-# model = Net().to(device)
-# optimizer = optim.SGD(model.parameters(), lr=lr, momentum=momentum)
-# log_interval = 10
-# epochs = 5
-
-
 def train_and_evaluate_mlp(
     device,
     model,
@@ -89,22 +82,9 @@ def train_and_evaluate_mlp(
     epochs,
     train_loader,
     test_loader,
-    reduction="mean",
     loss_fn=torch.nn.BCEWithLogitsLoss(),
     silent=False,
 ):
-    # (
-    #     device,
-    #     model,
-    #     optimizer,
-    #     loss_fn,
-    #     reduction,
-    #     log_interval,
-    #     epochs,
-    #     silent,
-    # ) = load_model()
-    # (train_loader, test_loader) = load_data()
-
     train_history = []
     acc_history = []
     for epoch in range(1, epochs + 1):
@@ -120,7 +100,7 @@ def train_and_evaluate_mlp(
                 silent,
             )
         )
-        acc_history.append(test(model, device, test_loader, loss_fn, reduction, silent))
+        acc_history.append(test(model, device, test_loader, loss_fn, silent))
     plot_results(train_history, acc_history)
     return train_history, acc_history
 
@@ -131,6 +111,3 @@ def plot_results(train_history, acc_history):
     plt.plot(acc_history, label="test")
     plt.legend()
     plt.show()
-
-
-# from models.mlp import train_and_evaluate_mlp, Net
