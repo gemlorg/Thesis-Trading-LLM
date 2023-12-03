@@ -36,15 +36,16 @@ data[cols] = minmax_scale(data[cols] )
 
 train_loader, test_loader = utils.get_data_loaders(data, cols, target)
 
-architecture = utils.get_layers(len(cols), len(target), num_layers=2, hidden_size=16)
-loss_fn = torch.nn.BCEWithLogitsLoss()
+architecture = utils.get_layers(len(cols), len(target), num_layers=2, hidden_size=64)
+print(architecture)
+loss_fn = nn.BCEWithLogitsLoss(reduction="mean")
 model = mlp.Net(architecture).to(device)
-lr = 0.001
-momentum = 0.9
+lr = 0.00001
+momentum = 0.4
 # print(architecture)
 optimizer = optim.SGD(model.parameters(), lr=lr, momentum=momentum)
-log_interval = 10
-epochs = 5
+log_interval = 100
+epochs = 5000
 
 # use mlp
 
