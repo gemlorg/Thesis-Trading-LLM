@@ -57,8 +57,8 @@ def get_data(data_path, num_lags=10, date_format="%Y-%m-%d", date_column="Date",
 def get_data_loaders(data, cols, target, test_size=0.2, batch_size=32):
     test_index = int(len(data) * (1 - test_size))
 
-    data_train = data.iloc[test_index:]
-    data_test = data.iloc[:test_index]
+    data_train = data.iloc[:test_index]
+    data_test = data.iloc[test_index:]
 
     X_train = data_train.drop(target, axis=1)
     y_train = data_train[target]
