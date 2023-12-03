@@ -16,11 +16,11 @@ def sigmoid(z):
     return 1/(1 + np.exp(-z))
 
 
-def add_lags_columns(data, num_lags, exclude_columns):
+def add_lags_columns(data, num_lags, include_columns):
     lag_columns = []
     for i in range(1, num_lags + 1):
-        for col in data.columns:
-            if col not in exclude_columns and "lag" not in col and col == "Price":
+        for col in include_columns:
+            if  "lag" not in col :
                 lag_col_name = "{}_lag_{}".format(col, i) 
                 
                 lag_columns.append(data[col].shift(i).rename(lag_col_name)  )
@@ -48,7 +48,7 @@ def get_data(data_path, num_lags=10, date_format="%Y-%m-%d", date_column="Date",
     
     # columns_to_keep = [date_column, price_column]
     # data = data[columns_to_keep]
-    data = add_lags_columns(data, num_lags, [date_column])
+    data = add_lags_columns(data, num_lags, [price_column])
     data = compute_price_deltas(data, price_column)
     data = data.drop([price_column], axis=1)
     return data
@@ -85,3 +85,12 @@ def get_data_loaders(data, cols, target, test_size=0.2, batch_size=32):
     )
 
     return train_loader, test_loader
+
+def get_layers(in_features, out_features, num_layers, hidden_size):
+    layers = []
+    layers.append(in_features)
+    for _ in range(num_layers):
+        layers.append(hidden_size)
+    layers.append(out_features)
+    print(layers)
+    return layers
