@@ -4,10 +4,8 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-scikit-learn = "*"
-numpy = "*"
-pandas = "*"
-os = "*"
+datetime = "*"
+itertools = "*"
 
 [dev-packages]
 
