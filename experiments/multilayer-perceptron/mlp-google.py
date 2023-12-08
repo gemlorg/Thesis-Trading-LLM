@@ -7,15 +7,15 @@ import torch.nn as nn
 import csv
 import torch.optim as optim
 import utils
-sys.path.append("..")
+sys.path.append("../..")
 import models.mlp as mlp
 from sklearn.preprocessing import minmax_scale, scale
 
 data_path = os.path.join(
-    os.path.dirname(__file__), "../data/google-stock-dataset-Daily.csv"
+    os.path.dirname(__file__), "../../data/google-stock-dataset-Daily.csv"
 )
 csv_results_path = os.path.join(
-    os.path.dirname(__file__), "../results/mlp-results-google.csv"
+    os.path.dirname(__file__), "../../results/mlp-results-google.csv"
 )
 
 num_lags = 40

@@ -7,20 +7,23 @@ import torch.nn as nn
 import csv
 import utils
 import torch.optim as optim
-sys.path.append("..")
+sys.path.append("../..")
 import models.mlp as mlp
 from sklearn.preprocessing import minmax_scale, scale
 
 
 data_path = os.path.join(
-    os.path.dirname(__file__), "../data/gbpcad_one_hour_202311210827.csv"
+    os.path.dirname(__file__), "../../data/raw_sales.csv"
 )
 torch.manual_seed(42)
-num_lags = 15
+num_lags = 30
 
-data = utils.get_data(data_path, num_lags, date_column="barTimestamp", price_column="close", date_format="%Y-%m-%d %H:%M:%S")
-data = data.iloc[:2000]
-data.drop(["id", "provider", "insertTimestamp", "dayOfWeek"], axis=1, inplace=True)
+data = utils.get_data(data_path, num_lags, date_column="datesold", price_column="price", date_format="%Y-%m-%d %H:%M:%S")
+# data = data.iloc[:2000]
+# data.drop(["id", "provider", "insertTimestamp", "dayOfWeek"], axis=1, inplace=True)
+data = data[data['propertyType'] == 'house'][data['bedrooms'] == 3]
+
+data.drop(["postcode", "propertyType", "bedrooms"], axis=1, inplace=True)
 # print(data.head())
 
 
@@ -33,24 +36,24 @@ target = ["price_delta"]
 cols = data.drop(target, axis=1).select_dtypes(np.number).columns
 #maybe should use another method for normalisation
 data[cols] = minmax_scale(data[cols] )
-# print(data.head())
+print(data.head())
 
 train_loader, test_loader = utils.get_data_loaders(data, cols, target)
 
 # architecture = utils.get_layers(len(cols), len(target), num_layers=3, hidden_size=50)
-architecture = [len(cols), 128,16 , len(target)]
+architecture = [len(cols), 64, 16, len(target)]
 # print(architecture)
 loss_fn = nn.BCEWithLogitsLoss(reduction="mean")
 model = mlp.Net(architecture).to(device)
-lr = 0.000004
-momentum = 0.4
+lr = 0.03
+momentum = 0.9
 # print(architecture)
 optimizer = optim.SGD(model.parameters(), lr=lr, momentum=momentum)
 # optimizer = optim.Adam(model.parameters(), lr=lr)
 log_interval = 1000
-epochs = 2000
+epochs = 100
 
-# # use mlp
+# # # use mlp
 
 # print(len(test_loader))
 
