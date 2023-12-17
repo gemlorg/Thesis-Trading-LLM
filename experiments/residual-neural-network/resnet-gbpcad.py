@@ -79,17 +79,18 @@ split_tensor = [row.chunk(int(t.shape[1]/3), dim=0) for row in t]
 result = [[[part.tolist()] for part in row_parts] for row_parts in split_tensor]
 X_test = torch.tensor(result)
 y_val = torch.from_numpy(y_train.to_numpy()).float()
-y_test = torch.from_numpy(y_train.to_numpy()).float()
+y_train = y_val
+y_test = torch.from_numpy(y_test.to_numpy()).float()
 
 
 
-print(X_train.shape)
+# print(X_train.shape)
 
 
 # Example usage:
 input_size = X_train.shape[1]  
 dense_units = 256  
-learning_rate = 0.0001  
+learning_rate = 0.001  
 model_instance = resNet.PriceDirectionClassifier(
     input_size=input_size,
     dense_units=dense_units,
@@ -98,7 +99,8 @@ model_instance = resNet.PriceDirectionClassifier(
     resnet_config=None,  
     feature_extractor_name= None,
 )
-model_instance.train_model(X_train, y_train, X_val, y_val, epochs=1, batch_size=32)
-model_instance.evaluate(X_test, y_test)
+for _ in range (10):
+    model_instance.train_model(X_train, y_train, X_val, y_val, epochs=2, batch_size=32)
+    model_instance.evaluate(X_test, y_test)
 # accuracy = model_instance.evaluate(X_test, y_test)
 

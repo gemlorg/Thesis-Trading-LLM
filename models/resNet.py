@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from transformers import ResNetConfig, ResNetModel, AutoFeatureExtractor, AutoImageProcessor
+from transformers import ResNetConfig, ResNetModel, AutoFeatureExtractor, BatchFeature
 from sklearn.metrics import accuracy_score
 import numpy as np
 
@@ -30,7 +30,7 @@ class PriceDirectionClassifier(nn.Module):
             feature_extractor_name = resnet_model_name
 
         self.feature_extractor = AutoFeatureExtractor.from_pretrained(
-            feature_extractor_name
+            feature_extractor_name, do_resize=False, do_rescale=False
         )
         # self.feature_extractor = ResNetFeatureExtractor(model_name="resnet50", do_resize=True, do_center_crop=True)
 
@@ -47,7 +47,7 @@ class PriceDirectionClassifier(nn.Module):
         #     nn.Sigmoid(), 
         # )
         self.dense = nn.Sequential(
-            nn.Linear(100352, 1),
+            nn.Linear(2048, 1),
             nn.Sigmoid(), 
         )
 
@@ -58,18 +58,20 @@ class PriceDirectionClassifier(nn.Module):
         # Processing the data with the feature extractor
         # print(data.shape)
         # print(data)
-
+        # second_extractor = BatchFeature()
         inputs = self.feature_extractor(data, return_tensors="pt")
+        # inputs_v2 = second_extractor(data, return_tensors="pt")
 
-        print("inputs shape: " + str(inputs["pixel_values"].shape))
-        print("inputs: " + str(inputs))
+        # print("inputs shape: " + str(inputs["pixel_values"].shape))
+        # print("inputs: " + str(inputs))
+        # print("inputs class type: " + str(type(inputs)))
 
         # Getting the last hidden states from the resnet model
         last_hidden_states = self.resnet_model(**inputs).last_hidden_state
 
         # Flatten
         x = last_hidden_states.view(last_hidden_states.size(0), -1)
-        print("x shape: " + str(x.shape))
+        # print("x shape: " + str(x.shape))
 
         # Dense layers
         x = self.dense(x)
@@ -80,13 +82,13 @@ class PriceDirectionClassifier(nn.Module):
             for i in range(0, len(X_train), batch_size):
                 batch_data = X_train[i : i + batch_size]
                 batch_labels = y_train[i : i + batch_size]
-                print("batch data dim: " + str(batch_data.shape))
+                # print("batch data dim: " + str(batch_data.shape))
 
                 self.optimizer.zero_grad()
                 outputs = self(batch_data)
-                print("lookin good lookin good")
+                # print("lookin good lookin good")
                 loss = self.criterion(
-                    outputs, torch.tensor(batch_labels.to_numpy(), dtype=torch.float32).view(-1, 1)
+                    outputs, batch_labels.view(-1, 1)
                 )
                 loss.backward()
                 self.optimizer.step()
@@ -104,8 +106,12 @@ class PriceDirectionClassifier(nn.Module):
     def evaluate(self, X_test, y_test):
         with torch.no_grad():
             test_outputs = self(X_test)
+            # print("X_test shape: " + str(X_test.shape))
             test_predictions = (test_outputs > 0.5).float().numpy()
-            print("test predictions: " + str(test_predictions))
+            # print("test predictions: " + str(test_predictions))
+        
+        # print("test predictions shape: " + str(test_predictions.shape))
+        # print("y_test shape: " + str(y_test.numpy().shape))
 
         accuracy = accuracy_score(y_test.numpy(), test_predictions)
         print(f"Accuracy on Test Set: {accuracy}")
