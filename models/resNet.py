@@ -134,6 +134,6 @@ class PriceDirectionClassifier(nn.Module):
         plt.plot(self.train_loss_history, label="train loss")
         plt.plot(self.acc_loss_history, label="val loss")
         plt.legend()
-        plt.savefig(where +  "_"+str(time))
+        plt.savefig(where +  "_"+str(time)+".png")
 
         plt.show()
