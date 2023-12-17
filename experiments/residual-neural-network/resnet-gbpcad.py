@@ -20,7 +20,7 @@ torch.manual_seed(42)
 num_lags = 17
 
 data = utils.get_data(data_path, num_lags, date_column="barTimestamp", price_column="close", date_format="%Y-%m-%d %H:%M:%S")
-data = data.iloc[:128]
+data = data.iloc[:1000]
 data.drop(["id", "provider", "insertTimestamp", "dayOfWeek"], axis=1, inplace=True)
 # print(data.head())
 
