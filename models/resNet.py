@@ -4,6 +4,7 @@ import torch.optim as optim
 from transformers import ResNetConfig, ResNetModel, AutoFeatureExtractor, BatchFeature
 from sklearn.metrics import accuracy_score
 import numpy as np
+import matplotlib.pyplot as plt
 
 
 class PriceDirectionClassifier(nn.Module):
@@ -15,6 +16,7 @@ class PriceDirectionClassifier(nn.Module):
         resnet_model_name="microsoft/resnet-50",
         resnet_config=None,
         feature_extractor_name=None,
+        is_pretrained=False,
     ):
         super(PriceDirectionClassifier, self).__init__()
 
@@ -43,35 +45,32 @@ class PriceDirectionClassifier(nn.Module):
         # self.dense = nn.Sequential(
         #     nn.Linear(100352, self.dense_units),
         #     nn.ReLU(),
-        #     nn.Linear(self.dense_units, 1), 
-        #     nn.Sigmoid(), 
+        #     nn.Linear(self.dense_units, 1),
+        #     nn.Sigmoid(),
         # )
         self.dense = nn.Sequential(
             nn.Linear(2048, 1),
-            nn.Sigmoid(), 
+            nn.Sigmoid(),
         )
 
         self.optimizer = optim.Adam(self.parameters(), lr=self.learning_rate)
         self.criterion = nn.BCELoss()
 
+        self.train_history = []
+        self.acc_history = []
+
     def forward(self, data):
         # Processing the data with the feature extractor
-        # print(data.shape)
-        # print(data)
         # second_extractor = BatchFeature()
         inputs = self.feature_extractor(data, return_tensors="pt")
         # inputs_v2 = second_extractor(data, return_tensors="pt")
 
-        # print("inputs shape: " + str(inputs["pixel_values"].shape))
-        # print("inputs: " + str(inputs))
-        # print("inputs class type: " + str(type(inputs)))
 
         # Getting the last hidden states from the resnet model
         last_hidden_states = self.resnet_model(**inputs).last_hidden_state
 
         # Flatten
         x = last_hidden_states.view(last_hidden_states.size(0), -1)
-        # print("x shape: " + str(x.shape))
 
         # Dense layers
         x = self.dense(x)
@@ -82,11 +81,10 @@ class PriceDirectionClassifier(nn.Module):
             for i in range(0, len(X_train), batch_size):
                 batch_data = X_train[i : i + batch_size]
                 batch_labels = y_train[i : i + batch_size]
-                # print("batch data dim: " + str(batch_data.shape))
 
                 self.optimizer.zero_grad()
                 outputs = self(batch_data)
-                # print("lookin good lookin good")
+
                 loss = self.criterion(
                     outputs, batch_labels.view(-1, 1)
                 )
@@ -102,34 +100,38 @@ class PriceDirectionClassifier(nn.Module):
             print(
                 f"Epoch {epoch+1}/{epochs}, Loss: {loss.item()}, Val Loss: {val_loss.item()}"
             )
+            self.train_history.append(loss.item())
 
     def evaluate(self, X_test, y_test):
         with torch.no_grad():
             test_outputs = self(X_test)
-            # print("X_test shape: " + str(X_test.shape))
+
             test_predictions = (test_outputs > 0.5).float().numpy()
-            # print("test predictions: " + str(test_predictions))
-        
-        # print("test predictions shape: " + str(test_predictions.shape))
-        # print("y_test shape: " + str(y_test.numpy().shape))
 
         accuracy = accuracy_score(y_test.numpy(), test_predictions)
         print(f"Accuracy on Test Set: {accuracy}")
+        self.acc_history.append(accuracy)
         return accuracy
 
+    def plot_results(self):
+        plt.figure(figsize=(12, 8))
+        plt.plot(self.train_history, label="train")
+        plt.plot(self.acc_history, label="test")
+        plt.legend()
+        plt.show()
 
 # X_train, X_val, X_test, y_train, y_val, y_test = ...
 
 # Example usage:
-# input_size = X_train.shape[1]  
-# dense_units = 256  
-# learning_rate = 0.0001  
+# input_size = X_train.shape[1]
+# dense_units = 256
+# learning_rate = 0.0001
 # model_instance = PriceDirectionClassifier(
 #     input_size=input_size,
 #     dense_units=dense_units,
 #     learning_rate=learning_rate,
 #     resnet_model_name="microsoft/resnet-50",
-#     resnet_config=None,  
+#     resnet_config=None,
 #     feature_extractor_name=None
 # )
 # model_instance.train_model(X_train, y_train, X_val, y_val, epochs=10, batch_size=32)
