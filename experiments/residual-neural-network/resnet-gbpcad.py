@@ -37,7 +37,7 @@ data[cols] = minmax_scale(data[cols] )
 
 
 
-X_train, X_val, X_test, y_train, y_val, y_test = utils.get_xy_tensors(data, cols, target, test_size=0.2)
+X_train, X_test, y_train, y_test = utils.get_xy_tensors(data, cols, target, test_size=0.2)
 X_train = utils.to_pixels(X_train, num_channels = 3)
 X_test = utils.to_pixels(X_test, num_channels = 3)
 X_val = X_test
@@ -58,4 +58,4 @@ model_instance = resNet.PriceDirectionClassifier(
 
 model_instance.train_model(X_train, y_train, X_val, y_val, epochs=100, batch_size=32)
 
-model_instance.plot_results("resnet-gbpcad")
+model_instance.plot_results("resnet-gbpcad-"+str(learning_rate)+"-"+str(epochs))
