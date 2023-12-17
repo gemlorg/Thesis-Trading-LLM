@@ -23,7 +23,7 @@ def add_lags_columns(data, num_lags, include_columns):
             if  "lag" not in col :
                 lag_col_name = "{}_lag_{}".format(col, i) 
                 
-                lag_columns.append(data[col].shift(i).rename(lag_col_name) )
+                lag_columns.append(data[col].shift(periods = i).rename(lag_col_name) )
 
     data = pd.concat([data] + lag_columns, axis=1)
     data = data.dropna()
@@ -106,7 +106,15 @@ def get_xy_tensors(data, cols, target, test_size=0.2):
 
     X_test = data_test.drop(target, axis=1)
     y_test = data_test[target]
+    
+    X_train = torch.tensor(X_train.values).float()
+    y_train = torch.tensor(y_train.values).float()
+    X_test = torch.tensor(X_test.values).float()
+    y_test = torch.tensor(y_test.values).float()
+    return X_train, X_test, y_train, y_test
 
-    X_val = data.drop(target, axis=1)
-    y_val=data[target]
-    return X_train, X_val, X_test, y_train, y_val, y_test
+def to_pixels(tensor, num_channels = 3):
+    assert(tensor.shape[1]%num_channels == 0)
+    split_tensor = [row.chunk(int(tensor.shape[1]/num_channels), dim=0) for row in tensor]
+    result = [[[part.tolist()] for part in row_parts] for row_parts in split_tensor]
+    return torch.tensor(result)
