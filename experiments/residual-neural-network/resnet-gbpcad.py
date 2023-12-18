@@ -21,7 +21,11 @@ torch.manual_seed(42)
 num_lags = 17
 
 data = utils.get_data(data_path, num_lags, date_column="barTimestamp", price_column="close", date_format="%Y-%m-%d %H:%M:%S")
-data = data.iloc[:1000]
+num_entries = 1000
+year=2023
+num_years = 8
+test_size=0.2
+data = utils.data_for_year(data, year, num_years, num_entries)
 data.drop(["id", "provider", "insertTimestamp", "dayOfWeek"], axis=1, inplace=True)
 
 
@@ -37,14 +41,15 @@ data[cols] = minmax_scale(data[cols] )
 
 
 
-X_train, X_test, y_train, y_test = utils.get_xy_tensors(data, cols, target, test_size=0.2)
+X_train, X_test, y_train, y_test = utils.get_xy_tensors(data, cols, target, test_size=test_size)
 X_train = utils.to_pixels(X_train, num_channels = 3)
 X_test = utils.to_pixels(X_test, num_channels = 3)
 X_val = X_test
 y_val = y_test
 
 dense_units = 256
-learning_rate = 0.001
+learning_rate = 0.00001
+epochs=200
 is_pretrained = False
 model_instance = resNet.PriceDirectionClassifier(
     dense_units=dense_units,
@@ -56,6 +61,8 @@ model_instance = resNet.PriceDirectionClassifier(
 )
 
 
-model_instance.train_model(X_train, y_train, X_val, y_val, epochs=100, batch_size=32)
 
-model_instance.plot_results("resnet-gbpcad-"+str(learning_rate)+"-"+str(epochs))
+model_instance.train_model(X_train, y_train, X_val, y_val, epochs=epochs, batch_size=10)
+
+model_instance.plot_results("./images/resnet-gbpcad_"+str(learning_rate)+"_"+str(epochs), string="GBP/CAD, ResNet50, lr="+str(learning_rate)+", epochs="+str(epochs)+", year=" + str(year) + ", entries=" + str(num_entries) + ", test_size=" + str(test_size))
+

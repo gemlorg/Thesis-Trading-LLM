@@ -5,7 +5,7 @@ from transformers import ResNetConfig, ResNetModel, AutoFeatureExtractor, BatchF
 from sklearn.metrics import accuracy_score
 import numpy as np
 import matplotlib.pyplot as plt
-from time import time
+import datetime
 
 
 class PriceDirectionClassifier(nn.Module):
@@ -70,8 +70,9 @@ class PriceDirectionClassifier(nn.Module):
         x = self.dense(x)
         return x
 
-    def train_model(self, X_train, y_train, X_val, y_val, epochs=10, batch_size=32, log_interval=100):
+    def train_model(self, X_train, y_train, X_val, y_val, epochs=10, batch_size=32, log_interval=2):
         for epoch in range(epochs):
+            
             train_outputs = []
             for i in range(0, len(X_train), batch_size):
                 batch_data = X_train[i: i + batch_size]
@@ -120,9 +121,9 @@ class PriceDirectionClassifier(nn.Module):
             f"Accuracy on Test Set: {accuracy} ({round(accuracy * len(y_test))}/{len(y_test)})")
         return accuracy
 
-    def plot_results(self, where):
+    def plot_results(self, where, string=""):
         plt.figure(figsize=(11, 5))
-
+        plt.suptitle(string)
         plt.subplot(1, 2, 1)
         plt.title("Accuracy")
         plt.plot(self.train_history, label="train")
@@ -134,6 +135,6 @@ class PriceDirectionClassifier(nn.Module):
         plt.plot(self.train_loss_history, label="train loss")
         plt.plot(self.acc_loss_history, label="val loss")
         plt.legend()
-        plt.savefig(where +  "_"+str(time)+".png")
+        plt.savefig(where +  "_"+str(datetime.datetime.now())+".png")
 
         plt.show()
