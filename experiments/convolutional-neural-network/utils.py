@@ -2,6 +2,9 @@ import pandas as pd
 from datetime import datetime
 import torch
 import numpy as np
+from torch.nn.utils.rnn import pad_sequence
+from torch.utils.data import DataLoader, TensorDataset
+import matplotlib.pyplot as plt
 
 from sklearn.preprocessing import minmax_scale, scale
 
@@ -55,7 +58,18 @@ def get_data(
     return data
 
 
-def get_data_loaders(data, cols, target, test_size=0.2, batch_size=32):
+def create_sequence(data_record, num_lags):
+    # Assuming 'datesold' is the first column and 'num_lags' are the subsequent columns
+    datesold = torch.tensor(data_record["datesold"]).float().expand(num_lags)
+    lagged_data = torch.tensor(data_record.drop("datesold").values).float()
+
+    # Stack 'datesold' and 'lagged_data' along a new dimension
+    sequence = torch.stack([datesold, lagged_data], dim=0)
+
+    return sequence
+
+
+def get_data_loaders(data, target, num_lags, test_size=0.2, batch_size=32):
     test_index = int(len(data) * (1 - test_size))
 
     data_train = data.iloc[:test_index]
@@ -67,9 +81,16 @@ def get_data_loaders(data, cols, target, test_size=0.2, batch_size=32):
     X_test = data_test.drop(target, axis=1)
     y_test = data_test[target]
 
+    X_train_sequences = torch.stack(
+        X_train.apply(lambda x: create_sequence(x, num_lags), axis=1).tolist()
+    )
+    X_test_sequences = torch.stack(
+        X_test.apply(lambda x: create_sequence(x, num_lags), axis=1).tolist()
+    )
+
     train_loader = torch.utils.data.DataLoader(
         torch.utils.data.TensorDataset(
-            torch.tensor(X_train[cols].values).float(),
+            X_train_sequences,
             torch.tensor(y_train.values).float(),
         ),
         batch_size=batch_size,
@@ -78,14 +99,23 @@ def get_data_loaders(data, cols, target, test_size=0.2, batch_size=32):
 
     test_loader = torch.utils.data.DataLoader(
         torch.utils.data.TensorDataset(
-            torch.tensor(X_test[cols].values).float(),
+            X_test_sequences,
             torch.tensor(y_test.values).float(),
         ),
         batch_size=batch_size,
         shuffle=True,
     )
-
     return train_loader, test_loader
+
+
+def plot_results(model, acc_history, name):
+    plt.figure(figsize=(12, 8))
+    plt.plot(acc_history, label="test")
+    plt.ylabel("Accuracy")
+    plt.xlabel("Epoch")
+    plt.title(name + "\n" + str(model))
+    plt.legend()
+    plt.savefig("pics/" + name + ".png")
 
 
 def get_layers(in_features, out_features, num_layers, hidden_size):

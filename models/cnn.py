@@ -13,6 +13,7 @@ class CNN(nn.Module):
         conv_kernel_sizes,
         dense_layers,
         dense_units,
+        seq_length,
         activation_fn=torch.relu,
     ):
         super(CNN, self).__init__()
@@ -24,6 +25,8 @@ class CNN(nn.Module):
                 input_channels if i == 0 else conv_out_channels[i - 1],
                 conv_out_channels[i],
                 kernel_size=conv_kernel_sizes[i],
+                stride=1,
+                padding=int(conv_kernel_sizes[i] / 2),
             )
             self.conv_layers.append(layer)
 
@@ -31,12 +34,27 @@ class CNN(nn.Module):
         self.dense_layers = nn.ModuleList()
         for i in range(dense_layers):
             layer = nn.Linear(
-                conv_out_channels[-1] if i == 0 else dense_units[i - 1], dense_units[i]
+                conv_out_channels[-1] * seq_length if i == 0 else dense_units[i - 1],
+                dense_units[i],
             )
             self.dense_layers.append(layer)
 
         self.output_layer = nn.Linear(dense_units[-1], 1)
         self.activation_fn = activation_fn
+        self.architecture_string = (
+            "Conv_config = ("
+            + str(conv_layers)
+            + ", "
+            + str(conv_out_channels)
+            + ", "
+            + str(conv_kernel_sizes)
+            + ")\n"
+            + "Dense_config = ("
+            + str(dense_layers)
+            + ", "
+            + str(dense_units)
+            + ")\n"
+        )
 
     def forward(self, x):
         # Applying the convolutional layers
@@ -54,6 +72,9 @@ class CNN(nn.Module):
         x = self.output_layer(x)
         output = torch.sigmoid(x)
         return output
+
+    def __str__(self):
+        return self.architecture_string
 
 
 def train(
@@ -135,7 +156,7 @@ def train_and_evaluate_cnn(
             )
         )
         acc_history.append(test(model, device, test_loader, loss_fn, silent))
-    plot_results(train_history, acc_history)
+    # plot_results(train_history, acc_history)
     return train_history, acc_history
 
 
@@ -150,18 +171,18 @@ def plot_results(train_history, acc_history):
 # Example usage:
 
 # train_loader, test_loader = ...
-# input_channels = 3  
-# conv_layers = 2  
+# input_channels = 3
+# conv_layers = 2
 # conv_out_channels = [
 #     64,
 #     128,
-# ]  
+# ]
 # conv_kernel_sizes = [
 #     3,
 #     3,
-# ]  
-# dense_layers = 2  
-# dense_units = [256, 128] 
+# ]
+# dense_layers = 2
+# dense_units = [256, 128]
 
 # cnn_model = CNN(
 #     input_channels=input_channels,
