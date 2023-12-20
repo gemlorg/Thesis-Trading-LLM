@@ -73,6 +73,7 @@ def test_model(
     name,
     epochs=epochs,
     activation_fn=torch.relu,
+    learning_rate=0.001,
 ):
     cnn_model = cnn.CNN(
         input_channels=input_channels,
@@ -85,7 +86,7 @@ def test_model(
         activation_fn=activation_fn,
     )
     cnn_model.to(device)
-    optimizer = torch.optim.Adam(cnn_model.parameters(), lr=0.001)
+    optimizer = torch.optim.Adam(cnn_model.parameters(), lr=learning_rate)
 
     _, hist = cnn.train_and_evaluate_cnn(
         device,
@@ -117,6 +118,16 @@ for conv_layers, conv_out_channels, conv_kernel_sizes in conv_configs:
 test_model(2, [64, 128], [3, 5], 2, [256, 128], "good_long_train", epochs=50)
 test_model(2, [64, 128], [3, 5], 3, [200, 100, 10], "promising_long_train", epochs=50)
 test_model(2, [64, 128], [3, 5], 3, [512, 256, 128], "flat_long_train", epochs=30)
+test_model(
+    2,
+    [64, 128],
+    [3, 5],
+    3,
+    [512, 256, 128],
+    "flat_very_long_train_w",
+    epochs=1000,
+    learning_rate=0.05,
+)
 
 
 functions = [

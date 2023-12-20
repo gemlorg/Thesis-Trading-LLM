@@ -116,6 +116,7 @@ def plot_results(model, acc_history, name):
     plt.title(name + "\n" + str(model))
     plt.legend()
     plt.savefig("pics/" + name + ".png")
+    plt.close()
 
 
 def get_layers(in_features, out_features, num_layers, hidden_size):
