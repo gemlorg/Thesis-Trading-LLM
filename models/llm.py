@@ -50,3 +50,18 @@ def fine_tune_lm(model, train_dataloader, epochs=3, learning_rate=5e-5):
 
         print(f"Epoch {epoch + 1}/{epochs} - Loss: {loss.item()}")
 
+
+def test_lm(model, test_dataloader, tokenizer):
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+    for batch in test_dataloader:
+        input_ids = batch["input_ids"].to(device)
+        attention_mask = batch["attention_mask"].to(device)
+        labels = input_ids.clone()
+        outputs = model.generate(
+            input_ids, attention_mask=attention_mask, labels=labels, max_new_tokens=5
+        )
+        translated_text = tokenizer.batch_decode(outputs, skip_special_tokens=True)
+
+        for text in translated_text:
+            print(text)
