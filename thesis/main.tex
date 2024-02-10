@@ -1,0 +1,105 @@
+
+
+% dodaj opcję [licencjacka] dla pracy licencjackiej
+% dodaj opcję [en] dla wersji angielskiej (mogą być obie: [licencjacka,en])
+\documentclass[en]{pracamgr}
+
+% Dane magistrantów:
+\autor{Damian Dąbrowski}{439954}
+\autori{Heorhii Lopatin}{456366}
+\autorii{Ivan Gechu}{439665}
+\autoriii{Krzysztof Szostek}{440011}
+
+\title{Large language models for forecasting market's behaviour}
+\titlepl{Duże modele językowe w przewidywaniu giełdy}
+
+%\tytulang{An implementation of a difference blabalizer based on the theory of $\sigma$ -- $\rho$ phetors}
+
+%kierunek: 
+% - matematyka, informacyka, ...
+% - Mathematics, Computer Science, ...
+\kierunek{Computer Science}
+
+% Praca wykonana pod kierunkiem:
+% (podać tytuł/stopień imię i nazwisko opiekuna
+% Instytut
+% ew. Wydział ew. Uczelnia (jeżeli nie MIM UW))
+\opiekun{dr Piotr Hofman\\
+  Instytut Informatyki\\
+  }
+
+% miesiąc i~rok:
+\date{May 2024}
+
+%Podać dziedzinę wg klasyfikacji Socrates-Erasmus:
+\dziedzina{ 
+%11.0 Matematyka, Informatyka:\\ 
+%11.1 Matematyka\\ 
+% 11.2 Statystyka\\ 
+%11.3 Informatyka\\ 
+11.4 Sztuczna inteligencja\\ 
+%11.5 Nauki aktuarialne\\
+%11.9 Inne nauki matematyczne i informatyczne
+}
+
+%Klasyfikacja tematyczna wedlug AMS (matematyka) lub ACM (informatyka)
+\klasyfikacja{D. Software\\
+  D.127. Blabalgorithms\\
+  D.127.6. Numerical blabalysis}
+
+% Słowa kluczowe:
+\keywords{machine learning, large language models, time series forecasting, market prices}
+
+% Tu jest dobre miejsce na Twoje własne makra i~środowiska:
+\newtheorem{defi}{Definicja}[section]
+
+% koniec definicji
+\begin{document}
+\newcommand{\rozdzial}[2]{
+	\chapter{#1}
+	\input{chapters/#2}
+}
+
+\maketitle
+
+%tu idzie streszczenie na strone poczatkowa
+\begin{abstract}
+        This thesis concerns research into the use of machine learning 
+        and large language models in market analysis, focusing on market
+        predictions.
+
+\end{abstract}
+
+\tableofcontents
+%\listoffigures
+%\listoftables
+
+\rozdzial{Introduction}{introduction}
+\rozdzial{Related work}{related-work}
+\rozdzial{Other models}{other-models}
+\rozdzial{Methodology }{methodology}
+\rozdzial{Main results}{results}
+\rozdzial{Forecasting applications}{forecasting-application}
+\rozdzial{Conclusion}{conclusion}
+\appendix
+\rozdzial{Visualisation}{visualisation}
+%here appendix
+\begin{thebibliography}{99}
+	\addcontentsline{toc}{chapter}{Bibliografia}
+
+	\bibitem[Bea65]{beaman} Juliusz Beaman, \textit{Morbidity of the Joll function}, Mathematica Absurdica, 117 (1965) 338--9.
+
+	\bibitem[Blar16]{eb1} Elizjusz Blarbarucki, \textit{O pewnych
+		aspektach pewnych aspektów}, Astrolog Polski, Zeszyt 16, Warszawa
+	1916.
+
+\end{thebibliography}
+
+\end{document}
+
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% coding: latin-2
+%%% End:
