@@ -1,5 +1,26 @@
+Here we present our results from trying to use the following models to extrapolate a time series.
+Classification models output in binary categories: increase or decrease in value, and are therefore less precise.
+
 \section{Random forest}
+Random forests were tested only on the simple sales data.
+The following options were tried
+
+\noindent
+- num\_lags: [1, 5, 10, 13, 25, 40, 50]\\
+- n\_estimators: [20, 50, 100]\\
+- max\_features: [2, 4, 8]\\
+- criterion: ["gini", "entropy", "log\_loss"]
+
+The accuracy of the models ranged from 0.749 to 0.827. The main influence seems to be the lag number - the optimal being around 10. Then slightly better are those with max\_features = 4, and number of trees $\ge$ 50. The criterion doesn't seem to play a significant role.
 \section{Support vector machine}
+For the support vector machine there were overall nine models tried:
+
+/noindent
+- three kernels: `rbf`, `poly`, `sigmoid`\\
+- one gamma: `scale`\\
+- three C values: `0.1`, `1.0`, `10.0` \\
+
+The `poly` kernel worked much better than both `rbf` and `sigmoid`, which both worked equally badly. Overall, though, the statistics for every model were terrible. The value of `C` has had very little impact and only on `rbf` kernel.
 \section{Multi-layer perceptron}
 \section{Convolutional neural network}
 \section{Residual neural network}
