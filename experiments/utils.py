@@ -10,7 +10,9 @@ import numpy as np
 import matplotlib.pyplot as plt
      
 import csv
+from torch.utils.data import Dataset, DataLoader
 from sklearn.preprocessing import minmax_scale, scale
+from data import Dataset_GBPCAD_hour
 
 def sigmoid(z):
     return 1/(1 + np.exp(-z))
@@ -118,3 +120,15 @@ def to_pixels(tensor, num_channels = 3):
     split_tensor = [row.chunk(int(tensor.shape[1]/num_channels), dim=0) for row in tensor]
     result = [[[part.tolist()] for part in row_parts] for row_parts in split_tensor]
     return torch.tensor(result)
+
+data_dict = {
+    "gbpcad" : Dataset_GBPCAD_hour
+
+}
+
+split = 0.7
+def split_data(data_name, data_type, num_lags, batch_size):
+    Data = data_dict[data_name]
+    data_set = Data() #need to init 
+    data_loader = DataLoader(data_set, batch_size=batch_size, shuffle=True)
+    return data_set, data_loader
