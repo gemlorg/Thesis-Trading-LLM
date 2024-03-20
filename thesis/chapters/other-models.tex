@@ -36,6 +36,7 @@ The \verb|criterion| parameter describes the function used by the model to calcu
 % error rates that compare favorably to Adaboost
 % (Freund and Schapire[1996]), but are more robust with respect to noise. Internal estimates monitor error, strength, and correlation and these are used to show the response to increasing the number of features used in the splitting. Internal estimates are also used to measure variable importance. These ideas are also applicable to regression.
 
+\subsection{results}
 The model was trained and tested on the simple property sales dataset.
 The model was trained to classify whether the next price will be higher or lower than the previous one, based on the sequence of prices spanning the last \verb|num_lags| days.
 The combinations of following parameters were tried
@@ -87,6 +88,7 @@ If \(Y(X) >= 0.5\), the model classifies the datapoint as 1 (in our model below 
 
 During training the parameters \(B_0, B_1, \ldots, B_n\) are chosen using Maximum Likelihood Estimation function, so that the results of the \(Y\) function best fit the training dataset.
 
+\subsection{Results}
 Two models have been trained.
 The first one is trained to predict if the next price in the dataset wil be higher than the previous one, provided with a sequence of prices spanning over the last \verb|num_lags| days.
 The second one does the same but operates on monthly averages instead of single records (for this, the dataset was averaged over subsuquent months).
@@ -128,15 +130,19 @@ Support vector machines are a widely popular model for machine learning classifi
 
 The model construes datapoints as high-dimensional vectors and finds the best hyperplane that divides the two classes the data is classified into. The goal of training is to find the hyperplane with the greatest margin - that is, the greatest distance from the closest vectors, called the support vectors.
 
-The model uses a kernel function to transform the space of data points which are not separable by a hyperplane, into one where they are separable.
+\subsection{Parameters}
+\begin{itemize}
+	\item \textbf{Kernel:} The model uses a kernel function to transform the space of data points which are not separable by a hyperplane, into one where they are separable.
 
-The \(C\) value specifies how accurate the model should be, that is how much it should avoid misclassifications, versus how wide the margins should be. A lower value of \(C\) corresponds to wider margins.
+	\item \textbf{C value:} The \(C\) value specifies how accurate the model should be, that is how much it should avoid misclassifications, versus how wide the margins should be. A lower value of \(C\) corresponds to wider margins.
 
-The gamma value specifies how much influence individual training datapoints should have. The \verb|scale| value of gamma means that gamma is scaled automatically to fit the size of the dataset.
-
+	\item \textbf{Gamma:} The gamma value specifies how much influence individual training datapoints should have. The \verb|scale| value of gamma means that gamma is scaled automatically to fit the size of the dataset.
+\end{itemize}
 % A model was trained to predict whether the next price will be higher or lower than the previous one.
 
 % What was used is Support Vector Regression, which is a modification of the idea of Support Vector Machine for the purposes of regression tasks, where instead of finding a hyperplane, 
+
+\subsection{Results}
 
 The model was tested using two metrics: Mean Squared Error and R-squared.
 
@@ -157,6 +163,151 @@ Support Vector Machine model doesn't perform well in this task, as can be seen i
 	\label{fig:svm}
 
 \end{figure}
-\section{Multi-layer perceptron}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\section{Multilayer Perceptron}
+
+The Multilayer Perceptron (MLP) is a feedforward neural network, that is made up of multiple layers of nodes in a directed graph, where each node from one layer is connected to all the nodes from the previous one.
+MLPs are widely used in pattern recognition, classification, and regression problems due to their ability as networks to model complex nonlinear relationships in the input data.
+An MLP consists of an input layer of neurons, one or more hidden layers, and an output layer.
+Each node, except for those in the input layer, is a neuron that uses a nonlinear activation function to combine inputs from the previous layer and an additional bias term.
+
+\subsection{Structure of an MLP}
+
+An MLP is made up of the following components:
+\begin{itemize}
+	\item \textbf{Input Layer:} The first layer of the network, which receives the input data to be processed. Each neuron in this layer represents a feature of the input data.
+	\item \textbf{Hidden Layers:} One or more layers that perform computations on the inputs received and pass their output to the next layer. The neurons in these layers apply activation functions to their inputs to introduce nonlinearity.
+	\item \textbf{Output Layer:} The final layer that produces the output of the network.
+\end{itemize}
+
+\subsection{Forward Propagation}
+
+The process of computing the output of an MLP is called forward propagation.
+In this process, the input data is passed through each layer of the network, transforming the data as it moves through. The output of each neuron is computed as follows:
+
+\begin{equation}
+	a^{(l)}_j = \phi\left(\sum_{i} w^{(l)}_{ji} a^{(l-1)}_i + b^{(l)}_j\right)
+\end{equation}
+
+where
+\begin{itemize}
+	\item $a^{(l)}_j$ is the activation of the $j$-th neuron in the $l$-th layer,
+	\item $\phi$ denotes the activation function,
+	\item $w^{(l)}_{ji}$ represents the weight from the $i$-th neuron in the $(l-1)$-th layer to the $j$-th neuron in the $l$-th layer,
+	\item $b^{(l)}_j$ is the bias term for the $j$-th neuron in the $l$-th layer,
+	\item $a^{(l-1)}_i$ is the activation of the $i$-th neuron in the $(l-1)$-th layer.
+\end{itemize}
+
+\subsection{Backpropagation and Training}
+
+To train an MLP, the backpropagation algorithm is used.
+This algorithm adjusts the weights and biases of the network to minimize the difference between the actual output and the expected output.
+The process involves computing the gradient of a loss function with respect to each weight and bias in the network, and then using these gradients to update the weights and biases in the direction that minimizes the loss.
+The loss function measures the error between the predicted output and the actual output. The update rule for the weights is given by:
+
+\begin{equation}
+	w^{(l)}_{ji} \leftarrow w^{(l)}_{ji} - \eta \frac{\partial \mathcal{L}}{\partial w^{(l)}_{ji}}
+\end{equation}
+
+where
+\begin{itemize}
+	\item $\eta$ is the learning rate,
+	\item $\frac{\partial \mathcal{L}}{\partial w^{(l)}_{ji}}$ is the partial derivative of the loss function $\mathcal{L}$ with respect to the weight $w^{(l)}_{ji}$.
+\end{itemize}
+Similar updates are made for the biases.
+
+Through iterative training involving forward propagation, loss calculation, and backpropagation, the MLP learns to approximate the function that maps data inputs to desired predictions.
+
+\subsection{Results}
+The model has been trained and tested on the google dataset.
+The results can be seen below (Fig \ref{fig:mlp}).
+% Model Architecture id is given by:
+
+
+\begin{figure}[h!]
+	\includegraphics[width=\linewidth]{"pictures/mlp_res.png"}
+	\caption{Results of multilayer perceptron experiment.}
+	\label{fig:mlp}
+
+\end{figure}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 \section{Convolutional neural network}
+Convolutional Neural Networks (CNNs) are a class of deep neural networks, highly effective for analyzing visual imagery. They employ a mathematical operation called convolution, which allows them to efficiently process data in a grid-like topology, such as images.
+
+\subsection{Architecture of Convolutional Neural Networks}
+A typical CNN architecture comprises several layers that transform the input image to produce an output that represents the presence of specific features or class labels. The most common layers found in a CNN are:
+
+\subsubsection{Convolutional Layer}
+The convolutional layer is the fundamental building block of a CNN. It applies a set of learnable filters to the input. Each filter activates specific features at certain spatial positions in the input. Mathematically, the convolution operation is defined as follows:
+\[f(x, y) = (g * h)(x, y) = \sum_m\sum_n g(m,n) \cdot h(x-m, y-n)\]
+where \(f(x, y)\) is the output, \(g\) is the input image, \(h\) is the filter, and \(*\) denotes the convolution operation.
+
+\subsubsection{Activation Function}
+Following convolution, an activation function is applied to introduce non-linearity into the model. The Rectified Linear Unit (ReLU) is commonly used:
+\[f(x) = \max(0, x)\]
+
+\subsubsection{Pooling Layer}
+The pooling layer reduces the spatial dimensions (width and height) of the input volume for the next convolutional layer. It operates independently on every depth slice of the input and resizes it spatially. A common operation for pooling is max pooling:
+\[f(x, y) = \max_{(a,b) \in D} g(x+a, y+b)\]
+where \(D\) is the set of coordinates in the input, and \(g\) is the input image.
+
+\subsubsection{Fully Connected Layer}
+Towards the end of the network, fully connected layers are used, where each input node is connected to each output by a learnable weight. This layer classifies the image into various classes based on the learned high-level features.
+
+\subsubsection{Output Layer}
+The final layer of a CNN is a softmax layer that outputs a probability distribution over the classes, indicating the likelihood of the input image belonging to each class.
+
+
+\subsection{Results}
+The CNN model has been trained and tested on the simple sales data.
+
+
+
+
+
+
+
 \section{Residual neural network}
