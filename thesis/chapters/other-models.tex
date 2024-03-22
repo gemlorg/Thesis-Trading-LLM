@@ -36,7 +36,7 @@ The \verb|criterion| parameter describes the function used by the model to calcu
 % error rates that compare favorably to Adaboost
 % (Freund and Schapire[1996]), but are more robust with respect to noise. Internal estimates monitor error, strength, and correlation and these are used to show the response to increasing the number of features used in the splitting. Internal estimates are also used to measure variable importance. These ideas are also applicable to regression.
 
-\subsection{results}
+\subsection{Results}
 The model was trained and tested on the simple property sales dataset.
 The model was trained to classify whether the next price will be higher or lower than the previous one, based on the sequence of prices spanning the last \verb|num_lags| days.
 The combinations of following parameters were tried
@@ -309,5 +309,44 @@ The CNN model has been trained and tested on the simple sales data.
 
 
 
-
 \section{Residual neural network}
+
+As the number of layers in classic CNN grows, the problem of vanishing or exploding gradient appears.
+It means that gradients become very small (or very large in case of exploding) as they are propagated
+through the layers of the network.
+
+Residual neural network (ResNet) is a type of CNN that is less subject to this problem.
+It was developed by Kaiming He, Xiangyu Zhang, Shaoqing Ren and Jian Sun in 2015.
+
+\subsection{ResNet Architecture}
+ResNet uses a technique called skip connections. Skip connection bypasses several layers, so
+that input of one layer is added to the output of some further layer. Blocks of such connections
+are called residual and the network is formed by stacking residual blocks.
+
+The idea is that instead of learning the original mapping of input to output, residual blocks
+learn the difference between output and input, which is called the residual function.
+
+\subsection{Results}
+
+This model has been trained on GBP/CAD dataset in two versions: not pretrained and pretrained.
+
+% TODO add pictures
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
