@@ -1,0 +1,95 @@
+In this chapter we present the basic theory behind Large Language Models. We then introduce the LLaMA model, which we've been using. We then describe the embedding technique we've used and we present our results.
+
+
+\section{Overview}
+
+% TODO: Cite a paper
+A Large Language Model (LLM) is an advanced artificial intelligence system designed to understand and generate human-like text based on patterns it learns from enormous amounts of textual data.
+These models utilize deep learning techniques, particularly neural networks, which consist of layers of interconnected neurons that (layers) process information sequentially, one by one.
+% TODO: Cite a paper
+The predominant architecture underpinning most contemporary LLMs is the Transformer (see below), noted for its self-attention mechanism that enables the model to assess the importance of different words in a sentence irrespective of their positional relationship.
+
+The training of an LLM involves presenting it with a large, diverse corpus of text, during which it adjusts its internal parameters to minimize the difference between its predictions and the actual data. This process, known as supervised learning, equips the model with a probabilistic understanding of language, enabling it to predict a continuation of a given piece of input text.
+
+Once trained, LLMs can perform a variety of language-based tasks such as translation, summarization, question answering, and text generation. Their capability to generate coherent and contextually relevant text makes them invaluable for applications in natural language processing (NLP), including conversational agents, content creation tools, and sophisticated text analysis. We will see how it deals with analysing and predicting time series data.
+
+
+\section{The Transformer}
+
+% TODO: Cite a paper
+The Transformer is a type of neural network architecture introduced in the seminal 2017 paper \textit{"Attention is All You Need"} by Vaswani et al. It has since become foundational for many cutting-edge natural language processing (NLP) models due to its efficiency and effectiveness in handling data sequences, such as text.
+
+\subsection{Key Features and Components}
+
+\begin{itemize}
+	\item \textbf{Attention Mechanism:} The Transformer implements a self-attention mechanism that allows the model to semantically connect different words in a sentence, regardless of their positions. For instance, in the sentence ``The cat that sat on the mat chased the mouse,'' the model can directly relate ``cat'' and ``chased'' without processing intervening words sequentially.
+
+	\item \textbf{Layer Structure:} Composed of a stack of identical layers, each Transformer layer has two main sub-layers: a multi-head self-attention mechanism and a fully connected feed-forward layer. Both sub-layers are equipped with residual connections (see ResNet description) followed by layer normalization.
+	      % TODO: link ResNet description
+
+	\item \textbf{Multi-Head Attention:} This component allows the model to focus on different positions of the input sequence simultaneously.
+	      It divides the attention mechanism into multiple ``heads'', where each head focuses on a different aspect of the input sequence, enabling the model to learn from input information on many different syntactic and semantic levels simultaneously.
+
+	\item \textbf{Positional Encoding:} To compensate for the inherent lack of sequential data processing in Transformer model, \textit{positional encodings} are added to input to inject information about the position of each word in the sequence.
+	      This way the Transformer can also take into account the order of the input tokens.
+
+	\item \textbf{Encoder and Decoder:} The Transformer model typically features an \textit{encoder} to process the input text and a \textit{decoder} to generate the output text, a design particularly effective for machine translation.
+	      The encoder transforms an input sequence into a series of continuous representations (i.e. high-dimensional vectors), which the decoder then converts into an output sequence.
+	      The decoder also utilizes self-attention to reference previously generated words, ensuring contextually aware generation.
+	      % ??? What are continous representations?
+
+	      % \item \textbf{Scalability and Parallelization:} A significant advantage of the Transformer over earlier models such as RNNs or LSTMs is its ability to parallelize training, since it does not require sequential processing of input data. This feature significantly enhances training speed and has facilitated the development of very large models.
+\end{itemize}
+
+
+
+\section{LLaMA model}
+
+\subsection{Introduction}
+% TODO: cite a paper for 
+\textbf{LLaMA} or \textbf{Large Language Model Meta AI} is an innovative large language model developed by Meta AI. The model is part of a new generation of neural networks designed for a wide range of natural language processing (NLP) applications, from simple text generation to complex decision-making tasks.
+
+\subsection{Key Features}
+
+\begin{itemize}
+	\item \textbf{Model Variants:} LLaMA is available in various sizes, offering flexibility for deployment in different environments. These variants range from smaller models that can run on limited-resource settings to larger versions designed for high-performance servers.
+
+	\item \textbf{Training Data:} The model has been trained on a diverse dataset, including a vast corpus of text from books, websites, and other text sources. %This extensive training helps the model better understand and generate human-like text.
+
+	\item \textbf{Application Scope:} Due to its scalable nature, LLaMA is suited for a variety of applications, such as conversational agents, content generation, summarization, and more advanced tasks like sentiment analysis and machine translation.
+
+	\item \textbf{Accessibility:} Meta AI has made strides towards making LLaMA accessible to researchers and developers, which promotes further innovation and development within the community.
+\end{itemize}
+
+\subsection{Introduction to LLaMA-2}
+% TODO: Cite a paper
+\textbf{LLaMA-2} represents the next generation of Large Language Models developed by Meta AI, building upon the foundation established by the original LLaMA model. This enhanced model incorporates significant advancements in architecture, training, and application, making it more efficient and powerful in handling a wider range of natural language processing tasks.
+
+\subsection{Advancements in LLaMA-2}
+
+LLaMA-2 introduces several key improvements that enhance its performance and usability:
+
+\begin{itemize}
+	\item \textbf{Improved Training Techniques:} LLaMA-2 employs advanced training methodologies that increase its learning efficiency and the richness of its language understanding. These techniques also help in reducing biases and improving the model's ability to generalize across different contexts.
+
+	\item \textbf{Expanded Model Sizes:} While maintaining scalability, LLaMA-2 offers a range of model sizes, enabling users to select a model that best fits their computational budget and performance needs.
+\end{itemize}
+
+
+\section{Time-series Embedding}
+We focus on reprogramming an embedding-visible language foundation model, here Llama-2,
+for general time series forecasting without requiring any fine-tuning of the backbone model. Specifically, we consider the following problem: given a sequence of historical observations \(X \in \R^{N\times T}\)
+consisting of \(N\) different 1-dimensional variables across \(T\) time steps, we aim to reprogram a large
+language model \(f(\cdot)\) to understand the input time series and accurately forecast the readings at \(H\) future time steps, denoted by \(\hat{Y} \in \R^{N\times H}\) , with the overall objective to minimize the mean square errors between the ground truths \(Y\) and predictions, i.e., \(\frac1H \sum_{h=1}^H \| \hat{Y}_h - Y_h \|_F^2 \).
+
+The method encompasses three main components: (1) input transformation, (2) a pre-trained and
+frozen LLM, and (3) output projection. Initially, a multivariate time series is partitioned into \(N\) univariate time series, which are subsequently processed independently (Nie et al., 2023).
+The i-th series is denoted as \(X(i) \in \R^{1\times T}\) , which undergoes normalization, patching, and embedding prior to being reprogrammed with learned text prototypes to align the source and target modalities.
+Then, we augment the LLM’s time series reasoning ability by prompting it together with reprogrammed patches to generate output representations, which are projected to the final forecasts \(\hat{Y}^{(i)} \in \R^{1\times H}\) .
+
+We note that only the parameters of the lightweight input transformation and output projection are updated, while the backbone language model is frozen.
+In contrast to vision-language and other multimodal language models, which usually fine-tune with paired cross-modality data, this use of model is directly optimized and becomes readily available with only a small set of time series and a few  training epochs, maintaining high efficiency and imposing fewer resource constraints compared to building large domain-specific models from scratch or fine-tuning them.
+To further reduce memory footprints, various off-the-shelf techniques (e.g., quantization) can be seamlessly integrated for slimming this.
+
+\section{Our methodology}
+\section{Results}

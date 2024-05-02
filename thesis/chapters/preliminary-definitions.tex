@@ -13,14 +13,16 @@ Here we describe the various datasets we used for the training and testing of ou
 	\item \textbf{Motivation:} a description of what the data in the dataset represent, what their purpose is, how they were gathered and why it is valuable to our research.
 	\item \textbf{Size:} a description of how many datapoints the dataset contains, how many features each datapoints has and the overall size of the file.
 	\item \textbf{Features:} a description of the features each datapoint of the dataset has and what the features represent.
+	      % TODO: What new name for Quality? Characteristic of the dataset. Discussion?
 	\item \textbf{Quality:} a description of the features and drawbacks of the overall dataset e.g. how dependent are the features between themselves.
 	\item \textbf{Plot:} a plot of the numeric features of the dataset, its visual representation.
 \end{itemize}
 \subsection{House sales}
 \begin{itemize}
 	\item \textbf{Source:} House Property Sales Time Series (raw\_sales.csv) :\\ https://www.kaggle.com/datasets/htagholdings/property-sales
-	\item \textbf{Collection method:} Property sales data was gathered for the 2007-2019 period for one specific region.
-	\item \textbf{Motivation:} A simple dataset for the easier models. A proper, manageable size, once filtered by property and number of bedrooms. Has very few features, making it easier to understand and process.
+	      % TODO: 'one specific region' - place note that it was not specified.
+	\item \textbf{Collection method:} Property sales data was gathered for the 2007-2019 period for one specific region. (not concrete proofs)(TODO: * region was not specified)
+	\item \textbf{Motivation:} A simple dataset for the basic models. A proper, manageable size, once filtered by property and number of bedrooms. Has very few features, making it easier to understand and process.
 	\item \textbf{Size:} Consists of 29600 datapoints. Once filtered for property being house, number of bedrooms equal to 3, around 11300 datapoints remain.
 	\item \textbf{Features:} The dataset has very few features. Every datapoint consists of:
 	      \begin{itemize}
@@ -31,7 +33,12 @@ Here we describe the various datasets we used for the training and testing of ou
 		      \item \textbf{bedrooms}: Number of bedrooms: 1, 2, 3, 4 or 5.
 	      \end{itemize}
 	      The dataset was filtered by propertyType and bedrooms, and the postcode was discarded.
+
+	      % może inaczej nazwać, dyskuzja
+	      % TODO: What is the message? What is the point?
 	\item \textbf{Quality:} The prices rise, while nonlinearly, with time.
+
+	      % TODO: What does the plot represent?
 	\item \textbf{Plot:}
 	      \begin{figure}[h!]
 		      \includegraphics[width=\linewidth]{"pictures/house_sales_graph.png"}
@@ -52,6 +59,7 @@ Here we describe the various datasets we used for the training and testing of ou
 \subsection{Google Stock}
 \begin{itemize}
 	\item \textbf{Source:} Google Stock Dataset \\ https://www.kaggle.com/datasets/r1shabhgupta/google-stock-price-daily-weekly-and-monthly-2023/data
+	      % TODO: Not described precisely. Place note, clearly, what is described and what we suspect.
 	\item \textbf{Collection method:} Collected from the stock market (probably). Has daily data and weekly and monthly summaries.
 	\item \textbf{Motivation:} More complex dataset, multiple time series numeric features, but fewer datapoints.
 	\item \textbf{Size:} Daily set has 2510 datapoints. Weekly set has 520 datapoints. Monthly set has 120 datapoints.
@@ -63,6 +71,7 @@ Here we describe the various datasets we used for the training and testing of ou
 		      \item \textbf{Low}: the lowest price at which the stock was traded during the day.
 		      \item \textbf{Close}: the closing price of the stock on the given date.
 		      \item \textbf{Volume}: the total number of shares traded on the given date.
+		            % TODO: Explain what this feature is. How and to what is it adjusted?
 		      \item \textbf{Adj Close}: the adjusted closing price of the stock on the given date.
 	      \end{itemize}
 	\item \textbf{Quality:}
@@ -72,7 +81,7 @@ Here we describe the various datasets we used for the training and testing of ou
 \begin{itemize}
 	\item \textbf{Source:} Apple Stock Prices \\ https://www.kaggle.com/datasets/suyashlakhani/apple-stock-prices-20152020
 	\item \textbf{Collection method:} Collected from the stock market (probably).
-	\item \textbf{Motivation:} Even more features then the previous datasets, more interesting.
+	\item \textbf{Motivation:} Even more features then the Google Stock dataset, more interesting.
 	\item \textbf{Size:} The dataset consists of 1258 datapoints.
 	\item \textbf{Features:} Every datapoint has the following features
 	      \begin{itemize}
@@ -81,6 +90,7 @@ Here we describe the various datasets we used for the training and testing of ou
 		      \item \textbf{low} - Lowest Price of the day
 		      \item \textbf{open} - Opening price of the day
 		      \item \textbf{volume} - Volume of stock traded
+		            % TODO: Explain the below.
 		      \item \textbf{adjClose} - Closing stock price in relation to other stock attributes/actions
 		      \item \textbf{adjHigh} - Highest stock price in relation to other stock attributes/actions
 		      \item \textbf{adjOpen} - Opening Stock price in relation to other stock attributes/actions
@@ -88,8 +98,8 @@ Here we describe the various datasets we used for the training and testing of ou
 		      \item \textbf{divCash} - Cash dividend
 		      \item \textbf{splitFactor} - Stock split
 	      \end{itemize}
-	\item \textbf{Quality:}
-	\item \textbf{Plot:}
+	      % \item \textbf{Quality:}
+	      % \item \textbf{Plot:}
 \end{itemize}
 \subsection{Gold}
 \begin{itemize}
@@ -98,14 +108,15 @@ Here we describe the various datasets we used for the training and testing of ou
 	\item \textbf{Motivation:} The dataset contains lots of datapoints and lots of features.
 	\item \textbf{Size:} Annual dataset has 43 datapoints. Daily dataset has a bit over 10 thousand datapoints.
 	\item \textbf{Features:} Each datapoint has the following features: date and rates in six curriencies: USD (American), INR (Indian), AED (Arabian), EUR (European), GBP (South Georgian) and CNY (Chinese).
-	\item \textbf{Quality:}
-	\item \textbf{Plot:}
+	      % \item \textbf{Quality:}
+	      % \item \textbf{Plot:}
 \end{itemize}
 \subsection{Electricity}
 \begin{itemize}
 	\item \textbf{Source:}
 	\item \textbf{Motivation:}
 	\item \textbf{Size:} The dataset has 26304 datapoints.
+	      % TODO: What are those columns?
 	\item \textbf{Features:} Each datapoint consists of a date and 320 numbered columns and an OT column.
 	\item \textbf{Collection method:}
 	\item \textbf{Quality:}
@@ -185,6 +196,7 @@ Here we describe the various datasets we used for the training and testing of ou
 \begin{itemize}
 	\item \textbf{Source:} sine.csv - we generated this dataset ourselves
 	\item \textbf{Motivation:} This is a non-trivial, but predictable, dataset for testing whether LLM responds to the data.
+	      % TODO: What is the distribution of these datapoints?
 	\item \textbf{Size:} Dataset consists of 1000 datapoints.
 	\item \textbf{Features:} Each datapoint consists of date, x and target, where target = sin(x).
 	\item \textbf{Collection method:} Dataset was generated by a script.
@@ -192,9 +204,24 @@ Here we describe the various datasets we used for the training and testing of ou
 	\item \textbf{Plot:} A simple sine wave.
 \end{itemize}
 
+\subsection{Time Series Practice Dataset}
+\begin{itemize}
+
+
+	\item \textbf{Source:} https://www.kaggle.com/datasets/samuelcortinhas/time-series-practice-dataset/data?select=train.csv
+	\item \textbf{Motivation:} As the Sine dataset it is a fictional dataset to more easily tune LLM training, but more complicated than Sine and significantly larger.
+	\item \textbf{Size:} This dataset contains 230 thousand simulated time series datapoints covering 10 years (2010-2019).  The are no null values.
+	\item \textbf{Features:} The features include date, store id, product id and number sold. The train.csv covers the years 2010-2018 and the test.csv covers 2019 only. The are 7 unique stores and 10 unique products.
+	\item \textbf{Collection method:} This time series data was created using multiple features including various long term trends, year-long seasonality patterns, weekday/weekend effects and noise. Moreover, the products and the stores are supposed to be weakly correlated.
+
+	      % \item \textbf{Quality:}
+	      % \item \textbf{Plot:} A simple sine wave.
+\end{itemize}
+
 \section{What metrics we used}
 Every metric should be described by
 \begin{itemize}
+	% TODO: Elaborate on the below.
 	\item what it measures,
 	\item how it is calculated,
 	\item what its result represents,
@@ -263,6 +290,7 @@ where:
 \end{itemize}
 
 \subsubsection{Limitations}
+% TODO: What are predictors?
 The \(R^2\) metric has some limitations. It does not necessarily imply causation, nor does a high \(R^2\) score mean that the model is the best choice for prediction. It's also important to note that adding more predictors to a model can artificially inflate the \(R^2\) value, even if those predictors are not statistically significant.
 
 
@@ -296,18 +324,18 @@ Literature review contains:
 % nasze wyniki vs. literatura
 % dyskusja - krótka analiza, porównanie z literaturą
 
-Dla LLM:
-5 najciekawszych pomysłów, które zadziałały
-5 najciekawszych pomysłów, które nie zadziałały
+% Dla LLM:
+% 5 najciekawszych pomysłów, które zadziałały
+% 5 najciekawszych pomysłów, które nie zadziałały
 
-Kryteria oceniania:
-czy nazwa odpowiada treści
-czy ma wstęp, przegląd literatury, własną myśl itp.
-czy jest jasno napisana
-własne wnioski (dlaczego wydaje nam się, że to zadziałało, a to nie)
+% Kryteria oceniania:
+% czy nazwa odpowiada treści
+% czy ma wstęp, przegląd literatury, własną myśl itp.
+% czy jest jasno napisana
+% własne wnioski (dlaczego wydaje nam się, że to zadziałało, a to nie)
 
-wyniki, które trochę przetrwają, coś ciekawego, coś, co ma uniwersalny charakter
+% wyniki, które trochę przetrwają, coś ciekawego, coś, co ma uniwersalny charakter
 
-co robić:
-metryki, datasety
-literature review - co tam ma być
+% co robić:
+% metryki, datasety
+% literature review - co tam ma być
