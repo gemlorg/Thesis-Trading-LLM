@@ -1,7 +1,22 @@
+% TODO: Outline that binary output is recommended by the client. It is possible to have more complicated output for Other models.
 Here we present our results from trying to use the following models to extrapolate a time series.
 Classification models output in binary categories: increase or decrease in value, and are therefore less precise.
 
 
+% \section{How we describe models}
+% Below, in the chapter "Other models" we describe several models we tried to use for the task of predicting prices. The descriptions include the following:
+% \begin{itemize}
+% 	% \item \textbf{Relevant literature:} 
+% 	\item \textbf{Description:} a short description of how the model works and how it is trained.
+% 	\item \textbf{Motivation:} what the model is usually used for and why we chose to try it out.
+% 	\item \textbf{Features and limitations:} some advantages and benefits of the model, as well as its disadvantages and drawbacks.
+% 	\item \textbf{Parameters:} the description of the parameters of the model and how they affect its training.
+% 	\item \textbf{Metrics:} how we measured the results of the training and testing of the model.
+% 	\item \textbf{Data used:} what combinations of parameters of the model we tested and on what datasets we trained and tested the model.
+% 	\item \textbf{Preprocessing:} how the datasets used were preprocessed for training and testing of the model.
+% 	\item \textbf{Analysis:} an analysis of our results of our training and testing of the model compared with the results obtained in literature.
+% 	\item \textbf{Picture:} a picture or a plot demonstrating the results obtained from testing the model.
+% \end{itemize}
 
 
 
@@ -14,15 +29,17 @@ Classification models output in binary categories: increase or decrease in value
 
 
 \section{Random forest}
-A random forest is a machine learning model for classification and regression tasks introduced by Leo Breiman in 2001. A random forest is an ensemble of individual tree predictors, each of which depends on a random vector, chosen independently and with the same distribution for all trees. The results from individual trees are then aggregated into the overall result of the model - for classification tasks it is the mode of individual classifications and for prediction tasks it is the mean average of individual predictions.
+A random forest \cite{random_forest} is a machine learning model for classification and regression tasks introduced by Leo Breiman in 2001. A random forest is an ensemble of individual tree predictors, each of which depends on a random vector, chosen independently and with the same distribution for every tree. The results from individual trees are then aggregated into the overall result of the model - for classification tasks it is the mode of individual classifications and for prediction tasks it is the mean average of individual predictions.
 
-The error of forest prediction converges as such as the quantity of trees in the forest increases. The error of forest prediction depends negatively on the accuracy of individual trees and correlation between them.
+The error of forest prediction converges as such as the quantity of trees in the forest increases. The error of forest prediction depends negatively on the accuracy of individual trees and positively on the correlation between them.
 
-The \verb|num_lags| parameter is the width of data taken for individual predictions. The larger the \verb|num_lags| the more of past data the model takes into account.
+An individual tree is constructed in the following way: a random subset of the dataset is selected - this and only this subset is used in growing the tree. Than, for each node a random subset of features is chosen and a best split is chosen from the chosen features of the data. Thus each tree is grown to maximum depth (until all leaves have one datapoint, for classifier trees).
+
+The \verb|num_lags| parameter is the number of previous datapoints taken into account for individual predictions - if \(k=\) \verb|num_lags|, then datapoints \([n-k, n)\) are used to predict price at \(n\). The larger the \verb|num_lags| the more of past data the model takes into account.
 
 The \verb|n_estimators| parameter (number of estimators) describes the number of trees grown in the forest. Increasing the number of trees increases the accuracy of the model, but it also increases the computational cost.
 
-The \verb|max_features| parameter (number of features) specifies the the number of features of the data considered for a split at each node while growing an individual tree. A higher value of \verb|max_features| may capture more information about the data at the ris of overfitting and decreased randomness of the model.
+The \verb|max_features| parameter (number of features) specifies the the number of features of the data considered for a split at each node while growing an individual tree. A higher value of \verb|max_features| may capture more information about the data at the risk of overfitting and decreased randomness of the model.
 
 The \verb|criterion| parameter describes the function used by the model to calculate a quality of a split at a given node
 
@@ -37,25 +54,28 @@ The \verb|criterion| parameter describes the function used by the model to calcu
 % (Freund and Schapire[1996]), but are more robust with respect to noise. Internal estimates monitor error, strength, and correlation and these are used to show the response to increasing the number of features used in the splitting. Internal estimates are also used to measure variable importance. These ideas are also applicable to regression.
 
 \subsection{Results}
-The model was trained and tested on the simple property sales dataset.
-The model was trained to classify whether the next price will be higher or lower than the previous one, based on the sequence of prices spanning the last \verb|num_lags| days.
-The combinations of following parameters were tried
+TBA
+% % TODO: reference to the data sets chapter
+% The model was trained and tested on the simple property sales dataset.
+% The model was trained to classify whether the next price will be higher or lower than the previous one, based on the sequence of prices spanning the last \verb|num_lags| days.
+% The combinations of following parameters were tried
 
-\noindent
-\begin{itemize}
-	\item \verb|num_lags|: [1, 5, 10, 13, 25, 40, 50]
-	\item \verb|n_estimators|: [20, 50, 100]
-	\item \verb|max_features|: [2, 4, 8]
-	\item \verb|criterion|: ["gini", "entropy", "log\_loss"]
-\end{itemize}
+% \noindent
+% \begin{itemize}
+% 	\item \verb|num_lags|: [1, 5, 10, 13, 25, 40, 50]
+% 	\item \verb|n_estimators|: [20, 50, 100]
+% 	\item \verb|max_features|: [2, 4, 8]
+% 	\item \verb|criterion|: ["gini", "entropy", "log\_loss"]
+% \end{itemize}
 
-The accuracy of the models ranged from 0.749 to 0.827. The main influence seems to be the lag number - the optimal being around 10. Then slightly better were those models with \verb|max_features| equal to 4, and number of trees greater or equal to 50. The criterion didn't seem to play a significant role. See figure \ref{fig:random_forest_fig} below.
+% % TODO: Are all parameters independent? Explain better how this behaves.
+% The accuracy of the models ranged from 0.749 to 0.827. The main influence seems to be the lag number - the optimal being around 10. Then slightly better were those models with \verb|max_features| equal to 4, and number of trees greater or equal to 50. The criterion didn't seem to play a significant role. See figure \ref{fig:random_forest_fig} below.
 
-\begin{figure}[h!]
-	\includegraphics[width=\linewidth]{"pictures/random_forest_results.png"}
-	\caption{Results of random forest experiment.}
-	\label{fig:random_forest_fig}
-\end{figure}
+% \begin{figure}[h!]
+% 	\includegraphics[width=\linewidth]{"pictures/random_forest_results.png"}
+% 	\caption{Results of random forest experiment.}
+% 	\label{fig:random_forest_fig}
+% \end{figure}
 
 
 
@@ -73,7 +93,7 @@ The accuracy of the models ranged from 0.749 to 0.827. The main influence seems 
 
 \section{Logistic regression}
 
-Logistic regression is a statistical model used for binary classification.
+Logistic regression \cite{logistic_regression} is a statistical model used for binary classification.
 It calculates the probability of whether a datapoint classifies to one class.
 During training of the model a sigmoid function of features of data is calculated that best fits the provided training dataset.
 
@@ -92,9 +112,12 @@ During training the parameters \(B_0, B_1, \ldots, B_n\) are chosen using Maximu
 Two models have been trained.
 The first one is trained to predict if the next price in the dataset wil be higher than the previous one, provided with a sequence of prices spanning over the last \verb|num_lags| days.
 The second one does the same but operates on monthly averages instead of single records (for this, the dataset was averaged over subsuquent months).
+% TODO: Which data set?
 The first model proved to be more precise with an accuracy of 82\% for an optimal value of k of around 40 (Fig \ref{fig:logv1}). At the same time the second model only scored 75\% (Fig \ref{fig:logv2}).
 
+% TODO: Why do you wants to predict next price? There was nothing about that in random forest
 However, simply predicting whether the price will be higher or lower is much easier then predicting the actual next price.
+% TODO: IT is not poor if comppared to random forest. Maybe you you should explain why the random forest does perform poorly.
 Additionally, logistic regression assumes an independence of datapoints from each other, wherefore it performs poorly for time series datasets.
 Therefore this model is insufficient for our purpose.
 
@@ -126,13 +149,20 @@ Therefore this model is insufficient for our purpose.
 
 
 \section{Support vector machine}
-Support vector machines are a widely popular model for machine learning classification problems, due to their high generalization abilities and applicability to high-dimensional data.
+Support vector machines \cite{support_vector_machine} are a widely popular model for machine learning classification problems, due to their high generalization abilities and applicability to high-dimensional data.
 
 The model construes datapoints as high-dimensional vectors and finds the best hyperplane that divides the two classes the data is classified into. The goal of training is to find the hyperplane with the greatest margin - that is, the greatest distance from the closest vectors, called the support vectors.
 
 \subsection{Parameters}
 \begin{itemize}
 	\item \textbf{Kernel:} The model uses a kernel function to transform the space of data points which are not separable by a hyperplane, into one where they are separable.
+
+	      Roughly speaking, a kernel \( K(x, y) \) is a real-valued
+	      function \( K : X \times X \rightarrow \mathbb{R} \) for which there exists a
+	      function \( \Phi : X \rightarrow Z \), where \( Z \) is a real vector space,
+	      with the property \( K(x, y) = \Phi(x)^T \Phi(y) \). The
+	      kernel \( K(x, y) \) acts as a dot product in the space \( Z \).
+	      In the SVM literature \( X \) and \( Z \) are called, respectively, input space and feature space. \cite{support_vector_machine} % NOTE: verbatim from page 4
 
 	\item \textbf{C value:} The \(C\) value specifies how accurate the model should be, that is how much it should avoid misclassifications, versus how wide the margins should be. A lower value of \(C\) corresponds to wider margins.
 
@@ -143,26 +173,31 @@ The model construes datapoints as high-dimensional vectors and finds the best hy
 % What was used is Support Vector Regression, which is a modification of the idea of Support Vector Machine for the purposes of regression tasks, where instead of finding a hyperplane, 
 
 \subsection{Results}
+TBA
 
-The model was tested using two metrics: Mean Squared Error and R-squared.
+% The model was tested using two metrics: Mean Squared Error and R-squared.
 
-For the support vector machine there were overall nine models tried:
+% For the support vector machine there were overall nine models tried:
 
-\begin{itemize}
-	\item three kernels: \verb|rbf|, \verb|poly|, \verb|sigmoid|
-	\item one gamma: \verb|scale|
-	\item three C values: 0.1, 1.0, 10.0
-\end{itemize}
-The `poly` kernel worked much better than both `rbf` and `sigmoid`, which both worked equally badly. Overall, though, the statistics for every model were terrible. The value of `C` has had very little impact and only on `rbf` kernel.
+% \begin{itemize}
+% 	\item three kernels: \verb|rbf|, \verb|poly|, \verb|sigmoid|
+% 	\item one gamma: \verb|scale|
+% 	\item three C values: 0.1, 1.0, 10.0
+% \end{itemize}
+% % TODO: Be precise. What does it mean much better.
+% The `poly` kernel worked much better than both `rbf` and `sigmoid`, which both worked equally badly.
+% % TODO: Be precise. Compared to what. What are the expectations?
+% Overall, though, the statistics for every model were terrible. The value of `C` has had very little impact and only on `rbf` kernel.
 
-Support Vector Machine model doesn't perform well in this task, as can be seen in the results (Fig \ref{fig:svm}). Overall, Support Vector Machins don't perform well with large datasets, which will be part of our endeavour.
+% Support Vector Machine model doesn't perform well in this task, as can be seen in the results (Fig \ref{fig:svm}). Overall, Support Vector Machins don't perform well with large datasets, which will be part of our endeavour.
 
-\begin{figure}[h!]
-	\includegraphics[width=\linewidth]{"pictures/svm_models_results.png"}
-	\caption{Results of support vector machine experiment.}
-	\label{fig:svm}
+% % TODO: It is not clear, what is presented on this picture.
+% \begin{figure}[h!]
+% 	\includegraphics[width=\linewidth]{"pictures/svm_models_results.png"}
+% 	\caption{Results of support vector machine experiment.}
+% 	\label{fig:svm}
 
-\end{figure}
+% \end{figure}
 
 
 
@@ -183,8 +218,7 @@ Support Vector Machine model doesn't perform well in this task, as can be seen i
 
 
 \section{Multilayer Perceptron}
-
-The Multilayer Perceptron (MLP) is a feedforward neural network, that is made up of multiple layers of nodes in a directed graph, where each node from one layer is connected to all the nodes from the previous one.
+The Multilayer Perceptron (MLP) \cite{multilayer_perceptron} is a feedforward neural network, that is made up of multiple layers of nodes in a directed graph, where each node from one layer is connected to all the nodes from the previous one.
 MLPs are widely used in pattern recognition, classification, and regression problems due to their ability as networks to model complex nonlinear relationships in the input data.
 An MLP consists of an input layer of neurons, one or more hidden layers, and an output layer.
 Each node, except for those in the input layer, is a neuron that uses a nonlinear activation function to combine inputs from the previous layer and an additional bias term.
@@ -237,6 +271,7 @@ Similar updates are made for the biases.
 Through iterative training involving forward propagation, loss calculation, and backpropagation, the MLP learns to approximate the function that maps data inputs to desired predictions.
 
 \subsection{Results}
+% TODO: This does not make sense if you test different models on different data sets.
 The model has been trained and tested on the google dataset.
 The results can be seen below (Fig \ref{fig:mlp}).
 % Model Architecture id is given by:
@@ -275,7 +310,7 @@ The results can be seen below (Fig \ref{fig:mlp}).
 
 
 \section{Convolutional neural network}
-Convolutional Neural Networks (CNNs) are a class of deep neural networks, highly effective for analyzing visual imagery. They employ a mathematical operation called convolution, which allows them to efficiently process data in a grid-like topology, such as images.
+Convolutional Neural Networks (CNNs) \cite{convolutional_neural_network} are a class of deep neural networks, highly effective for analyzing visual imagery. They employ a mathematical operation called convolution, which allows them to efficiently process data in a grid-like topology, such as images.
 
 \subsection{Architecture of Convolutional Neural Networks}
 A typical CNN architecture comprises several layers that transform the input image to produce an output that represents the presence of specific features or class labels. The most common layers found in a CNN are:
@@ -316,7 +351,7 @@ It means that gradients become very small (or very large in case of exploding) a
 through the layers of the network.
 
 Residual neural network (ResNet) is a type of CNN that is less subject to this problem.
-It was developed by Kaiming He, Xiangyu Zhang, Shaoqing Ren and Jian Sun in 2015.
+It was developed by Kaiming He, Xiangyu Zhang, Shaoqing Ren and Jian Sun in 2015 \cite{residual_neural_network}
 
 \subsection{ResNet Architecture}
 ResNet uses a technique called skip connections. Skip connection bypasses several layers, so
