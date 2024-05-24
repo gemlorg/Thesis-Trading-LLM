@@ -1,3 +1,5 @@
+% TODO: Define overfitting
+
 % TODO: Outline that binary output is recommended by the client. It is possible to have more complicated output for Other models.
 Here we present our results from trying to use the following models to extrapolate a time series.
 Classification models output in binary categories: increase or decrease in value, and are therefore less precise.
@@ -33,15 +35,25 @@ A random forest \cite{random_forest} is a machine learning model for classificat
 
 The error of forest prediction converges as such as the quantity of trees in the forest increases. The error of forest prediction depends negatively on the accuracy of individual trees and positively on the correlation between them.
 
-An individual tree is constructed in the following way: a random subset of the dataset is selected - this and only this subset is used in growing the tree. Than, for each node a random subset of features is chosen and a best split is chosen from the chosen features of the data. Thus each tree is grown to maximum depth (until all leaves have one datapoint, for classifier trees).
+An individual tree is constructed in the following way: a random subset of the dataset is selected - this and only this subset is used in growing the tree.
+% TODO: Describe this process more precisely
+Than, for each node a random subset of features is chosen. And a best split is chosen from the chosen features of the data. Then each tree is grown to maximum depth (until all leaves have one datapoint, for classifier trees).
 
-The \verb|num_lags| parameter is the number of previous datapoints taken into account for individual predictions - if \(k=\) \verb|num_lags|, then datapoints \([n-k, n)\) are used to predict price at \(n\). The larger the \verb|num_lags| the more of past data the model takes into account.
+Below is the list of parameters that influence the growth of trees:
 
-The \verb|n_estimators| parameter (number of estimators) describes the number of trees grown in the forest. Increasing the number of trees increases the accuracy of the model, but it also increases the computational cost.
+\begin{itemize}
 
-The \verb|max_features| parameter (number of features) specifies the the number of features of the data considered for a split at each node while growing an individual tree. A higher value of \verb|max_features| may capture more information about the data at the risk of overfitting and decreased randomness of the model.
+	\item The \verb|num_lags| parameter is the number of previous datapoints taken into account for individual predictions - if \(k=\) \verb|num_lags|, then datapoints \([n-k, n)\) are used to predict price at \(n\). The larger the \verb|num_lags| the more of past data the model takes into account.
 
-The \verb|criterion| parameter describes the function used by the model to calculate a quality of a split at a given node
+	\item The \verb|n_estimators| parameter (number of estimators) describes the number of trees grown in the forest. Increasing the number of trees increases the accuracy of the model, but it also increases the computational cost.
+
+	\item The \verb|max_features| parameter (number of features) specifies the the number of features of the data considered for a split at each node while growing an individual tree. A higher value of \verb|max_features| may capture more information about the data at the risk
+	      % TODO: why at the risk of overfitting?
+	      of overfitting and decreased randomness of the model.
+
+	\item The \verb|criterion| parameter describes the function used by the model to calculate a quality of a split at a given node
+
+\end{itemize}
 
 
 % The generalization error for forests converges a.s. to a limit
@@ -55,7 +67,7 @@ The \verb|criterion| parameter describes the function used by the model to calcu
 
 \subsection{Results}
 TBA
-% % TODO: reference to the data sets chapter
+% % TODO reference to the data sets chapter
 % The model was trained and tested on the simple property sales dataset.
 % The model was trained to classify whether the next price will be higher or lower than the previous one, based on the sequence of prices spanning the last \verb|num_lags| days.
 % The combinations of following parameters were tried
@@ -68,7 +80,7 @@ TBA
 % 	\item \verb|criterion|: ["gini", "entropy", "log\_loss"]
 % \end{itemize}
 
-% % TODO: Are all parameters independent? Explain better how this behaves.
+% % TODO Are all parameters independent? Explain better how this behaves.
 % The accuracy of the models ranged from 0.749 to 0.827. The main influence seems to be the lag number - the optimal being around 10. Then slightly better were those models with \verb|max_features| equal to 4, and number of trees greater or equal to 50. The criterion didn't seem to play a significant role. See figure \ref{fig:random_forest_fig} below.
 
 % \begin{figure}[h!]
@@ -93,10 +105,13 @@ TBA
 
 \section{Logistic regression}
 
+% TODO: redo the description and results
+
 Logistic regression \cite{logistic_regression} is a statistical model used for binary classification.
 It calculates the probability of whether a datapoint classifies to one class.
 During training of the model a sigmoid function of features of data is calculated that best fits the provided training dataset.
 
+%TODO: is n = num_lags? what is n
 More precisely, the model calculates the function \(Y(X) = \frac{1}{1+e^{-z}}\), where
 \begin{itemize}
 	\item \(z = B_0 + B_1\cdot X_1 + \ldots + B_n\cdot X_n\),
@@ -106,13 +121,14 @@ More precisely, the model calculates the function \(Y(X) = \frac{1}{1+e^{-z}}\),
 Function \(Y\) assumes values only in the range \((0,1)\).
 If \(Y(X) >= 0.5\), the model classifies the datapoint as 1 (in our model below - the price will be higher). If the converse is true, the datapoint is classified as 0 (the price will be lower).
 
+% TODO: what is the Maximum Likelihood Function?
 During training the parameters \(B_0, B_1, \ldots, B_n\) are chosen using Maximum Likelihood Estimation function, so that the results of the \(Y\) function best fit the training dataset.
 
 \subsection{Results}
 Two models have been trained.
 The first one is trained to predict if the next price in the dataset wil be higher than the previous one, provided with a sequence of prices spanning over the last \verb|num_lags| days.
 The second one does the same but operates on monthly averages instead of single records (for this, the dataset was averaged over subsuquent months).
-% TODO: Which data set?
+% TODO: Which data set? Why is 40 optimal?
 The first model proved to be more precise with an accuracy of 82\% for an optimal value of k of around 40 (Fig \ref{fig:logv1}). At the same time the second model only scored 75\% (Fig \ref{fig:logv2}).
 
 % TODO: Why do you wants to predict next price? There was nothing about that in random forest
@@ -149,14 +165,20 @@ Therefore this model is insufficient for our purpose.
 
 
 \section{Support vector machine}
+
+% TODO: redo description
+% TODO: make a diagram
+
 Support vector machines \cite{support_vector_machine} are a widely popular model for machine learning classification problems, due to their high generalization abilities and applicability to high-dimensional data.
 
 The model construes datapoints as high-dimensional vectors and finds the best hyperplane that divides the two classes the data is classified into. The goal of training is to find the hyperplane with the greatest margin - that is, the greatest distance from the closest vectors, called the support vectors.
 
 \subsection{Parameters}
 \begin{itemize}
+	% TODO: Clarify that it is not kernel from GAL
 	\item \textbf{Kernel:} The model uses a kernel function to transform the space of data points which are not separable by a hyperplane, into one where they are separable.
 
+	      % TODO: What is X, Z et. should be at beginning
 	      Roughly speaking, a kernel \( K(x, y) \) is a real-valued
 	      function \( K : X \times X \rightarrow \mathbb{R} \) for which there exists a
 	      function \( \Phi : X \rightarrow Z \), where \( Z \) is a real vector space,
@@ -164,8 +186,9 @@ The model construes datapoints as high-dimensional vectors and finds the best hy
 	      kernel \( K(x, y) \) acts as a dot product in the space \( Z \).
 	      In the SVM literature \( X \) and \( Z \) are called, respectively, input space and feature space. \cite{support_vector_machine} % NOTE: verbatim from page 4
 
-	\item \textbf{C value:} The \(C\) value specifies how accurate the model should be, that is how much it should avoid misclassifications, versus how wide the margins should be. A lower value of \(C\) corresponds to wider margins.
+	\item \textbf{C value:} The \(C\) value specifies how accurate the model should be, that is how much it should avoid misclassifications, versus how wide the margins should be. A lower value of \(C\) corresponds to wider margins. % TODO: in what metric: %, count?
 
+	      % TODO: Better describe the gamma
 	\item \textbf{Gamma:} The gamma value specifies how much influence individual training datapoints should have. The \verb|scale| value of gamma means that gamma is scaled automatically to fit the size of the dataset.
 \end{itemize}
 % A model was trained to predict whether the next price will be higher or lower than the previous one.
@@ -184,14 +207,14 @@ TBA
 % 	\item one gamma: \verb|scale|
 % 	\item three C values: 0.1, 1.0, 10.0
 % \end{itemize}
-% % TODO: Be precise. What does it mean much better.
+% % TODO Be precise. What does it mean much better.
 % The `poly` kernel worked much better than both `rbf` and `sigmoid`, which both worked equally badly.
-% % TODO: Be precise. Compared to what. What are the expectations?
+% % TODO Be precise. Compared to what. What are the expectations?
 % Overall, though, the statistics for every model were terrible. The value of `C` has had very little impact and only on `rbf` kernel.
 
 % Support Vector Machine model doesn't perform well in this task, as can be seen in the results (Fig \ref{fig:svm}). Overall, Support Vector Machins don't perform well with large datasets, which will be part of our endeavour.
 
-% % TODO: It is not clear, what is presented on this picture.
+% % TODO It is not clear, what is presented on this picture.
 % \begin{figure}[h!]
 % 	\includegraphics[width=\linewidth]{"pictures/svm_models_results.png"}
 % 	\caption{Results of support vector machine experiment.}
@@ -263,7 +286,7 @@ The loss function measures the error between the predicted output and the actual
 
 where
 \begin{itemize}
-	\item $\eta$ is the learning rate,
+	\item $\eta$ is the learning rate, % TODO: why is it not infinite?
 	\item $\frac{\partial \mathcal{L}}{\partial w^{(l)}_{ji}}$ is the partial derivative of the loss function $\mathcal{L}$ with respect to the weight $w^{(l)}_{ji}$.
 \end{itemize}
 Similar updates are made for the biases.
@@ -271,18 +294,19 @@ Similar updates are made for the biases.
 Through iterative training involving forward propagation, loss calculation, and backpropagation, the MLP learns to approximate the function that maps data inputs to desired predictions.
 
 \subsection{Results}
-% TODO: This does not make sense if you test different models on different data sets.
-The model has been trained and tested on the google dataset.
-The results can be seen below (Fig \ref{fig:mlp}).
-% Model Architecture id is given by:
+TBA
+% % TODO This does not make sense if you test different models on different data sets.
+% The model has been trained and tested on the google dataset.
+% The results can be seen below (Fig \ref{fig:mlp}).
+% % Model Architecture id is given by:
 
 
-\begin{figure}[h!]
-	\includegraphics[width=\linewidth]{"pictures/mlp_res.png"}
-	\caption{Results of multilayer perceptron experiment.}
-	\label{fig:mlp}
+% \begin{figure}[h!]
+% 	\includegraphics[width=\linewidth]{"pictures/mlp_res.png"}
+% 	\caption{Results of multilayer perceptron experiment.}
+% 	\label{fig:mlp}
 
-\end{figure}
+% \end{figure}
 
 
 
@@ -317,6 +341,8 @@ A typical CNN architecture comprises several layers that transform the input ima
 
 \subsubsection{Convolutional Layer}
 The convolutional layer is the fundamental building block of a CNN. It applies a set of learnable filters to the input. Each filter activates specific features at certain spatial positions in the input. Mathematically, the convolution operation is defined as follows:
+% TODO: example?
+% TODO: in below, what is the range of x y m n?
 \[f(x, y) = (g * h)(x, y) = \sum_m\sum_n g(m,n) \cdot h(x-m, y-n)\]
 where \(f(x, y)\) is the output, \(g\) is the input image, \(h\) is the filter, and \(*\) denotes the convolution operation.
 
@@ -325,7 +351,9 @@ Following convolution, an activation function is applied to introduce non-linear
 \[f(x) = \max(0, x)\]
 
 \subsubsection{Pooling Layer}
+% TODO: what is a depth slice?
 The pooling layer reduces the spatial dimensions (width and height) of the input volume for the next convolutional layer. It operates independently on every depth slice of the input and resizes it spatially. A common operation for pooling is max pooling:
+% TODO: what is the range of x y?
 \[f(x, y) = \max_{(a,b) \in D} g(x+a, y+b)\]
 where \(D\) is the set of coordinates in the input, and \(g\) is the input image.
 
@@ -337,7 +365,8 @@ The final layer of a CNN is a softmax layer that outputs a probability distribut
 
 
 \subsection{Results}
-The CNN model has been trained and tested on the simple sales data.
+TBA
+% The CNN model has been trained and tested on the simple house sales data.
 
 
 
@@ -345,6 +374,8 @@ The CNN model has been trained and tested on the simple sales data.
 
 
 \section{Residual neural network}
+
+% TODO: write a better description
 
 As the number of layers in classic CNN grows, the problem of vanishing or exploding gradient appears.
 It means that gradients become very small (or very large in case of exploding) as they are propagated
@@ -354,16 +385,20 @@ Residual neural network (ResNet) is a type of CNN that is less subject to this p
 It was developed by Kaiming He, Xiangyu Zhang, Shaoqing Ren and Jian Sun in 2015 \cite{residual_neural_network}
 
 \subsection{ResNet Architecture}
+
+
 ResNet uses a technique called skip connections. Skip connection bypasses several layers, so
 that input of one layer is added to the output of some further layer. Blocks of such connections
 are called residual and the network is formed by stacking residual blocks.
 
+% TODO: explain better, make a diagram.
 The idea is that instead of learning the original mapping of input to output, residual blocks
 learn the difference between output and input, which is called the residual function.
 
 \subsection{Results}
+TBA
 
-This model has been trained on GBP/CAD dataset in two versions: not pretrained and pretrained.
+% This model has been trained on GBP/CAD dataset in two versions: not pretrained and pretrained.
 
 % TODO add pictures
 
