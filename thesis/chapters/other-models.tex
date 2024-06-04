@@ -1,10 +1,14 @@
-% TODO: Define overfitting
-
 % TODO: Outline that binary output is recommended by the client. It is possible to have more complicated output for Other models.
 Here we present our results from trying to use the following models to extrapolate a time series.
 Classification models output in binary categories: increase or decrease in value, and are therefore less precise.
 
-
+In the below descriptions, \textbf{overfitting} refers to a phenomenon when model learns from the training data too closely or exactly, thereby making it less generalisable to new data. See  figure  \autoref{fig:overfitting}. Figure and description are both due to Wikipedia \cite{overfitting}.
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.5\linewidth]{"pictures/overfitted_data.png"}
+	\caption{Noisy (roughly linear) data is fitted to a linear function and a polynomial function. Although the polynomial function is a perfect fit, the linear function can be expected to generalize better: if the two functions were used to extrapolate beyond the fitted data, the linear function should make better predictions.}
+	\label{fig:overfitting}
+\end{figure}
 % \section{How we describe models}
 % Below, in the chapter "Other models" we describe several models we tried to use for the task of predicting prices. The descriptions include the following:
 % \begin{itemize}
@@ -35,9 +39,9 @@ A random forest \cite{random_forest} is a machine learning model for classificat
 
 The error of forest prediction converges as such as the quantity of trees in the forest increases. The error of forest prediction depends negatively on the accuracy of individual trees and positively on the correlation between them.
 
-An individual tree is constructed in the following way: a random subset of the dataset is selected - this and only this subset is used in growing the tree.
+An individual tree is constructed in the following way: a \textbf{sample} - random subset of the dataset - is selected. This and only this subset is used in growing the tree.
 % TODO: Describe this process more precisely
-Than, for each node a random subset of features is chosen. And a best split is chosen from the chosen features of the data. Then each tree is grown to maximum depth (until all leaves have one datapoint, for classifier trees).
+Then, for each node, a random subset of features is chosen. A best split is chosen using the \verb|criterion| function, based on the chosen features of the sample. Then each tree is grown to maximum depth (until all leaves have one datapoint, for classifier trees).
 
 Below is the list of parameters that influence the growth of trees:
 
@@ -47,9 +51,7 @@ Below is the list of parameters that influence the growth of trees:
 
 	\item The \verb|n_estimators| parameter (number of estimators) describes the number of trees grown in the forest. Increasing the number of trees increases the accuracy of the model, but it also increases the computational cost.
 
-	\item The \verb|max_features| parameter (number of features) specifies the the number of features of the data considered for a split at each node while growing an individual tree. A higher value of \verb|max_features| may capture more information about the data at the risk
-	      % TODO: why at the risk of overfitting?
-	      of overfitting and decreased randomness of the model.
+	\item The \verb|max_features| parameter (number of features) specifies the the number of features of the data considered for a split at each node while growing an individual tree. A higher value of \verb|max_features| may capture more information about the data at the risk of growing more correlated trees, thereby decreasing its randomness and ability to adapt to new data, causing overfitting.
 
 	\item The \verb|criterion| parameter describes the function used by the model to calculate a quality of a split at a given node
 
@@ -105,53 +107,90 @@ TBA
 
 \section{Logistic regression}
 
-% TODO: redo the description and results
+Logistic regression \cite{logistic_regression} is a statistical method used for binary classification problems, where the outcome variable has one of two possible values. It models the probability that a given input point belongs to a certain class.
 
-Logistic regression \cite{logistic_regression} is a statistical model used for binary classification.
-It calculates the probability of whether a datapoint classifies to one class.
-During training of the model a sigmoid function of features of data is calculated that best fits the provided training dataset.
+In the below description, \(n\) denotes the size of the training dataset. For our case of predicting time series, an input vector \(x_i\) is a subseries of datapoints of length \verb|num_lags|, for which the output \(y_i\) is a prediction whether the datapoint following \(x_i\) will have a higher or lower price than the previous datapoint. Therefore, in the below description, \(d = \verb|num_lags|*k\), where \(k\) is the number of features of an individual datapoint.
 
-%TODO: is n = num_lags? what is n
-More precisely, the model calculates the function \(Y(X) = \frac{1}{1+e^{-z}}\), where
-\begin{itemize}
-	\item \(z = B_0 + B_1\cdot X_1 + \ldots + B_n\cdot X_n\),
-	\item \(X_1, \ldots, X_n\) are features of data \(X\),
-	\item \(B_0, B_1, \ldots, B_n\) are parameters of the model.
-\end{itemize}
-Function \(Y\) assumes values only in the range \((0,1)\).
-If \(Y(X) >= 0.5\), the model classifies the datapoint as 1 (in our model below - the price will be higher). If the converse is true, the datapoint is classified as 0 (the price will be lower).
+With that in mind, the general formulation of the logistic regression model is as follows:
 
-% TODO: what is the Maximum Likelihood Function?
-During training the parameters \(B_0, B_1, \ldots, B_n\) are chosen using Maximum Likelihood Estimation function, so that the results of the \(Y\) function best fit the training dataset.
+Given a set of \(n\) observations \(\{(x_i, y_i)\}_{i=1}^n\), where \(x_i \in \mathbb{R}^d\) represents the feature vector and \(y_i \in \{0, 1\}\) represents the binary outcome, the logistic regression model predicts the probability of the outcome being 1 (positive class) as:
+
+\[
+	P(y = 1 \mid x) = \frac{1}{1 + e^{-(\beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots + \beta_d x_d)}}
+\]
+
+where \(\beta_0\) is the shift term,
+%intercept term (i.e. representing the shift of the baseline probability)
+and \(\beta_1, \beta_2, \ldots, \beta_d\) are the coefficients corresponding to the \(d\) features.
+
+The model is trained by maximizing the likelihood function, which measures the probability of observing the given data as a function of \(\beta\) parameters. The likelihood function for logistic regression is given by:
+
+\[
+	L(\beta) = \prod_{i=1}^n P(y_i = 1 \mid x_i)^{y_i} (1 - P(y_i = 1 \mid x_i))^{1 - y_i}
+\]
+
+To simplify computation, the log-likelihood function is often used:
+
+\[
+	\ell(\beta) = \log(L(\beta)) = \sum_{i=1}^n \left[ y_i \log(P(y_i = 1 \mid x_i)) + (1 - y_i) \log(1 - P(y_i = 1 \mid x_i)) \right]
+\]
+
+The optimal parameters \(\beta\) are estimated by maximizing the log-likelihood function using numerical optimization techniques such as gradient descent.
+
+
+
+
+
+% % TODO: redo the description and results
+
+% Logistic regression \cite{logistic_regression} is a statistical model used for binary classification.
+% It calculates the probability of whether a datapoint classifies to one class.
+% During training of the model a sigmoid function of features of data is calculated that best fits the provided training dataset.
+
+% %TODO: is n = num_lags? what is n
+% More precisely, the model calculates the function \(Y(X) = \frac{1}{1+e^{-z}}\), where
+% \begin{itemize}
+% 	\item \(z = B_0 + B_1\cdot X_1 + \ldots + B_n\cdot X_n\),
+% 	\item \(X_1, \ldots, X_n\) are features of data \(X\),
+% 	\item \(B_0, B_1, \ldots, B_n\) are parameters of the model.
+% \end{itemize}
+% Function \(Y\) assumes values only in the range \((0,1)\).
+% If \(Y(X) >= 0.5\), the model classifies the datapoint as 1 (in our model below - the price will be higher). If the converse is true, the datapoint is classified as 0 (the price will be lower).
+
+% % TODO: what is the Maximum Likelihood Function?
+% During training the parameters \(B_0, B_1, \ldots, B_n\) are chosen using Maximum Likelihood Estimation function, so that the results of the \(Y\) function best fit the training dataset.
 
 \subsection{Results}
-Two models have been trained.
-The first one is trained to predict if the next price in the dataset wil be higher than the previous one, provided with a sequence of prices spanning over the last \verb|num_lags| days.
-The second one does the same but operates on monthly averages instead of single records (for this, the dataset was averaged over subsuquent months).
-% TODO: Which data set? Why is 40 optimal?
-The first model proved to be more precise with an accuracy of 82\% for an optimal value of k of around 40 (Fig \ref{fig:logv1}). At the same time the second model only scored 75\% (Fig \ref{fig:logv2}).
+TBA
 
-% TODO: Why do you wants to predict next price? There was nothing about that in random forest
-However, simply predicting whether the price will be higher or lower is much easier then predicting the actual next price.
-% TODO: IT is not poor if comppared to random forest. Maybe you you should explain why the random forest does perform poorly.
-Additionally, logistic regression assumes an independence of datapoints from each other, wherefore it performs poorly for time series datasets.
-Therefore this model is insufficient for our purpose.
 
-\begin{figure}[h!]
-	\centering
-	\begin{subfigure}[b]{0.4\linewidth}
-		\includegraphics[width=\linewidth]{pictures/logistic-regression-v1.png}
-		\caption{Day-by-day prediction.}
-		\label{fig:logv1}
-	\end{subfigure}
-	\begin{subfigure}[b]{0.4\linewidth}
-		\includegraphics[width=\linewidth]{pictures/logistic-regression-v2.png}
-		\caption{Month-by-month prediction.}
-		\label{fig:logv2}
-	\end{subfigure}
-	\caption{Plots of two models of logistic regression.}
-	\label{fig:logistic-regression}
-\end{figure}
+% Two models have been trained.
+% The first one is trained to predict if the next price in the dataset wil be higher than the previous one, provided with a sequence of prices spanning over the last \verb|num_lags| days.
+% The second one does the same but operates on monthly averages instead of single records (for this, the dataset was averaged over subsuquent months).
+% % TODO: Which data set? Why is 40 optimal?
+% The first model proved to be more precise with an accuracy of 82\% for an optimal value of k of around 40 (Fig \ref{fig:logv1}). At the same time the second model only scored 75\% (Fig \ref{fig:logv2}).
+
+% % TODO: Why do you wants to predict next price? There was nothing about that in random forest
+% However, simply predicting whether the price will be higher or lower is much easier then predicting the actual next price.
+% % TODO: IT is not poor if comppared to random forest. Maybe you you should explain why the random forest does perform poorly.
+% Additionally, logistic regression assumes an independence of datapoints from each other, wherefore it performs poorly for time series datasets.
+% Therefore this model is insufficient for our purpose.
+
+% \begin{figure}[h!]
+% 	\centering
+% 	\begin{subfigure}[b]{0.4\linewidth}
+% 		\includegraphics[width=\linewidth]{pictures/logistic-regression-v1.png}
+% 		\caption{Day-by-day prediction.}
+% 		\label{fig:logv1}
+% 	\end{subfigure}
+% 	\begin{subfigure}[b]{0.4\linewidth}
+% 		\includegraphics[width=\linewidth]{pictures/logistic-regression-v2.png}
+% 		\caption{Month-by-month prediction.}
+% 		\label{fig:logv2}
+% 	\end{subfigure}
+% 	\caption{Plots of two models of logistic regression.}
+% 	\label{fig:logistic-regression}
+% \end{figure}
 
 
 
@@ -166,30 +205,55 @@ Therefore this model is insufficient for our purpose.
 
 \section{Support vector machine}
 
-% TODO: redo description
 % TODO: make a diagram
 
-Support vector machines \cite{support_vector_machine} are a widely popular model for machine learning classification problems, due to their high generalization abilities and applicability to high-dimensional data.
+Support Vector Machines (SVMs) are supervised learning models used for classification and regression tasks. They are particularly well-suited for binary classification problems. The main idea behind SVMs is to find the optimal hyperplane that maximally separates the data points of different classes in the feature space.
 
-The model construes datapoints as high-dimensional vectors and finds the best hyperplane that divides the two classes the data is classified into. The goal of training is to find the hyperplane with the greatest margin - that is, the greatest distance from the closest vectors, called the support vectors.
+A hyperplane is defined by the equation
+\[
+	\mathbf{w} \cdot \mathbf{x} + b = 0,
+\]
+where \( \mathbf{w} \) is the weight vector and \( b \) is the bias term. The optimal hyperplane is the one that maximizes the margin, which is the distance between the hyperplane and the nearest datapoints from either class, known as support vectors.
+
+To find this optimal hyperplane, SVM solves the following optimization problem:
+\[
+	\min_{\mathbf{w}, b} \frac{1}{2} \|\mathbf{w}\|^2
+\]
+subject to the constraint:
+\[
+	y_i (\mathbf{w} \cdot \mathbf{x}_i + b) \geq 1, \quad \forall i
+\]
+where \( y_i \in \{-1, 1\}\) is the class label of the \( i \)-th data point \( \mathbf{x}_i \).
+
+For non-linearly separable data, SVM can employ kernel functions to map the input features into a higher-dimensional space where a linear separation is possible.
+%Commonly used kernel functions include the linear, polynomial, and radial basis function (RBF) kernels.
+% Support vector machine \cite{support_vector_machine} is a model for machine learning classification problems, due to their high generalization abilities and applicability to high-dimensional data.
+
+% The model construes datapoints as high-dimensional vectors and finds the best hyperplane that divides the two classes the data is classified into. The goal of training is to find the hyperplane with the greatest margin - that is, the greatest distance from the closest vectors, called the support vectors.
 
 \subsection{Parameters}
 \begin{itemize}
-	% TODO: Clarify that it is not kernel from GAL
-	\item \textbf{Kernel:} The model uses a kernel function to transform the space of data points which are not separable by a hyperplane, into one where they are separable.
+	\item \textbf{Kernel:}\footnote{Note that the word 'kernel' here is \textbf{not} meant in the linear algebra sense of part of the domain that is transformed to zero.} The model uses a kernel function to transform the space of data points which are not separable by a hyperplane, into one where they are separable.
 
-	      % TODO: What is X, Z et. should be at beginning
+	      The following description is from \cite{support_vector_machine} from page 4. \( X \) and \(Z\) are, respectively, the original input space and the transformed, high-dimensional space.
+
+
 	      Roughly speaking, a kernel \( K(x, y) \) is a real-valued
 	      function \( K : X \times X \rightarrow \mathbb{R} \) for which there exists a
 	      function \( \Phi : X \rightarrow Z \), where \( Z \) is a real vector space,
 	      with the property \( K(x, y) = \Phi(x)^T \Phi(y) \). The
 	      kernel \( K(x, y) \) acts as a dot product in the space \( Z \).
-	      In the SVM literature \( X \) and \( Z \) are called, respectively, input space and feature space. \cite{support_vector_machine} % NOTE: verbatim from page 4
+	      %In the SVM literature \( X \) and \( Z \) are called, respectively, input space and feature space. %\cite{support_vector_machine} 
 
-	\item \textbf{C value:} The \(C\) value specifies how accurate the model should be, that is how much it should avoid misclassifications, versus how wide the margins should be. A lower value of \(C\) corresponds to wider margins. % TODO: in what metric: %, count?
+	\item \textbf{C value:} The \(C\) value specifies how accurate the model should be, that is how much it should avoid misclassifications, versus how wide the margins should be. A lower value of \(C\) corresponds to wider margins, but potentially more misclassifications. % TODO: in what metric: %, count?
 
 	      % TODO: Better describe the gamma
-	\item \textbf{Gamma:} The gamma value specifies how much influence individual training datapoints should have. The \verb|scale| value of gamma means that gamma is scaled automatically to fit the size of the dataset.
+	\item \textbf{Gamma:}
+	      %The gamma parameter is used by the non-linear kernel functions to specify how quickly the kernel specifies how much influence individual training datapoints should have. The \verb|scale| value of gamma means that gamma is scaled automatically to fit the size of the dataset.
+	      The \( \gamma \) parameter is a component of non-linear kernel functions, (e.g. the Radial Basis Function (RBF) kernel: \(K(\mathbf{x}_i, \mathbf{x}_j) = \exp(-\gamma \|\mathbf{x}_i - \mathbf{x}_j\|^2)\). It determines how
+	      %far the influence of a single training example reaches, effectively controlling the shape and smoothness of the decision boundary. 
+	      influential a single datapoint has in shaping the optimal boundary
+	      A high \( \gamma \) value causes the influence of each training point to be very localized, resulting in a more complex and tailored model that can capture intricate patterns in the data, but with a higher risk of overfitting. A low \( \gamma \) value means that the influence of each training point extends further, producing a smoother and simpler decision boundary that may generalize better to unseen data but be less accurate.
 \end{itemize}
 % A model was trained to predict whether the next price will be higher or lower than the previous one.
 
@@ -286,7 +350,7 @@ The loss function measures the error between the predicted output and the actual
 
 where
 \begin{itemize}
-	\item $\eta$ is the learning rate, % TODO: why is it not infinite?
+	\item $\eta$ is the learning rate. If it is too small, the model will train very slowly and may get stuck in local minima. If it is too large, it might not converge.
 	\item $\frac{\partial \mathcal{L}}{\partial w^{(l)}_{ji}}$ is the partial derivative of the loss function $\mathcal{L}$ with respect to the weight $w^{(l)}_{ji}$.
 \end{itemize}
 Similar updates are made for the biases.
@@ -341,28 +405,37 @@ A typical CNN architecture comprises several layers that transform the input ima
 
 \subsubsection{Convolutional Layer}
 The convolutional layer is the fundamental building block of a CNN. It applies a set of learnable filters to the input. Each filter activates specific features at certain spatial positions in the input. Mathematically, the convolution operation is defined as follows:
-% TODO: example?
-% TODO: in below, what is the range of x y m n?
 \[f(x, y) = (g * h)(x, y) = \sum_m\sum_n g(m,n) \cdot h(x-m, y-n)\]
-where \(f(x, y)\) is the output, \(g\) is the input image, \(h\) is the filter, and \(*\) denotes the convolution operation.
+where \(f(x, y)\) is the output, \(g\) is the filter, \(h\) is the input image, and \(*\) denotes the convolution operation. \(x\) and \(y\) range over output image dimensions; \(m\) and \(n\) range over the filter dimensions.
 
 \subsubsection{Activation Function}
 Following convolution, an activation function is applied to introduce non-linearity into the model. The Rectified Linear Unit (ReLU) is commonly used:
 \[f(x) = \max(0, x)\]
 
 \subsubsection{Pooling Layer}
-% TODO: what is a depth slice?
-The pooling layer reduces the spatial dimensions (width and height) of the input volume for the next convolutional layer. It operates independently on every depth slice of the input and resizes it spatially. A common operation for pooling is max pooling:
-% TODO: what is the range of x y?
-\[f(x, y) = \max_{(a,b) \in D} g(x+a, y+b)\]
-where \(D\) is the set of coordinates in the input, and \(g\) is the input image.
+The pooling layer reduces the spatial dimensions (width and height) of the input volume for the next convolutional layer.
+%It operates independently on every depth slice of the input and resizes it spatially. 
+% A common operation for pooling is max pooling:
+% % TODO: what is the range of x y?
+% where \(D\) is the set of coordinates in the input, and \(g\) is the input image.
 
 \subsubsection{Fully Connected Layer}
 Towards the end of the network, fully connected layers are used, where each input node is connected to each output by a learnable weight. This layer classifies the image into various classes based on the learned high-level features.
 
 \subsubsection{Output Layer}
-The final layer of a CNN is a softmax layer that outputs a probability distribution over the classes, indicating the likelihood of the input image belonging to each class.
+The final layer of a CNN
+%is a softmax layer that 
+outputs a probability distribution over the classes, indicating the likelihood of the input image belonging to each class.
 
+A simple diagram of the layers can be seen on figure \autoref{fig:cnn-diagram} (due to \cite{cnn_diagram_source}).
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.5\linewidth]{"pictures/architecture-cnn-en.jpeg"}
+	\caption{A simple diagram illustrating the different layers of the network working on an example input image.}
+	\label{fig:cnn-diagram}
+
+\end{figure}
 
 \subsection{Results}
 TBA
@@ -373,27 +446,35 @@ TBA
 
 
 
-\section{Residual neural network}
-
-% TODO: write a better description
-
-As the number of layers in classic CNN grows, the problem of vanishing or exploding gradient appears.
-It means that gradients become very small (or very large in case of exploding) as they are propagated
-through the layers of the network.
-
-Residual neural network (ResNet) is a type of CNN that is less subject to this problem.
-It was developed by Kaiming He, Xiangyu Zhang, Shaoqing Ren and Jian Sun in 2015 \cite{residual_neural_network}
-
-\subsection{ResNet Architecture}
+\section{Residual Neural Network}
 
 
-ResNet uses a technique called skip connections. Skip connection bypasses several layers, so
-that input of one layer is added to the output of some further layer. Blocks of such connections
-are called residual and the network is formed by stacking residual blocks.
+A Residual Neural Network (ResNet) is a type of deep learning model specifically designed to mitigate the vanishing gradient problem, where through backpropagation only the last few layers of the network get trained. ResNets introduce skip connections, also known as residual connections, which allow the input of a layer to be directly added to the output of a subsequent layer. This is mathematically expressed as:
 
-% TODO: explain better, make a diagram.
-The idea is that instead of learning the original mapping of input to output, residual blocks
-learn the difference between output and input, which is called the residual function.
+\[
+	\mathbf{y} = \mathcal{F}(\mathbf{x}, \{W_i\}) + \mathbf{x}
+\]
+
+where $\mathbf{y}$ is the output of the layer, $\mathcal{F}$ represents the residual mapping to be learned by the layer, $\mathbf{x}$ is the input, and $\{W_i\}$ denote the weights of the layers.
+
+The primary advantage of this architecture is its ability to facilitate the training of deeper networks by preserving the gradient flow through the network during backpropagation. This is achieved by allowing the backpropagation to bypass one or more layers, reducing the risk of gradient vanishing. As a result, ResNets can be trained to much depths than CNNs, and can have more layers.
+% As the number of layers in classic CNN grows, the problem of vanishing or exploding gradient appears.
+% It means that gradients become very small (or very large in case of exploding) as they are propagated
+% through the layers of the network.
+
+% Residual neural network (ResNet) is a type of CNN that is less subject to this problem.
+% It was developed by Kaiming He, Xiangyu Zhang, Shaoqing Ren and Jian Sun in 2015 \cite{residual_neural_network}
+
+% \subsection{ResNet Architecture}
+
+
+% ResNet uses a technique called skip connections. Skip connection bypasses several layers, so
+% that input of one layer is added to the output of some further layer. Blocks of such connections
+% are called residual and the network is formed by stacking residual blocks.
+
+% % TODO: explain better, make a diagram.
+% The idea is that instead of learning the original mapping of input to output, residual blocks
+% learn the difference between output and input, which is called the residual function.
 
 \subsection{Results}
 TBA
