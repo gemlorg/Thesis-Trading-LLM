@@ -20,6 +20,8 @@ The following vocabulary is used:
 
 	\item \textbf{Context length} is the maximal size of input tokens a large language model can process at any one time.
 
+	\item \textbf{Cross-modality data} is data that combines multiple modalities, i.e. text, image, audio, video, etc. In particuliar, combination of text description and time series is cross-modality data.
+
 \end{itemize}
 % CLEAN
 
@@ -46,42 +48,38 @@ The Transformer is a type of neural network architecture introduced in the semin
 
 \begin{figure}[h!]
 	\includegraphics[width=\linewidth]{"pictures/the-transformer-model-architecture.png"} % TODO: better diagram
-	\caption{The Transformer model architecture} % TODO: better description - every part of diagram has to be explained
+	\caption{The Transformer model architecture} % TODO: better description - every part of the diagram has to be explained
 	\label{fig:transformer_architecture_fig}
 \end{figure}
 
-The Transformer (fig \ref{fig:transformer_architecture_fig}) consists of the following components:
+The Transformer (fig \autoref{fig:transformer_architecture_fig}) consists of the following components:
 
 \begin{enumerate}
 	\item \textbf{Input Embedding}: Converts input tokens into vectors
 	\item \textbf{Positional Encoding}: Adds positional information to the embeddings to retain the order of the sequence. This encoding is another high-dimensional vector.
-	\item \textbf{Encoder} (on the left): % TODO: reference the picture
+	\item \textbf{Encoder} (\autoref{fig:transformer_architecture_fig} the left):
 	      \begin{itemize}
-		      \item Consists of N = 6 layers.
+		      \item Consists of \(N = 6\)\footnote{\cite{attention_is_all_you_need}, section 3.1)} layers.
 		      \item Each layer has two sub-layers:
 		            \begin{itemize}
-			            % TODO: multiple tokens - all? some? be precise
-			            \item \textbf{Multi-Head Attention}: Applies attention mechanism over the input. Calculates the weight or importance of each token in its surrounding context (\textit{Attention}). Does so independently for multiple tokens at once (\textit{Multi-Head}). The results are concatenated and linearly transformed. % TODO: what does it mean linearly transformed? What for? To what?
+			            \item \textbf{Multi-Head Attention}: Applies attention mechanism over the input. For each token calculates the weight or importance of over tokens in the surrounding context (\textit{Attention}). Does so independently with \(h\)\footnote{In \cite{attention_is_all_you_need}, \(h = 6\)} 'heads', each calculating different semantic relantionships (\textit{Multi-Head}). The results are concatenated and linearly transformed into size of one output (as if from one head).
 			            \item \textbf{Feed Forward}: Applies a fully connected feed-forward neural network.
 		            \end{itemize}
 		      \item \textbf{Add \& Norm}: Residual connections followed by layer normalization after each sub-layer.
 	      \end{itemize}
-	\item \textbf{Decoder} (on the right): % TODO: reference the picture
+	\item \textbf{Decoder} (\autoref{fig:transformer_architecture_fig}, on the right):
 	      \begin{itemize}
-		      \item Also consists of N = 6 layers. % TODO: descibe that this is from article.
+		      \item Also consists of \(N = 6\)\footnote{\cite{attention_is_all_you_need}, section 3.1)} layers.
 		      \item Each layer has three sub-layers:
 		            \begin{itemize}
-			            % TODO: what does it mean 'masked'
-			            \item \textbf{Masked Multi-Head Attention}: As in Encoder, but masked - ensures that the predictions for position i can depend only on the known outputs at positions less than i.
-			                  % TODO: what does it mean 'attends'
-			            \item \textbf{Multi-Head Attention}: Attends to the encoder’s output.
+			            \item \textbf{Masked Multi-Head Attention}: As in Encoder, but masked, i.e. attention results for future tokens are disarded - .
+			            \item \textbf{Multi-Head Attention}: Applies the multi-head attention mechanism to encoder output.
 			            \item \textbf{Feed Forward}: Applies a fully connected feed-forward neural network.
 		            \end{itemize}
 		      \item \textbf{Add \& Norm}: Residual connections followed by layer normalization after each sub-layer.
 	      \end{itemize}
 	\item \textbf{Output Embedding}: Converts decoder output tokens into semantic vector space.
-	      % TODO: the following is contrary to intuition and experience of using e.g. ChatGPT
-	\item \textbf{Linear \& Softmax Layer}: Maps the decoder’s output to the probability distribution over the target vocabulary. The most probable token is the output.
+	\item \textbf{Linear \& Softmax Layer}: Maps the decoder’s output to the probability distribution over the target vocabulary. The most probable token is the output. \footnote{This may seem contrary to popular experience using e.g. ChatGPT, where given the same input, it may not necessarily output the same result. However, such tools may have random seeds for each interaction session and also may take into account the context of the conversation. }
 \end{enumerate}
 
 
@@ -95,7 +93,7 @@ The Transformer (fig \ref{fig:transformer_architecture_fig}) consists of the fol
 \subsection{Features}
 
 \begin{itemize}
-	\item \textbf{Model Variants:} LLaMA is available in various sizes, offering flexibility for deployment in different environments. These variants range from models of 7 billion parameters in size up to models of 65 billion parameters in size. % TODO: how is it for LLaMA-3?
+	\item \textbf{Model Variants:} LLaMA is available in various sizes, offering flexibility for deployment in different environments. These variants range from models of 7 billion parameters in size up to models of 65 billion parameters in size. \footnote{LLaMa-3, which came out in April 2024, has size possibilities of 8 billion and 70 billion parameters}
 
 	\item \textbf{Training Data:} The model has been trained on 1.4 trillion tokens of data from several sources, including CommonCrawl and Github, Wikipedia (Table 1. in \cite{llama}). It therefore has an enormous and domain diverse range of input data.
 
@@ -109,8 +107,7 @@ The Transformer (fig \ref{fig:transformer_architecture_fig}) consists of the fol
 
 \section{Time-series Embedding}
 We now present the technique we've used for using a vanilla (not fine-tuned) LLaMA-2 model to predict time series data.
-% TODO: parantheses - what is the process? fine-tuning?
-The main idea involves using a framework around a frozen LLM (i.e. one that is not changed in the process) that transforms input time series data into a text representation the LLM can then work on. Its output is then converted into a prediction. The idea is due to an article by Jin et al. (2024) \cite{reprogramming_llm}.
+The main idea involves using a framework around a frozen LLM (i.e. one that is not changed during the training process) that transforms input time series data into a text representation the LLM can then work on. Its output is then converted into a prediction. The idea is due to an article by Jin et al. (2024) \cite{reprogramming_llm}.
 
 \begin{figure}[h!]
 	\includegraphics[width=\linewidth]{"pictures/prompt-embedding.png"} % TODO: poor quality of picture - should be better explained
@@ -124,18 +121,17 @@ The main idea involves using a framework around a frozen LLM (i.e. one that is n
 
 
 
-What follows is a more detailed description.
+The following three paragraphs come from the article.
 % TODO: This paragraph/problem may also be described earlier, e.g. in introduction.
 We consider the following problem: given a sequence of historical observations \(X \in \R^{N\times T}\)
 consisting of \(N\) different 1-dimensional variables across \(T\) time steps, we aim to reprogram a large
 language model \(f(\cdot)\) to understand the input time series and accurately forecast the readings at \(H\) future time steps, denoted by \(\hat{Y} \in \R^{N\times H}\) , with the overall objective to minimize the mean square errors between the expected outputs \(Y\) and predictions, i.e., \(\frac1H \sum_{h=1}^H \| \hat{Y}_h - Y_h \|_F^2 \).
 
-The method encompasses three main components: (1) input transformation, (2) a pre-trained and frozen LLM, and (3) output projection. Initially, a multifeature time series is partitioned into \(N\) unifeature time series, which are subsequently processed independently (Nie et al., 2023) \cite{nie_et_al}.
 % TODO: normalization, patching, embedding - explain
+The method encompasses three main components: (1) input transformation, (2) a pre-trained and frozen LLM, and (3) output projection. Initially, a multifeature time series is partitioned into \(N\) unifeature time series, which are subsequently processed independently (Nie et al., 2023) \cite{nie_et_al}.
 The i-th series is denoted as \(X(i) \in \R^{1\times T}\) , which undergoes normalization, patching, and embedding prior to being reprogrammed with learned text prototypes to align the source and target modalities.
 Then, we augment the LLM’s time series reasoning ability by prompting it together with the transformed series to generate output representations, which are projected to the final forecasts \(\hat{Y}^{(i)} \in \R^{1\times H}\) .
 
-% TODO: what is cross-modality data? Explain, give examples.
 We note that only the parameters of the lightweight input transformation and output projection are updated, while the backbone language model is frozen.
 In contrast to vision-language and other multimodal language models, which usually fine-tune with paired cross-modality data, this use of model is directly optimized and becomes readily available with only a small set of time series and a few  training epochs, maintaining high efficiency and imposing fewer resource constraints compared to building large domain-specific models from scratch or fine-tuning them.
 
