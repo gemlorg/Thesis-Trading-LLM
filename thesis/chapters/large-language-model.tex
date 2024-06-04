@@ -136,6 +136,20 @@ We note that only the parameters of the lightweight input transformation and out
 In contrast to vision-language and other multimodal language models, which usually fine-tune with paired cross-modality data, this use of model is directly optimized and becomes readily available with only a small set of time series and a few  training epochs, maintaining high efficiency and imposing fewer resource constraints compared to building large domain-specific models from scratch or fine-tuning them.
 
 \section{Our methodology}
+In the current and the next few sections we will share the details of our implementation. The goal is to further elaborate on the idea presented in the previous section and describe the specifics and challenges of our approach. \\
+
+\subsection{Data Preprocessing} 
+In the previously defined model architecture, the input consists of a vector of floats that represent the prices over time. Therefore we only use a single feature of the time series data. This means that in the context of the datasets discribed earlier all but the target column are discarded. Afterwards, the data is normalised. A single entry in the updated dataset consists of two features, first one being a vector of length \textbf{seq\_len} floats representing successive prices with a step of \textbf{seq\_step} values in the original dataset, along with the target feature which is the next \textbf{pred\_len} prices using the same step size. \\
+\subsection{Embedding}
+Embedding is the part where we take the advantage of the fact that human language can be translated into a sequence of tokens which can serve as instructions to the LLM. In our case, we use the predefined methods of the LLaMa model to convert the instructions into a tensor of floats. This tensor will later be used as a part of the input to the LLM. \\
+
+\subsection{Patching} 
+
+Considering that the weights of the LLM are frozen, the actual training of the model is mostly done by changing the patching. We project the feature vector into a d-dimensional vector space by repeating some of the values and apply convolution and dropout to the result. Afterwards, multi-head attention is applied using linearly modified embeddings from LLaMA. At the very end we apply a linear transformation once again. The resulting tensor is later treated as a sequence of tokens along with the output from the patching layer. \\ 
+
+\subsection{Body and Output Projection}
+Two sequences of tokens received from the pathing and embedding layers are fed to the LLaMa as a single sequence of tokens. The output is then projected to the forecasted values. \\ 
+
 \section{Model Parameters}
 
 In this study, we employed a set of distinctive parameters for our model training:
@@ -144,6 +158,9 @@ In this study, we employed a set of distinctive parameters for our model trainin
     \item \textbf{seq\_len} – This parameter defines the number of records in one prompt to the model.
     \item \textbf{pred\_len} – This parameter specifies the number of records to predict.
     \item \textbf{seq\_step} – This parameter determines the step size in records to move the prompt. For instance, if \textit{seq\_step} is set to 4, the records would be indexed as 0, 4, 8, and so on. This approach was essential in filtering out noise caused by hourly fluctuations, significantly enhancing the results.
+    \item \textbf{lradj} - Describes whic strategy should be used to adjust the learning rate, e.g. \textbf{type1} implies $lr_{n+1} = lr_{n} * 0.5$.
+    \item \textbf{n\_heads} - number of heads in the multi-head attention mechanism.
+    \item \textbf{d\_ff} - number of neurons in the feed forward layer.
 \end{itemize}
 
 \subsection{Impact on Results}
@@ -172,6 +189,8 @@ This method notably improved our accuracy, especially for datasets with clear se
 
 To address this challenge, we explored various analytical tools commonly used in trading. Numerous indicators are designed to forecast future prices, based on factors such as moving averages, trading volume, and price trends. We decided to incorporate three widely-used indicators: Relative Strength Index (RSI), Moving Average Convergence Divergence (MACD), and Bollinger Bands (BBANDS). These indicators, already familiar to the model due to its pre-existing knowledge, significantly enhanced its predictive capabilities.
 
+
+
 \subsection{Indicators Used}
 
 \begin{itemize}
@@ -182,4 +201,11 @@ To address this challenge, we explored various analytical tools commonly used in
 
 Incorporating these indicators yielded a substantial improvement in our model's performance. The accuracy of our predictions increased by over 2% on certain datasets, which is a significant enhancement in our context. This improvement underscores the value of integrating domain-specific indicators and leveraging the LLM's pre-existing knowledge to refine our forecasting model. Further detailed results will be discussed in the subsequent sections.
 
+\subsection{Possible Improvements}
+
+\subsection{Underlying LLM}
+The 7B LLaMa-2 model we used is significantly less powerful in comparison to 70B LLaMa-3 or even 70B LLama-2, as it follows from the official benchmarks. It would be interesting to see how the performance of the model would be affected by a more modern underlying LLM, however it would require significantly more computational resources as well as additional code that would allow us to run the program on multiple GPUs.  
+
+\subsection{Larget Training Set}
+The model was trained on datasets which contained less than 40000 records. It takes us approximately 12 hours to train the model on a dataset of this size. Training the model on a larger dataset would allow to fit more complex patterns in the datasets which could potentially be developing over a span of multiple years. 
 \section{Results}
