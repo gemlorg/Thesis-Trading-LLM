@@ -1,0 +1,156 @@
+In this chapter we present the results in the following way: for each dataset described in \autoref{chap:other-models}, we present one table. The table presents accuracies each model achieves at predicting at predicting the price \verb|Prediction Timestep| into the future.
+
+Todo: describe parameters pred_len and seq_step
+
+Datasets were tested with the following parameters:
+AAPL, 40, 1, (ostatni)
+BTCUSD, 5, 2, (ostatni)
+EURUSD, 7, 7, (ostatni)
+GBPCAD,  10, 7, (czwarty)
+GBPTRY, 5,  2, (pierwszy)
+Electricity, 6, 11,  (czwarty)
+US500, 10, 1, (dziewiąty)
+
+Todo: describe the process of preparing datasets.
+
+Todo: describe measuring accuracy, the loss function.
+
+
+\begin{center}
+	\begin{tabular}{||l || c | c | c | c | c | c | c||}
+		\hline
+		\multicolumn{8}{|c|}{Apple Stocks Dataset}                                                        \\
+		\hline
+		Prediction Timestep & Random forest & Logistic regression & SVM & MLP & CNN & ResNet & LLM        \\ [0.5ex]
+		\hline\hline
+		8 days              & xy            & xy                  & xy  & xy  & xy  & xy     & 0.48047337 \\
+		\hline
+		16 days             & xy            & xy                  & xy  & xy  & xy  & xy     & 0.48742604 \\
+		\hline
+		24 days             & xy            & xy                  & xy  & xy  & xy  & xy     & 0.49630178 \\
+		\hline
+		32 days             & xy            & xy                  & xy  & xy  & xy  & xy     & 0.52204142 \\
+		\hline
+		40 days             & xy            & xy                  & xy  & xy  & xy  & xy     & 0.54985207 \\[1ex]
+
+		\hline
+	\end{tabular}
+\end{center}
+\begin{center}
+	\begin{tabular}{||l || c | c | c | c | c | c | c||}
+		\hline
+		\multicolumn{8}{|c|}{BTCUSD Dataset}                                                              \\
+		\hline
+		Prediction Timestep & Random forest & Logistic regression & SVM & MLP & CNN & ResNet & LLM        \\ [0.5ex]
+		\hline\hline
+		2 hours             & xy            & xy                  & xy  & xy  & xy  & xy     & 0.50065963 \\
+		\hline
+		4 hours             & xy            & xy                  & xy  & xy  & xy  & xy     & 0.5055409  \\
+		\hline
+		6 hours             & xy            & xy                  & xy  & xy  & xy  & xy     & 0.5        \\
+		\hline
+		8 hours             & xy            & xy                  & xy  & xy  & xy  & xy     & 0.50092348 \\
+		\hline
+		10 hours            & xy            & xy                  & xy  & xy  & xy  & xy     & 0.50540897 \\[1ex]
+		\hline
+	\end{tabular}
+\end{center}
+\begin{center}
+	\begin{tabular}{||l || c | c | c | c | c | c | c||}
+		\hline
+		\multicolumn{8}{|c|}{EURUSD Dataset}                                                       \\
+		\hline
+		Prediction Timestep & Random forest & Logistic regression & SVM & MLP & CNN & ResNet & LLM \\ [0.5ex]
+		\hline\hline
+		t                   & xy            & xy                  & xy  & xy  & xy  & xy     & xy  \\
+		\hline
+		t                   & xy            & xy                  & xy  & xy  & xy  & xy     & xy  \\
+		\hline
+		t                   & xy            & xy                  & xy  & xy  & xy  & xy     & xy  \\
+		\hline
+		t                   & xy            & xy                  & xy  & xy  & xy  & xy     & xy  \\
+		\hline
+		t                   & xy            & xy                  & xy  & xy  & xy  & xy     & xy  \\[1ex]
+		\hline
+		t                   & xy            & xy                  & xy  & xy  & xy  & xy     & xy  \\[1ex]
+		\hline
+		t                   & xy            & xy                  & xy  & xy  & xy  & xy     & xy  \\[1ex]
+		\hline
+	\end{tabular}
+\end{center}
+\begin{center}
+	\begin{tabular}{||l || c | c | c | c | c | c | c||}
+		\hline
+		\multicolumn{8}{|c|}{GBPCAD Dataset}                                                       \\
+		\hline
+		Prediction Timestep & Random forest & Logistic regression & SVM & MLP & CNN & ResNet & LLM \\ [0.5ex]
+		\hline\hline
+		t                   & xy            & xy                  & xy  & xy  & xy  & xy     & xy  \\
+		\hline
+		t                   & xy            & xy                  & xy  & xy  & xy  & xy     & xy  \\
+		\hline
+		t                   & xy            & xy                  & xy  & xy  & xy  & xy     & xy  \\
+		\hline
+		t                   & xy            & xy                  & xy  & xy  & xy  & xy     & xy  \\
+		\hline
+		t                   & xy            & xy                  & xy  & xy  & xy  & xy     & xy  \\[1ex]
+		\hline
+	\end{tabular}
+\end{center}
+\begin{center}
+	\begin{tabular}{||l || c | c | c | c | c | c | c||}
+		\hline
+		\multicolumn{8}{|c|}{GBPTRY Dataset}                                                       \\
+		\hline
+		Prediction Timestep & Random forest & Logistic regression & SVM & MLP & CNN & ResNet & LLM \\ [0.5ex]
+		\hline\hline
+		t                   & xy            & xy                  & xy  & xy  & xy  & xy     & xy  \\
+		\hline
+		t                   & xy            & xy                  & xy  & xy  & xy  & xy     & xy  \\
+		\hline
+		t                   & xy            & xy                  & xy  & xy  & xy  & xy     & xy  \\
+		\hline
+		t                   & xy            & xy                  & xy  & xy  & xy  & xy     & xy  \\
+		\hline
+		t                   & xy            & xy                  & xy  & xy  & xy  & xy     & xy  \\[1ex]
+		\hline
+	\end{tabular}
+\end{center}
+\begin{center}
+	\begin{tabular}{||l || c | c | c | c | c | c | c||}
+		\hline
+		\multicolumn{8}{|c|}{Electricity Dataset}                                                  \\
+		\hline
+		Prediction Timestep & Random forest & Logistic regression & SVM & MLP & CNN & ResNet & LLM \\ [0.5ex]
+		\hline\hline
+		t                   & xy            & xy                  & xy  & xy  & xy  & xy     & xy  \\
+		\hline
+		t                   & xy            & xy                  & xy  & xy  & xy  & xy     & xy  \\
+		\hline
+		t                   & xy            & xy                  & xy  & xy  & xy  & xy     & xy  \\
+		\hline
+		t                   & xy            & xy                  & xy  & xy  & xy  & xy     & xy  \\
+		\hline
+		t                   & xy            & xy                  & xy  & xy  & xy  & xy     & xy  \\[1ex]
+		\hline
+	\end{tabular}
+\end{center}
+\begin{center}
+	\begin{tabular}{||l || c | c | c | c | c | c | c||}
+		\hline
+		\multicolumn{8}{|c|}{US500 Dataset}                                                        \\
+		\hline
+		Prediction Timestep & Random forest & Logistic regression & SVM & MLP & CNN & ResNet & LLM \\ [0.5ex]
+		\hline\hline
+		t                   & xy            & xy                  & xy  & xy  & xy  & xy     & xy  \\
+		\hline
+		t                   & xy            & xy                  & xy  & xy  & xy  & xy     & xy  \\
+		\hline
+		t                   & xy            & xy                  & xy  & xy  & xy  & xy     & xy  \\
+		\hline
+		t                   & xy            & xy                  & xy  & xy  & xy  & xy     & xy  \\
+		\hline
+		t                   & xy            & xy                  & xy  & xy  & xy  & xy     & xy  \\[1ex]
+		\hline
+	\end{tabular}
+\end{center}

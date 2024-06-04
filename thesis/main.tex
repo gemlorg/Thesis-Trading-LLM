@@ -11,6 +11,7 @@
 \title{Large language models for forecasting market behaviour}
 \titlepl{Duże modele językowe w przewidywaniu giełdy}
 
+\usepackage{hyperref}
 \usepackage{graphicx}
 \usepackage{subcaption}
 \usepackage{amssymb}
@@ -60,6 +61,7 @@
 \begin{document}
 \newcommand{\rozdzial}[2]{
 	\chapter{#1}
+	\label{chap:#2}
 	\input{chapters/#2}
 }
 
@@ -84,7 +86,7 @@
 \rozdzial{Other models}{other-models}
 \rozdzial{Large Language Model}{large-language-model}
 % \rozdzial{Methodology }{methodology}
-% \rozdzial{Main results}{results}
+\rozdzial{Main results}{results}
 % \rozdzial{Forecasting applications}{forecasting-application}
 \rozdzial{Conclusion}{conclusion}
 \appendix

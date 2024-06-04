@@ -14,63 +14,34 @@ Here we describe the various datasets we used for the training and testing of ou
 	\item \textbf{Size:} a description of how many datapoints the dataset contains, how many features each datapoints has and the overall size of the file.
 	\item \textbf{Features:} a description of the features each datapoint of the dataset has and what the features represent.
 	\item \textbf{Characteristic:} a description of the features and drawbacks of the overall dataset e.g. how dependent are the features between themselves.
-	\item \textbf{Plot:} a plot of the numeric features of the dataset, its visual representation.
+	      % \item \textbf{Plot:} a plot of the numeric features of the dataset, its visual representation.
 \end{itemize}
-\subsection{House sales}
-\begin{itemize}
-	\item \textbf{Source:} House Property Sales Time Series (raw\_sales.csv) :\\ https://www.kaggle.com/datasets/htagholdings/property-sales
-	\item \textbf{Collection method:} Property sales data was gathered for the 2007-2019 period for one specific region \footnote{The region in question was not specified in the description of the dataset.}
-	\item \textbf{Motivation:} A simple dataset for the basic models. A proper, manageable size, once filtered by property and number of bedrooms. Has very few features, making it easier to understand and process.
-	\item \textbf{Size:} Consists of 29600 datapoints. Once filtered for property being house, number of bedrooms equal to 3, around 11300 datapoints remain.
-	\item \textbf{Features:} The dataset has very few features. Every datapoint consists of:
-	      \begin{itemize}
-		      \item \textbf{datesold}: Date at which the sale was made.
-		      \item \textbf{postcode}: 4 digit postcode of the suburb where the property was sold (given for reference only).
-		      \item \textbf{price}: Price for which the property was sold.
-		      \item \textbf{propertyType}: Property type i.e. house or unit.
-		      \item \textbf{bedrooms}: Number of bedrooms: 1, 2, 3, 4 or 5.
-	      \end{itemize}
-	      The dataset was filtered by propertyType and bedrooms, and the postcode was discarded.
-
-	      % może inaczej nazwać, dyskusja
-	\item \textbf{Characteristic:} The prices rise with time, therefore models might easily learn to always predict "up".
-
-	\item \textbf{Plot:} Below is the plot of prices with respect to time for properties with different numbers of bedrooms.
-	      \begin{figure}[h!]
-		      \includegraphics[width=\linewidth]{"pictures/house_sales_graph.png"}
-		      \caption{A plot of the House Sales dataset.}
-		      \label{fig:house_sales_graph}
-	      \end{figure}
-\end{itemize}
-% \subsection{Gbpcad}
+% \subsection{House sales}
 % \begin{itemize}
-% 	\item \textbf{Source:}
-% 	\item \textbf{Motivation:}
-% 	\item \textbf{Size:}
-% 	\item \textbf{Features:}
-% 	\item \textbf{Collection method:}
-% 	\item \textbf{Quality:}
-% 	\item \textbf{Plot:}
+% 	\item \textbf{Source:} House Property Sales Time Series (raw\_sales.csv) :\\ https://www.kaggle.com/datasets/htagholdings/property-sales
+% 	\item \textbf{Collection method:} Property sales data was gathered for the 2007-2019 period for one specific region \footnote{The region in question was not specified in the description of the dataset.}
+% 	\item \textbf{Motivation:} A simple dataset for the basic models. A proper, manageable size, once filtered by property and number of bedrooms. Has very few features, making it easier to understand and process.
+% 	\item \textbf{Size:} Consists of 29600 datapoints. Once filtered for property being house, number of bedrooms equal to 3, around 11300 datapoints remain.
+% 	\item \textbf{Features:} The dataset has very few features. Every datapoint consists of:
+% 	      \begin{itemize}
+% 		      \item \textbf{datesold}: Date at which the sale was made.
+% 		      \item \textbf{postcode}: 4 digit postcode of the suburb where the property was sold (given for reference only).
+% 		      \item \textbf{price}: Price for which the property was sold.
+% 		      \item \textbf{propertyType}: Property type i.e. house or unit.
+% 		      \item \textbf{bedrooms}: Number of bedrooms: 1, 2, 3, 4 or 5.
+% 	      \end{itemize}
+% 	      The dataset was filtered by propertyType and bedrooms, and the postcode was discarded.
+
+% 	      % może inaczej nazwać, dyskusja
+% 	\item \textbf{Characteristic:} The prices rise with time, therefore models might easily learn to always predict "up".
+
+% 	\item \textbf{Plot:} Below is the plot of prices with respect to time for properties with different numbers of bedrooms.
+% 	      \begin{figure}[h!]
+% 		      \includegraphics[width=\linewidth]{"pictures/house_sales_graph.png"}
+% 		      \caption{A plot of the House Sales dataset.}
+% 		      \label{fig:house_sales_graph}
+% 	      \end{figure}
 % \end{itemize}
-\subsection{Google Stock}
-\begin{itemize}
-	\item \textbf{Source:} Google Stock Dataset \\ https://www.kaggle.com/datasets/r1shabhgupta/google-stock-price-daily-weekly-and-monthly-2023/data
-	\item \textbf{Collection method:} We suspect this data was collected from the stock market (the source does not specify this). Has daily data and weekly and monthly summaries.
-	\item \textbf{Motivation:} More complex dataset, multiple time series numeric features, but fewer datapoints.
-	\item \textbf{Size:} Daily set has 2510 datapoints. Weekly set has 520 datapoints. Monthly set has 120 datapoints.
-	\item \textbf{Features:} Every datapoint has the following features:
-	      \begin{itemize}
-		      \item \textbf{Date}: the date on which the stock price was recorded.
-		      \item \textbf{Price}: the opening price of the stock on the given date.
-		      \item \textbf{High}: the highest price at which the stock was traded during the day.
-		      \item \textbf{Low}: the lowest price at which the stock was traded during the day.
-		      \item \textbf{Close}: the closing price of the stock on the given date.
-		      \item \textbf{Volume}: the total number of shares traded on the given date.
-		      \item \textbf{Adj Close}: the close price modified to account for dividends, stock splits, etc., to better reflect stock value.
-	      \end{itemize}
-	\item \textbf{Characteristic:}
-	\item \textbf{Plot:}
-\end{itemize}
 \subsection{Apple}
 \begin{itemize}
 	\item \textbf{Source:} Apple Stock Prices \\ https://www.kaggle.com/datasets/suyashlakhani/apple-stock-prices-20152020
@@ -94,6 +65,85 @@ Here we describe the various datasets we used for the training and testing of ou
 	      % \item \textbf{Characteristic:}
 	      % \item \textbf{Plot:}
 \end{itemize}
+\subsection{BTCUSD}
+\begin{itemize}
+	\item \textbf{Source:}
+	\item \textbf{Motivation:}
+	\item \textbf{Size:}
+	\item \textbf{Features:}
+	\item \textbf{Collection method:}
+	\item \textbf{Quality:}
+	\item \textbf{Plot:}
+\end{itemize}
+\subsection{EURUSD}
+\begin{itemize}
+	\item \textbf{Source:}
+	\item \textbf{Motivation:}
+	\item \textbf{Size:}
+	\item \textbf{Features:}
+	\item \textbf{Collection method:}
+	\item \textbf{Quality:}
+	\item \textbf{Plot:}
+\end{itemize}
+\subsection{GBPCAD}
+\begin{itemize}
+	\item \textbf{Source:}
+	\item \textbf{Motivation:}
+	\item \textbf{Size:}
+	\item \textbf{Features:}
+	\item \textbf{Collection method:}
+	\item \textbf{Quality:}
+	\item \textbf{Plot:}
+\end{itemize}
+\subsection{GBPTRY}
+\begin{itemize}
+	\item \textbf{Source:}
+	\item \textbf{Motivation:}
+	\item \textbf{Size:}
+	\item \textbf{Features:}
+	\item \textbf{Collection method:}
+	\item \textbf{Quality:}
+	\item \textbf{Plot:}
+\end{itemize}
+\subsection{Electricity}
+\begin{itemize}
+	\item \textbf{Source:}
+	\item \textbf{Motivation:}
+	\item \textbf{Size:}
+	\item \textbf{Features:}
+	\item \textbf{Collection method:}
+	\item \textbf{Quality:}
+	\item \textbf{Plot:}
+\end{itemize}
+\subsection{US500}
+\begin{itemize}
+	\item \textbf{Source:}
+	\item \textbf{Motivation:}
+	\item \textbf{Size:}
+	\item \textbf{Features:}
+	\item \textbf{Collection method:}
+	\item \textbf{Quality:}
+	\item \textbf{Plot:}
+\end{itemize}
+% \subsection{Google Stock}
+% \begin{itemize}
+% 	\item \textbf{Source:} Google Stock Dataset \\ https://www.kaggle.com/datasets/r1shabhgupta/google-stock-price-daily-weekly-and-monthly-2023/data
+% 	\item \textbf{Collection method:} We suspect this data was collected from the stock market (the source does not specify this). Has daily data and weekly and monthly summaries.
+% 	\item \textbf{Motivation:} More complex dataset, multiple time series numeric features, but fewer datapoints.
+% 	\item \textbf{Size:} Daily set has 2510 datapoints. Weekly set has 520 datapoints. Monthly set has 120 datapoints.
+% 	\item \textbf{Features:} Every datapoint has the following features:
+% 	      \begin{itemize}
+% 		      \item \textbf{Date}: the date on which the stock price was recorded.
+% 		      \item \textbf{Price}: the opening price of the stock on the given date.
+% 		      \item \textbf{High}: the highest price at which the stock was traded during the day.
+% 		      \item \textbf{Low}: the lowest price at which the stock was traded during the day.
+% 		      \item \textbf{Close}: the closing price of the stock on the given date.
+% 		      \item \textbf{Volume}: the total number of shares traded on the given date.
+% 		      \item \textbf{Adj Close}: the close price modified to account for dividends, stock splits, etc., to better reflect stock value.
+% 	      \end{itemize}
+% 	\item \textbf{Characteristic:}
+% 	\item \textbf{Plot:}
+% \end{itemize}
 \subsection{Gold}
 \begin{itemize}
 	\item \textbf{Source:} Gold rates \\ https://www.kaggle.com/datasets/hemil26/gold-rates-1985-jan-2022
