@@ -48,7 +48,8 @@ The Transformer is a type of neural network architecture introduced in the semin
 
 \begin{figure}[h!]
 	\includegraphics[width=\linewidth]{"pictures/the-transformer-model-architecture.png"} % TODO: better diagram
-	\caption{The Transformer model architecture} % TODO: better description - every part of the diagram has to be explained
+	\caption{The Transformer model architecture (figure from \cite{attention_is_all_you_need}). Both inputs and outputs are embedded and concatinated (\(\oplus\)) with their positional encodings - those are then fed into encoder and decoder respectivaly. The left part is one encoder layer. The whole encoder is made up of \(N\) of these layers stacked (output of one is input of the next). The output of the last encoder layer is used in all \(N\) decoder layers (on the right), which are likewise stacked. The output of the decoder (stack of decoder layers) is used for prediction.}
+
 	\label{fig:transformer_architecture_fig}
 \end{figure}
 
@@ -109,15 +110,15 @@ The Transformer (fig \autoref{fig:transformer_architecture_fig}) consists of the
 We now present the technique we've used for using a vanilla (not fine-tuned) LLaMA-2 model to predict time series data.
 The main idea involves using a framework around a frozen LLM (i.e. one that is not changed during the training process) that transforms input time series data into a text representation the LLM can then work on. Its output is then converted into a prediction. The idea is due to an article by Jin et al. (2024) \cite{reprogramming_llm}.
 
-\begin{figure}[h!]
-	\includegraphics[width=\linewidth]{"pictures/prompt-embedding.png"} % TODO: poor quality of picture - should be better explained
-	\caption{The model framework of TIME-LLM. Given an input time series, we first tokenize and
-		embed it via (1) patching along with a (2) customized embedding layer. (3) These patch embeddings
-		are then reprogrammed with condensed text prototypes to align two modalities. To augment the
-		LLM’s reasoning ability, (4) additional prompt prefixes are added to the input to direct the transformation
-		of input patches. (5) The output patches from the LLM are projected to generate the forecasts.}
-	\label{fig:prompt_embedding_fig}
-\end{figure}
+% \begin{figure}[h!]
+% 	\includegraphics[width=\linewidth]{"pictures/prompt-embedding.png"} % TODO: poor quality of picture - should be better explained
+% 	\caption{The model framework of TIME-LLM. Given an input time series, we first tokenize and
+% 		embed it via (1) patching along with a (2) customized embedding layer. (3) These patch embeddings
+% 		are then reprogrammed with condensed text prototypes to align two modalities. To augment the
+% 		LLM’s reasoning ability, (4) additional prompt prefixes are added to the input to direct the transformation
+% 		of input patches. (5) The output patches from the LLM are projected to generate the forecasts.}
+% 	\label{fig:prompt_embedding_fig}
+% \end{figure}
 
 
 
@@ -138,29 +139,29 @@ In contrast to vision-language and other multimodal language models, which usual
 \section{Our methodology}
 In the current and the next few sections we will share the details of our implementation. The goal is to further elaborate on the idea presented in the previous section and describe the specifics and challenges of our approach. \\
 
-\subsection{Data Preprocessing} 
+\subsection{Data Preprocessing}
 In the previously defined model architecture, the input consists of a vector of floats that represent the prices over time. Therefore we only use a single feature of the time series data. This means that in the context of the datasets discribed earlier all but the target column are discarded. Afterwards, the data is normalised. A single entry in the updated dataset consists of two features, first one being a vector of length \textbf{seq\_len} floats representing successive prices with a step of \textbf{seq\_step} values in the original dataset, along with the target feature which is the next \textbf{pred\_len} prices using the same step size. \\
 \subsection{Embedding}
 Embedding is the part where we take the advantage of the fact that human language can be translated into a sequence of tokens which can serve as instructions to the LLM. In our case, we use the predefined methods of the LLaMa model to convert the instructions into a tensor of floats. This tensor will later be used as a part of the input to the LLM. \\
 
-\subsection{Patching} 
+\subsection{Patching}
 
-Considering that the weights of the LLM are frozen, the actual training of the model is mostly done by changing the patching. We project the feature vector into a d-dimensional vector space by repeating some of the values and apply convolution and dropout to the result. Afterwards, multi-head attention is applied using linearly modified embeddings from LLaMA. At the very end we apply a linear transformation once again. The resulting tensor is later treated as a sequence of tokens along with the output from the patching layer. \\ 
+Considering that the weights of the LLM are frozen, the actual training of the model is mostly done by changing the patching. We project the feature vector into a d-dimensional vector space by repeating some of the values and apply convolution and dropout to the result. Afterwards, multi-head attention is applied using linearly modified embeddings from LLaMA. At the very end we apply a linear transformation once again. The resulting tensor is later treated as a sequence of tokens along with the output from the patching layer. \\
 
 \subsection{Body and Output Projection}
-Two sequences of tokens received from the pathing and embedding layers are fed to the LLaMa as a single sequence of tokens. The output is then projected to the forecasted values. \\ 
+Two sequences of tokens received from the pathing and embedding layers are fed to the LLaMa as a single sequence of tokens. The output is then projected to the forecasted values. \\
 
 \section{Model Parameters}
 
 In this study, we employed a set of distinctive parameters for our model training:
 
 \begin{itemize}
-    \item \textbf{seq\_len} – This parameter defines the number of records in one prompt to the model.
-    \item \textbf{pred\_len} – This parameter specifies the number of records to predict.
-    \item \textbf{seq\_step} – This parameter determines the step size in records to move the prompt. For instance, if \textit{seq\_step} is set to 4, the records would be indexed as 0, 4, 8, and so on. This approach was essential in filtering out noise caused by hourly fluctuations, significantly enhancing the results.
-    \item \textbf{lradj} - Describes whic strategy should be used to adjust the learning rate, e.g. \textbf{type1} implies $lr_{n+1} = lr_{n} * 0.5$.
-    \item \textbf{n\_heads} - number of heads in the multi-head attention mechanism.
-    \item \textbf{d\_ff} - number of neurons in the feed forward layer.
+	\item \textbf{seq\_len} – This parameter defines the number of records in one prompt to the model.
+	\item \textbf{pred\_len} – This parameter specifies the number of records to predict.
+	\item \textbf{seq\_step} – This parameter determines the step size in records to move the prompt. For instance, if \textit{seq\_step} is set to 4, the records would be indexed as 0, 4, 8, and so on. This approach was essential in filtering out noise caused by hourly fluctuations, significantly enhancing the results.
+	\item \textbf{lradj} - Describes whic strategy should be used to adjust the learning rate, e.g. \textbf{type1} implies $lr_{n+1} = lr_{n} * 0.5$.
+	\item \textbf{n\_heads} - number of heads in the multi-head attention mechanism.
+	\item \textbf{d\_ff} - number of neurons in the feed forward layer.
 \end{itemize}
 
 \subsection{Impact on Results}
@@ -175,7 +176,7 @@ To avoid reducing the number of records available for training, we leveraged the
 
 This approach, however, led to overfitting, particularly with a high \textit{seq\_len} of 200, a \textit{seq\_step} of 12, and a \textit{pred\_len} of 40. For illustration, consider feeding the model data from the past 20 weeks and predicting the next 4 weeks (one month). Our currency datasets contain 24 records per day over 5 days a week.
 
-In the initial iterations, our model achieved an accuracy of 89% on the training data in the first epoch. This high accuracy was due to the similarity of the training data sequences. Essentially, we presented price data for the last 5 months divided into 200 records and then predicted the price for the next month. We then slightly shifted the data forward by 1 hour, resulting in nearly identical sequences being fed to the model. Consequently, the model could easily predict the next month +1 hour, given its similarity to the previous predictions.
+In the initial iterations, our model achieved an accuracy of 89\% on the training data in the first epoch. This high accuracy was due to the similarity of the training data sequences. Essentially, we presented price data for the last 5 months divided into 200 records and then predicted the price for the next month. We then slightly shifted the data forward by 1 hour, resulting in nearly identical sequences being fed to the model. Consequently, the model could easily predict the next month +1 hour, given its similarity to the previous predictions.
 
 However, this approach failed during validation, as the model's accuracy drastically dropped when applied to completely unseen test data. This highlights the importance of diversifying training sequences to avoid overfitting and improve the model's generalization capabilities. Further exploration and refinement of these parameters are necessary to develop a robust predictive model.
 
@@ -183,7 +184,7 @@ However, this approach failed during validation, as the model's accuracy drastic
 
 The foundational concept behind leveraging a Large Language Model (LLM) lies in its extensive knowledge about the world. Our objective was to determine optimal strategies to harness this knowledge, thereby enhancing our model's forecasting accuracy. Essentially, we aimed to bypass fine-tuning and instead focus on crafting the most effective task descriptions to elicit accurate predictions from the outset.
 
-Initially, we experimented with simply providing sequences of numbers, similar to our approach in other models. However, this method proved inadequate, as the responses were often off-target and lacked focus. Recognizing the need for a more sophisticated approach, we turned to autocorrelation analysis to identify recurring patterns within the data. By applying Fourier transformation, we identified the most significant patterns and selected the steps with the highest autocorrelation as our top_k features.
+Initially, we experimented with simply providing sequences of numbers, similar to our approach in other models. However, this method proved inadequate, as the responses were often off-target and lacked focus. Recognizing the need for a more sophisticated approach, we turned to autocorrelation analysis to identify recurring patterns within the data. By applying Fourier transformation, we identified the most significant patterns and selected the steps with the highest autocorrelation as our top\_k features.
 
 This method notably improved our accuracy, especially for datasets with clear seasonal patterns, such as electricity consumption over the year. For instance, electricity usage typically increases during the winter months and decreases during the summer, with similar trends repeating annually. However, our primary goal was to predict market movements, particularly in the forex market, which lacks such seasonal patterns. Stock prices, for example, tend to grow over the years rather than oscillate within a fixed range.
 
@@ -194,18 +195,18 @@ To address this challenge, we explored various analytical tools commonly used in
 \subsection{Indicators Used}
 
 \begin{itemize}
-    \item \textbf{Relative Strength Index (RSI)}: This momentum oscillator measures the speed and change of price movements. It oscillates between 0 and 100 and is typically used to identify overbought or oversold conditions in a market.
-    \item \textbf{Moving Average Convergence Divergence (MACD)}: This trend-following indicator shows the relationship between two moving averages of a security's price. The MACD is calculated by subtracting the 26-period Exponential Moving Average (EMA) from the 12-period EMA.
-    \item \textbf{Bollinger Bands (BBANDS)}: These volatility bands are placed above and below a moving average. Volatility is based on the standard deviation, which changes as volatility increases and decreases.
+	\item \textbf{Relative Strength Index (RSI)}: This momentum oscillator measures the speed and change of price movements. It oscillates between 0 and 100 and is typically used to identify overbought or oversold conditions in a market.
+	\item \textbf{Moving Average Convergence Divergence (MACD)}: This trend-following indicator shows the relationship between two moving averages of a security's price. The MACD is calculated by subtracting the 26-period Exponential Moving Average (EMA) from the 12-period EMA.
+	\item \textbf{Bollinger Bands (BBANDS)}: These volatility bands are placed above and below a moving average. Volatility is based on the standard deviation, which changes as volatility increases and decreases.
 \end{itemize}
 
-Incorporating these indicators yielded a substantial improvement in our model's performance. The accuracy of our predictions increased by over 2% on certain datasets, which is a significant enhancement in our context. This improvement underscores the value of integrating domain-specific indicators and leveraging the LLM's pre-existing knowledge to refine our forecasting model. Further detailed results will be discussed in the subsequent sections.
+Incorporating these indicators yielded a substantial improvement in our model's performance. The accuracy of our predictions increased by over 2\% on certain datasets, which is a significant enhancement in our context. This improvement underscores the value of integrating domain-specific indicators and leveraging the LLM's pre-existing knowledge to refine our forecasting model. Further detailed results will be discussed in the subsequent sections.
 
 \subsection{Possible Improvements}
 
 \subsection{Underlying LLM}
-The 7B LLaMa-2 model we used is significantly less powerful in comparison to 70B LLaMa-3 or even 70B LLama-2, as it follows from the official benchmarks. It would be interesting to see how the performance of the model would be affected by a more modern underlying LLM, however it would require significantly more computational resources as well as additional code that would allow us to run the program on multiple GPUs.  
+The 7B LLaMa-2 model we used is significantly less powerful in comparison to 70B LLaMa-3 or even 70B LLama-2, as it follows from the official benchmarks. It would be interesting to see how the performance of the model would be affected by a more modern underlying LLM, however it would require significantly more computational resources as well as additional code that would allow us to run the program on multiple GPUs.
 
-\subsection{Larget Training Set}
-The model was trained on datasets which contained less than 40000 records. It takes us approximately 12 hours to train the model on a dataset of this size. Training the model on a larger dataset would allow to fit more complex patterns in the datasets which could potentially be developing over a span of multiple years. 
+\subsection{Larger Training Set}
+The model was trained on datasets which contained less than 40000 records. It takes us approximately 12 hours to train the model on a dataset of this size. Training the model on a larger dataset would allow to fit more complex patterns in the datasets which could potentially be developing over a span of multiple years.
 \section{Results}
