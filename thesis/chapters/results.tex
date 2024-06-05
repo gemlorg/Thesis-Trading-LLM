@@ -1,37 +1,37 @@
-In this chapter we present the results in the following way: for each dataset described in \autoref{chap:other-models}, we present one table. The table presents accuracies each model achieves at predicting at predicting the price \verb|Prediction Timestep| into the future.
+In this chapter we present the results in the following way: for each dataset described in \autoref{chap:other-models}, we present one table. The table presents accuracies each model achieves at predicting the price \verb|Prediction Timestep| time into the future. Next to the name of each dataset is a tuple of the form (\verb|pred_len|, \verb|seq_step|) with which parameters the models were trained.
 
-Todo: describe parameters pred_len and seq_step
+% Todo: describe parameters pred\_len and seq\_step
 
-Datasets were tested with the following parameters:
-AAPL, 40, 1, (ostatni)
-BTCUSD, 5, 2, (ostatni)
-EURUSD, 7, 7, (ostatni)
-GBPCAD,  10, 7, (czwarty)
-GBPTRY, 5,  2, (pierwszy)
-Electricity, 6, 11,  (czwarty)
-US500, 10, 1, (dziewiąty)
+% Datasets were tested with the following parameters:
+% AAPL, 40, 1, (ostatni)
+% BTCUSD, 5, 2, (ostatni)
+% EURUSD, 7, 7, (ostatni)
+% GBPCAD,  10, 7, (czwarty)
+% GBPTRY, 5,  2, (pierwszy)
+% Electricity, 6, 11,  (czwarty)
+% US500, 10, 1, (dziewiąty)
 
-Todo: describe the process of preparing datasets.
+% Todo: describe the process of preparing datasets.
 
-Todo: describe measuring accuracy, the loss function.
+% Todo: describe measuring accuracy, the loss function.
 
 
 \begin{center}
-	\begin{tabular}{||l || c | c | c | c | c | c | c||}
+	\begin{tabular}{|| c || c | c | c | c | c | c | c||}
 		\hline
-		\multicolumn{8}{|c|}{Apple Stocks Dataset}                                                        \\
+		\multicolumn{8}{|c|}{Apple Stocks Dataset (40, 1)}                                                                                              \\
 		\hline
-		Prediction Timestep & Random forest & Logistic regression & SVM & MLP & CNN & ResNet & LLM        \\ [0.5ex]
+		\vtop{\hbox{\strut Prediction}\hbox{\strut timestep}} & \vtop{\hbox{\strut Logistic}\hbox{\strut regression}} & MLP & CNN & ResNet & LLM        \\ [0.5ex]
 		\hline\hline
-		8 days              & xy            & xy                  & xy  & xy  & xy  & xy     & 0.48047337 \\
+		8 days                                                & x                                                     & x   & x   & x      & 0.48047337 \\
 		\hline
-		16 days             & xy            & xy                  & xy  & xy  & xy  & xy     & 0.48742604 \\
+		16 days                                               & x                                                     & x   & x   & x      & 0.48742604 \\
 		\hline
-		24 days             & xy            & xy                  & xy  & xy  & xy  & xy     & 0.49630178 \\
+		24 days                                               & x                                                     & x   & x   & x      & 0.49630178 \\
 		\hline
-		32 days             & xy            & xy                  & xy  & xy  & xy  & xy     & 0.52204142 \\
+		32 days                                               & x                                                     & x   & x   & x      & 0.52204142 \\
 		\hline
-		40 days             & xy            & xy                  & xy  & xy  & xy  & xy     & 0.54985207 \\[1ex]
+		40 days                                               & x                                                     & x   & x   & x      & 0.54985207 \\[1ex]
 
 		\hline
 	\end{tabular}
@@ -39,118 +39,120 @@ Todo: describe measuring accuracy, the loss function.
 \begin{center}
 	\begin{tabular}{||l || c | c | c | c | c | c | c||}
 		\hline
-		\multicolumn{8}{|c|}{BTCUSD Dataset}                                                              \\
+		\multicolumn{8}{|c|}{BTCUSD Dataset (5, 2)}                                                                                                     \\
 		\hline
-		Prediction Timestep & Random forest & Logistic regression & SVM & MLP & CNN & ResNet & LLM        \\ [0.5ex]
+		\vtop{\hbox{\strut Prediction}\hbox{\strut timestep}} & \vtop{\hbox{\strut Logistic}\hbox{\strut regression}} & MLP & CNN & ResNet & LLM        \\ [0.5ex]
 		\hline\hline
-		2 hours             & xy            & xy                  & xy  & xy  & xy  & xy     & 0.50065963 \\
+		2 hours                                               & x                                                     & x   & x   & x      & 0.50065963 \\
 		\hline
-		4 hours             & xy            & xy                  & xy  & xy  & xy  & xy     & 0.5055409  \\
+		4 hours                                               & x                                                     & x   & x   & x      & 0.5055409  \\
 		\hline
-		6 hours             & xy            & xy                  & xy  & xy  & xy  & xy     & 0.5        \\
+		6 hours                                               & x                                                     & x   & x   & x      & 0.5        \\
 		\hline
-		8 hours             & xy            & xy                  & xy  & xy  & xy  & xy     & 0.50092348 \\
+		8 hours                                               & x                                                     & x   & x   & x      & 0.50092348 \\
 		\hline
-		10 hours            & xy            & xy                  & xy  & xy  & xy  & xy     & 0.50540897 \\[1ex]
+		10 hours                                              & x                                                     & x   & x   & x      & 0.50540897 \\[1ex]
 		\hline
 	\end{tabular}
 \end{center}
 \begin{center}
 	\begin{tabular}{||l || c | c | c | c | c | c | c||}
 		\hline
-		\multicolumn{8}{|c|}{EURUSD Dataset}                                                       \\
+		\multicolumn{8}{|c|}{EURUSD Dataset (7, 7)}                                                                                                                      \\
 		\hline
-		Prediction Timestep & Random forest & Logistic regression & SVM & MLP & CNN & ResNet & LLM \\ [0.5ex]
+		\vtop{\hbox{\strut Prediction}\hbox{\strut timestep}} & \vtop{\hbox{\strut Logistic}\hbox{\strut regression}} & MLP & CNN & ResNet & LLM                         \\ [0.5ex]
 		\hline\hline
-		t                   & xy            & xy                  & xy  & xy  & xy  & xy     & xy  \\
+		7 hours                                               & x                                                     & x   & x   & x      & 0.53251161                  \\
 		\hline
-		t                   & xy            & xy                  & xy  & xy  & xy  & xy     & xy  \\
+		14 hours                                              & x                                                     & x   & x   & x      & 0.53947839                  \\
 		\hline
-		t                   & xy            & xy                  & xy  & xy  & xy  & xy     & xy  \\
+		21 hours                                              & x                                                     & x   & x   & x      & 0.53483387                  \\
 		\hline
-		t                   & xy            & xy                  & xy  & xy  & xy  & xy     & xy  \\
+		28 hours                                              & x                                                     & x   & x   & x      & 0.543587                    \\
 		\hline
-		t                   & xy            & xy                  & xy  & xy  & xy  & xy     & xy  \\[1ex]
+		35 hours                                              & x                                                     & x   & x   & x      & 0.54608789                  \\[1ex]
 		\hline
-		t                   & xy            & xy                  & xy  & xy  & xy  & xy     & xy  \\[1ex]
+		42 hours                                              & x                                                     & x   & x   & x      & x          & x & 0.54322972 \\[1ex]
 		\hline
-		t                   & xy            & xy                  & xy  & xy  & xy  & xy     & xy  \\[1ex]
+		49 hours                                              & x                                                     & x   & x   & x      & x          & x & 0.55466238 \\[1ex]
 		\hline
 	\end{tabular}
 \end{center}
 \begin{center}
 	\begin{tabular}{||l || c | c | c | c | c | c | c||}
 		\hline
-		\multicolumn{8}{|c|}{GBPCAD Dataset}                                                       \\
+		\multicolumn{8}{|c|}{GBPCAD Dataset (10, 7)}                                                                                                    \\
 		\hline
-		Prediction Timestep & Random forest & Logistic regression & SVM & MLP & CNN & ResNet & LLM \\ [0.5ex]
+		\vtop{\hbox{\strut Prediction}\hbox{\strut timestep}} & \vtop{\hbox{\strut Logistic}\hbox{\strut regression}} & MLP & CNN & ResNet & LLM        \\ [0.5ex]
 		\hline\hline
-		t                   & xy            & xy                  & xy  & xy  & xy  & xy     & xy  \\
+		14 hours                                              & x                                                     & x   & x   & x      & 0.49019608 \\
 		\hline
-		t                   & xy            & xy                  & xy  & xy  & xy  & xy     & xy  \\
+		28 hours                                              & x                                                     & x   & x   & x      & 0.4954955  \\
 		\hline
-		t                   & xy            & xy                  & xy  & xy  & xy  & xy     & xy  \\
+		42 hours                                              & x                                                     & x   & x   & x      & 0.49218336 \\
 		\hline
-		t                   & xy            & xy                  & xy  & xy  & xy  & xy     & xy  \\
+		56 hours                                              & x                                                     & x   & x   & x      & 0.50688924 \\
 		\hline
-		t                   & xy            & xy                  & xy  & xy  & xy  & xy     & xy  \\[1ex]
+		70 hours                                              & x                                                     & x   & x   & x      & 0.5145734  \\[1ex]
 		\hline
 	\end{tabular}
 \end{center}
 \begin{center}
 	\begin{tabular}{||l || c | c | c | c | c | c | c||}
 		\hline
-		\multicolumn{8}{|c|}{GBPTRY Dataset}                                                       \\
+		\multicolumn{8}{|c|}{GBPTRY Dataset (5, 2)}                                                                                                     \\
 		\hline
-		Prediction Timestep & Random forest & Logistic regression & SVM & MLP & CNN & ResNet & LLM \\ [0.5ex]
+		\vtop{\hbox{\strut Prediction}\hbox{\strut timestep}} & \vtop{\hbox{\strut Logistic}\hbox{\strut regression}} & MLP & CNN & ResNet & LLM        \\ [0.5ex]
 		\hline\hline
-		t                   & xy            & xy                  & xy  & xy  & xy  & xy     & xy  \\
+		2 hours                                               & x                                                     & x   & x   & x      & 0.50529101 \\
 		\hline
-		t                   & xy            & xy                  & xy  & xy  & xy  & xy     & xy  \\
+		4 hours                                               & x                                                     & x   & x   & x      & 0.52962963 \\
 		\hline
-		t                   & xy            & xy                  & xy  & xy  & xy  & xy     & xy  \\
+		6 hours                                               & x                                                     & x   & x   & x      & 0.53862434 \\
 		\hline
-		t                   & xy            & xy                  & xy  & xy  & xy  & xy     & xy  \\
+		8 hours                                               & x                                                     & x   & x   & x      & 0.53333333 \\
 		\hline
-		t                   & xy            & xy                  & xy  & xy  & xy  & xy     & xy  \\[1ex]
+		10 hours                                              & x                                                     & x   & x   & x      & 0.54656085 \\[1ex]
 		\hline
 	\end{tabular}
 \end{center}
 \begin{center}
 	\begin{tabular}{||l || c | c | c | c | c | c | c||}
 		\hline
-		\multicolumn{8}{|c|}{Electricity Dataset}                                                  \\
+		\multicolumn{8}{|c|}{Electricity Dataset (6, 11)}                                                                                                                \\
 		\hline
-		Prediction Timestep & Random forest & Logistic regression & SVM & MLP & CNN & ResNet & LLM \\ [0.5ex]
+		\vtop{\hbox{\strut Prediction}\hbox{\strut timestep}} & \vtop{\hbox{\strut Logistic}\hbox{\strut regression}} & MLP & CNN & ResNet & LLM                         \\ [0.5ex]
 		\hline\hline
-		t                   & xy            & xy                  & xy  & xy  & xy  & xy     & xy  \\
+		11 hours                                              & x                                                     & x   & x   & x      & 0.61141304                  \\
 		\hline
-		t                   & xy            & xy                  & xy  & xy  & xy  & xy     & xy  \\
+		22 hours                                              & x                                                     & x   & x   & x      & 0.66440217                  \\
 		\hline
-		t                   & xy            & xy                  & xy  & xy  & xy  & xy     & xy  \\
+		33 hours                                              & x                                                     & x   & x   & x      & 0.69429348                  \\
 		\hline
-		t                   & xy            & xy                  & xy  & xy  & xy  & xy     & xy  \\
+		44 hours                                              & x                                                     & x   & x   & x      & 0.72894022                  \\
 		\hline
-		t                   & xy            & xy                  & xy  & xy  & xy  & xy     & xy  \\[1ex]
+		55 hours                                              & x                                                     & x   & x   & x      & 0.72214674                  \\
+		\hline
+		66 hours                                              & x                                                     & x   & x   & x      & x          & x & 0.68783967 \\[1ex]
 		\hline
 	\end{tabular}
 \end{center}
 \begin{center}
 	\begin{tabular}{||l || c | c | c | c | c | c | c||}
 		\hline
-		\multicolumn{8}{|c|}{US500 Dataset}                                                        \\
+		\multicolumn{8}{|c|}{US500 Dataset (10, 1)}                                                                                                     \\
 		\hline
-		Prediction Timestep & Random forest & Logistic regression & SVM & MLP & CNN & ResNet & LLM \\ [0.5ex]
+		\vtop{\hbox{\strut Prediction}\hbox{\strut timestep}} & \vtop{\hbox{\strut Logistic}\hbox{\strut regression}} & MLP & CNN & ResNet & LLM        \\ [0.5ex]
 		\hline\hline
-		t                   & xy            & xy                  & xy  & xy  & xy  & xy     & xy  \\
+		2 hour                                                & x                                                     & x   & x   & x      & 0.50804829 \\
 		\hline
-		t                   & xy            & xy                  & xy  & xy  & xy  & xy     & xy  \\
+		4 hours                                               & x                                                     & x   & x   & x      & 0.51810865 \\
 		\hline
-		t                   & xy            & xy                  & xy  & xy  & xy  & xy     & xy  \\
+		6 hours                                               & x                                                     & x   & x   & x      & 0.53420523 \\
 		\hline
-		t                   & xy            & xy                  & xy  & xy  & xy  & xy     & xy  \\
+		8 hours                                               & x                                                     & x   & x   & x      & 0.52867203 \\
 		\hline
-		t                   & xy            & xy                  & xy  & xy  & xy  & xy     & xy  \\[1ex]
+		10 hours                                              & x                                                     & x   & x   & x      & 0.53370221 \\[1ex]
 		\hline
 	\end{tabular}
 \end{center}

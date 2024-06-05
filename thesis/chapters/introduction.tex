@@ -1,7 +1,13 @@
 \section{Overview}
 In the world of stock markets a major problem is the apparent incalculability of the complex network of factors e.g. how stock prices of one company affect those of another. As the environment of stock markets becomes more and more complex, the ability to analise and confidently predict its future becomes of crucial importance for traders, investors and researchers.
 
-With the recent advent of generative AI and the demonstrable power of Large Language Models a question arises of how these can be used to accurately analise and predict time series market prices in different environments. Therefore, this thesis presents our work on the subject.
+With the recent advent of generative AI and the demonstrable power of Large Language Models a question arises of if and how these can be used to accurately analise and predict time series market prices in different environments. This thesis presents our work on the subject.
+
+% TODO: reformulate the following paragraph
+We consider the following problem: given a sequence of historical observations \(X \in \R^{N\times T}\)
+consisting of \(N\) different 1-dimensional variables across \(T\) time steps, we aim to reprogram a large
+language model \(f(\cdot)\) to understand the input time series and accurately forecast the readings at \(H\) future time steps, denoted by \(\hat{Y} \in \R^{N\times H}\) , with the overall objective to minimize the mean square errors between the expected outputs \(Y\) and predictions, i.e., \(\frac1H \sum_{h=1}^H \| \hat{Y}_h - Y_h \|_F^2 \).
+
 \section{Contributions}
 \section{Outline}
 First, we look at what work has already been done in the field of LLM time series prediction, in particular what techniques of fine-tuning and input data transformation were used. Then we look at how different, smaller machine learning models deal with time series prediction.

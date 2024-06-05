@@ -2,7 +2,7 @@
 Here we present our results from trying to use the following models to extrapolate a time series.
 Classification models output in binary categories: increase or decrease in value, and are therefore less precise.
 
-In the below descriptions, \textbf{overfitting} refers to a phenomenon when model learns from the training data too closely or exactly, thereby making it less generalisable to new data. See  figure  \autoref{fig:overfitting}. Figure and description are both due to Wikipedia \cite{overfitting}.
+In the below descriptions, \textbf{overfitting} refers to a phenomenon when model learns from the training data too closely or exactly, thereby making it less generalisable to new data. See  figure  \autoref{fig:overfitting} for an illustration of the phenomenon. Figure and description are both due to Wikipedia \cite{overfitting}.
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.5\linewidth]{"pictures/overfitted_data.png"}
@@ -40,7 +40,6 @@ A random forest \cite{random_forest} is a machine learning model for classificat
 The error of forest prediction converges as such as the quantity of trees in the forest increases. The error of forest prediction depends negatively on the accuracy of individual trees and positively on the correlation between them.
 
 An individual tree is constructed in the following way: a \textbf{sample} - random subset of the dataset - is selected. This and only this subset is used in growing the tree.
-% TODO: Describe this process more precisely
 Then, for each node, a random subset of features is chosen. A best split is chosen using the \verb|criterion| function, based on the chosen features of the sample. Then each tree is grown to maximum depth (until all leaves have one datapoint, for classifier trees).
 
 Below is the list of parameters that influence the growth of trees:
@@ -67,8 +66,8 @@ Below is the list of parameters that influence the growth of trees:
 % error rates that compare favorably to Adaboost
 % (Freund and Schapire[1996]), but are more robust with respect to noise. Internal estimates monitor error, strength, and correlation and these are used to show the response to increasing the number of features used in the splitting. Internal estimates are also used to measure variable importance. These ideas are also applicable to regression.
 
-\subsection{Results}
-TBA
+% \subsection{Results}
+% TBA
 % % TODO reference to the data sets chapter
 % The model was trained and tested on the simple property sales dataset.
 % The model was trained to classify whether the next price will be higher or lower than the previous one, based on the sequence of prices spanning the last \verb|num_lags| days.
@@ -160,8 +159,8 @@ The optimal parameters \(\beta\) are estimated by maximizing the log-likelihood 
 % % TODO: what is the Maximum Likelihood Function?
 % During training the parameters \(B_0, B_1, \ldots, B_n\) are chosen using Maximum Likelihood Estimation function, so that the results of the \(Y\) function best fit the training dataset.
 
-\subsection{Results}
-TBA
+% \subsection{Results}
+% TBA
 
 
 % Two models have been trained.
@@ -259,8 +258,8 @@ For non-linearly separable data, SVM can employ kernel functions to map the inpu
 
 % What was used is Support Vector Regression, which is a modification of the idea of Support Vector Machine for the purposes of regression tasks, where instead of finding a hyperplane, 
 
-\subsection{Results}
-TBA
+% \subsection{Results}
+% TBA
 
 % The model was tested using two metrics: Mean Squared Error and R-squared.
 
@@ -357,8 +356,8 @@ Similar updates are made for the biases.
 
 Through iterative training involving forward propagation, loss calculation, and backpropagation, the MLP learns to approximate the function that maps data inputs to desired predictions.
 
-\subsection{Results}
-TBA
+% \subsection{Results}
+% TBA
 % % TODO This does not make sense if you test different models on different data sets.
 % The model has been trained and tested on the google dataset.
 % The results can be seen below (Fig \ref{fig:mlp}).
@@ -437,8 +436,8 @@ A simple diagram of the layers can be seen on figure \autoref{fig:cnn-diagram} (
 
 \end{figure}
 
-\subsection{Results}
-TBA
+% \subsection{Results}
+% TBA
 % The CNN model has been trained and tested on the simple house sales data.
 
 
@@ -476,8 +475,8 @@ The primary advantage of this architecture is its ability to facilitate the trai
 % The idea is that instead of learning the original mapping of input to output, residual blocks
 % learn the difference between output and input, which is called the residual function.
 
-\subsection{Results}
-TBA
+% \subsection{Results}
+% TBA
 
 % This model has been trained on GBP/CAD dataset in two versions: not pretrained and pretrained.
 
