@@ -158,11 +158,20 @@ In this study, we employed a set of distinctive parameters for our model trainin
 \begin{itemize}
 	\item \textbf{seq\_len} – This parameter defines the number of records in one prompt to the model.
 	\item \textbf{pred\_len} – This parameter specifies the number of records to predict.
-	\item \textbf{seq\_step} – This parameter determines the step size in records to move the prompt. For instance, if \textit{seq\_step} is set to 4, the records would be indexed as 0, 4, 8, and so on. This approach was essential in filtering out noise caused by hourly fluctuations, significantly enhancing the results.
-	\item \textbf{lradj} - Describes whic strategy should be used to adjust the learning rate, e.g. \textbf{type1} implies $lr_{n+1} = lr_{n} * 0.5$.
+	\item \textbf{seq_step} – This parameter determines the interval at which records are selected during iteration. For example, if \textit{seq_step} is set to 4, the records would be indexed as 0, 4, 8, and so on. This means that instead of processing every single record sequentially, you only process every fourth record, like 0, 4, 8, etc., and then 1, 5, 9, etc. This method helps in reducing noise caused by hourly fluctuations, significantly improving the accuracy of the results.
+	\item \textbf{learning\_rate} – This parameter controls the speed of learning. Lower values mean slower, more stable learning, while higher values mean faster, but potentially unstable, learning.
+	\item \textbf{lradj} - This parameter specifies the strategy for adjusting the learning rate during training. Each strategy modifying the learning rate according to a predefined pattern or schedule.
 	\item \textbf{n\_heads} - number of heads in the multi-head attention mechanism.
 	\item \textbf{d\_ff} - number of neurons in the feed forward layer.
 \end{itemize}
+
+### Types of \textbf{lradj}:
+- **type1**: The learning rate is halved after each epoch.
+- **type2**: The learning rate changes at specific epochs to predefined values: 2 (5e-5), 4 (1e-5), 6 (5e-6), 8 (1e-6), 10 (5e-7), 15 (1e-7), 20 (5e-8).
+- **type3**: The learning rate remains the same for the first epoch and then decreases by 30% after each subsequent epoch.
+- **PEMS**: The learning rate decreases by 10% after each epoch.
+- **TST**: The learning rate is adjusted according to the scheduler’s last learning rate.
+- **constant**: The learning rate remains constant throughout the training process.
 
 \subsection{Impact on Results}
 The effectiveness of these parameters is highly contingent upon the specific dataset in use. For datasets characterized by high volatility and a high frequency of records, a smaller \textit{seq\_step} is preferable. Conversely, for data that remains relatively stable over time, a larger \textit{seq\_step} is necessary to prevent the model from merely replicating the last observed value.
@@ -184,23 +193,123 @@ However, this approach failed during validation, as the model's accuracy drastic
 
 The foundational concept behind leveraging a Large Language Model (LLM) lies in its extensive knowledge about the world. Our objective was to determine optimal strategies to harness this knowledge, thereby enhancing our model's forecasting accuracy. Essentially, we aimed to bypass fine-tuning and instead focus on crafting the most effective task descriptions to elicit accurate predictions from the outset.
 
-Initially, we experimented with simply providing sequences of numbers, similar to our approach in other models. However, this method proved inadequate, as the responses were often off-target and lacked focus. Recognizing the need for a more sophisticated approach, we turned to autocorrelation analysis to identify recurring patterns within the data. By applying Fourier transformation, we identified the most significant patterns and selected the steps with the highest autocorrelation as our top\_k features.
+Initially, we experimented with simply providing sequences of numbers, similar to our approach in other models. However, it became apparent that the model was not trained to understand numerical series in this way. Just as a random person would not understand a sequence of numbers without context, the model's responses often included random numbers, and for longer sequences, it tends to frequently repeated the last number. 
+Recognizing the need for a more sophisticated approach, we turned to autocorrelation analysis to identify recurring patterns within the data. Here’s a detailed explanation of how it works:
 
-This method notably improved our accuracy, especially for datasets with clear seasonal patterns, such as electricity consumption over the year. For instance, electricity usage typically increases during the winter months and decreases during the summer, with similar trends repeating annually. However, our primary goal was to predict market movements, particularly in the forex market, which lacks such seasonal patterns. Stock prices, for example, tend to grow over the years rather than oscillate within a fixed range.
+1. **Fourier Transformation**: We apply the Fourier transform to the input data \( x_{\text{enc}} \) to convert it from the time domain to the frequency domain. This helps in identifying patterns by analyzing the frequency components of the data.
+
+    Let \( X(f) \) be the Fourier transform of \( x_{\text{enc}} \). The transformation is defined as:
+
+    \[
+    X(f) = \sum_{t=0}^{N-1} x_{\text{enc}}(t) e^{-i 2 \pi f t / N}
+    \]
+
+    In our case, the input data is permuted and transformed:
+
+    \[
+    q_{\text{fft}} = \text{FFT}(x_{\text{enc}}) \quad \text{and} \quad k_{\text{fft}} = \text{FFT}(x_{\text{enc}})
+    \]
+
+2. **Cross-Spectral Density**: We compute the cross-spectral density by multiplying the Fourier-transformed data with the complex conjugate of itself. This step helps in identifying the strength and phase relationship between different frequencies.
+
+    \[
+    R(f) = q_{\text{fft}}(f) \cdot k_{\text{fft}}^*(f)
+    \]
+
+    where \( k_{\text{fft}}^*(f) \) denotes the complex conjugate of \( k_{\text{fft}}(f) \).
+
+3. **Inverse Fourier Transformation**: We then apply the inverse Fourier transform to convert the data back to the time domain. This results in the autocorrelation function, which shows how the data correlates with itself at different lags.
+
+    \[
+    r(t) = \text{IFFT}(R(f))
+    \]
+
+4. **Mean Autocorrelation**: We calculate the mean of the autocorrelation across all data points to get a single autocorrelation function that represents the overall pattern in the data.
+
+    \[
+    \bar{r}(t) = \frac{1}{M} \sum_{m=1}^{M} r_m(t)
+    \]
+
+    where \( M \) is the number of data points.
+
+5. **Top-k Features**: Finally, we select the top-k lags with the highest autocorrelation values. These lags represent the steps at which the data shows the most significant recurring patterns.
+
+    We identify the top-k lags by finding the indices of the highest values in the mean autocorrelation function:
+
+    \[
+    \text{lags} = \text{argsort}(\bar{r}(t))[:k]
+    \]
+
+By using this method, we were able to identify and select the steps with the highest autocorrelation, effectively capturing the most significant patterns in the data.
+
+This method significantly improved our accuracy, particularly for datasets with clear seasonal patterns. For example, electricity consumption exhibits strong seasonal patterns both annually and daily. Over the course of a year, electricity usage typically increases during the winter months and decreases during the summer. Similarly, daily patterns show higher usage during daylight hours and lower usage at night.
+
+However, our primary goal was to predict market movements, especially in the forex market, which lacks such strong and clear seasonal patterns in shorter time frames. While financial markets do exhibit some seasonal trends, these are not as pronounced or consistent. Forex market movements and stock prices, for instance, tend to show more long-term growth trends and variability, rather than oscillating within a fixed range or displaying consistent short-term patterns.
 
 To address this challenge, we explored various analytical tools commonly used in trading. Numerous indicators are designed to forecast future prices, based on factors such as moving averages, trading volume, and price trends. We decided to incorporate three widely-used indicators: Relative Strength Index (RSI), Moving Average Convergence Divergence (MACD), and Bollinger Bands (BBANDS). These indicators, already familiar to the model due to its pre-existing knowledge, significantly enhanced its predictive capabilities.
-
-
 
 \subsection{Indicators Used}
 
 \begin{itemize}
-	\item \textbf{Relative Strength Index (RSI)}: This momentum oscillator measures the speed and change of price movements. It oscillates between 0 and 100 and is typically used to identify overbought or oversold conditions in a market.
-	\item \textbf{Moving Average Convergence Divergence (MACD)}: This trend-following indicator shows the relationship between two moving averages of a security's price. The MACD is calculated by subtracting the 26-period Exponential Moving Average (EMA) from the 12-period EMA.
-	\item \textbf{Bollinger Bands (BBANDS)}: These volatility bands are placed above and below a moving average. Volatility is based on the standard deviation, which changes as volatility increases and decreases.
+    \item \textbf{Relative Strength Index (RSI)}: This momentum oscillator measures the speed and change of price movements. It oscillates between 0 and 100 and is typically used to identify overbought or oversold conditions in a market. The RSI is calculated using the formula:
+
+    \[
+    RSI = 100 - \frac{100}{1 + RS}
+    \]
+
+    where \( RS \) (Relative Strength) is the average gain of up periods during the specified time frame divided by the average loss of down periods during the specified time frame:
+
+    \[
+    RS = \frac{\text{Average Gain}}{\text{Average Loss}}
+    \]
+
+    \item \textbf{Moving Average Convergence Divergence (MACD)}: This trend-following indicator shows the relationship between two moving averages of a security's price. The MACD is calculated by subtracting the 26-period Exponential Moving Average (EMA) from the 12-period EMA:
+
+    \[
+    \text{MACD} = \text{EMA}_{12} - \text{EMA}_{26}
+    \]
+
+    Additionally, a 9-period EMA of the MACD, called the "signal line," is plotted on top of the MACD to function as a trigger for buy and sell signals:
+
+    \[
+    \text{Signal Line} = \text{EMA}_{9}(\text{MACD})
+    \]
+
+    The MACD histogram, which represents the difference between the MACD and the signal line, is often used to identify potential buy and sell points:
+
+    \[
+    \text{MACD Histogram} = \text{MACD} - \text{Signal Line}
+    \]
+
+    \item \textbf{Bollinger Bands (BBANDS)}: These volatility bands are placed above and below a moving average. Volatility is based on the standard deviation, which changes as volatility increases and decreases. Bollinger Bands consist of three lines:
+
+    \begin{itemize}
+        \item Middle Band: a simple moving average (SMA) of the security's price over \( N \) periods:
+
+        \[
+        \text{Middle Band} = \text{SMA}_{N}
+        \]
+
+        \item Upper Band: the middle band plus \( k \) times the standard deviation (\( \sigma \)) over the same period:
+
+        \[
+        \text{Upper Band} = \text{SMA}_{N} + k\sigma
+        \]
+
+        \item Lower Band: the middle band minus \( k \) times the standard deviation (\( \sigma \)) over the same period:
+
+        \[
+        \text{Lower Band} = \text{SMA}_{N} - k\sigma
+        \]
+
+        where \( N \) is the number of periods for the moving average and \( k \) is a multiplier, typically set to 2.
+    \end{itemize}
+
 \end{itemize}
 
-Incorporating these indicators yielded a substantial improvement in our model's performance. The accuracy of our predictions increased by over 2\% on certain datasets, which is a significant enhancement in our context. This improvement underscores the value of integrating domain-specific indicators and leveraging the LLM's pre-existing knowledge to refine our forecasting model. Further detailed results will be discussed in the subsequent sections.
+By incorporating these indicators, we enhanced the model's ability to predict market movements. The RSI helps identify overbought and oversold conditions, the MACD provides insights into price trends and momentum, and Bollinger Bands measure market volatility. This comprehensive approach allowed us to capture various aspects of market behavior, leading to improved predictive performance.
+
+Incorporating these indicators yielded a substantial improvement in our model's performance. The accuracy of our predictions increased by over 2\% on certain datasets, highlighting the value of integrating domain-specific indicators and leveraging the LLM's pre-existing knowledge. Detailed results will be discussed in the subsequent sections.
 
 \subsection{Possible Improvements}
 
