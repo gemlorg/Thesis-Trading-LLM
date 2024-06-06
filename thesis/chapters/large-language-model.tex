@@ -27,7 +27,7 @@ The following vocabulary is used:
 
 \section{Overview}
 
-A Large Language Model (LLM) \cite{llmintro} is a language model that is pretrained on a large collection of data (usually millions of tokens).
+A Large Language Model (LLM) \cite{llmintro} is a language model that is pretrained on a large collection of data (usually billions of tokens).
 %an advanced artificial intelligence system designed to understand and generate human-like text based on patterns it learns from enormous amounts of textual data.
 These models utilize deep learning techniques, particularly neural networks, which consist of interconnected neuron layers that process information sequentially, one by one.
 The predominant architecture underpinning most contemporary LLMs is the Transformer (see below), notable for its self-attention mechanism that enables the model to assess the importance of different tokens in a sentence irrespective of the order the tokens are in.
@@ -56,21 +56,21 @@ The Transformer is a type of neural network architecture introduced in the semin
 The Transformer (fig \autoref{fig:transformer_architecture_fig}) consists of the following components:
 
 \begin{enumerate}
-	\item \textbf{Input Embedding}: Converts input tokens into vectors
+	\item \textbf{Input Embedding}: Converts input tokens into vectors.
 	\item \textbf{Positional Encoding}: Adds positional information to the embeddings to retain the order of the sequence. This encoding is another high-dimensional vector.
 	\item \textbf{Encoder} (\autoref{fig:transformer_architecture_fig} the left):
 	      \begin{itemize}
-		      \item Consists of \(N = 6\)\footnote{\cite{attention_is_all_you_need}, section 3.1)} layers.
+		      \item Consists of \(N = 6\) layers\footnote{\cite{attention_is_all_you_need}, section 3.1}.
 		      \item Each layer has two sub-layers:
 		            \begin{itemize}
-			            \item \textbf{Multi-Head Attention}: Applies attention mechanism over the input. For each token calculates the weight or importance of over tokens in the surrounding context (\textit{Attention}). Does so independently with \(h\)\footnote{In \cite{attention_is_all_you_need}, \(h = 6\)} 'heads', each calculating different semantic relantionships (\textit{Multi-Head}). The results are concatenated and linearly transformed into size of one output (as if from one head).
+			            \item \textbf{Multi-Head Attention}: Applies attention mechanism over the input. For each token calculates the weight or importance of over tokens in the surrounding context (\textit{Attention}). Does so independently with \(h\) 'heads'\footnote{In \cite{attention_is_all_you_need}, \(h = 6\)}, each calculating different semantic relantionships (\textit{Multi-Head}). The results are concatenated and linearly transformed into size of one output (as if from one head).
 			            \item \textbf{Feed Forward}: Applies a fully connected feed-forward neural network.
 		            \end{itemize}
 		      \item \textbf{Add \& Norm}: Residual connections followed by layer normalization after each sub-layer.
 	      \end{itemize}
 	\item \textbf{Decoder} (\autoref{fig:transformer_architecture_fig}, on the right):
 	      \begin{itemize}
-		      \item Also consists of \(N = 6\)\footnote{\cite{attention_is_all_you_need}, section 3.1)} layers.
+		      \item Also consists of \(N = 6\) layers\footnote{\cite{attention_is_all_you_need}, section 3.1}.
 		      \item Each layer has three sub-layers:
 		            \begin{itemize}
 			            \item \textbf{Masked Multi-Head Attention}: As in Encoder, but masked, i.e. attention results for future tokens are disarded - .
@@ -122,19 +122,20 @@ The main idea involves using a framework around a frozen LLM (i.e. one that is n
 
 
 
-The following three paragraphs come from the article.
+The following three paragraphs come from the article.\cite{reprogramming_llm}
+
 % TODO: This paragraph/problem may also be described earlier, e.g. in introduction.
-We consider the following problem: given a sequence of historical observations \(X \in \R^{N\times T}\)
-consisting of \(N\) different 1-dimensional variables across \(T\) time steps, we aim to reprogram a large
-language model \(f(\cdot)\) to understand the input time series and accurately forecast the readings at \(H\) future time steps, denoted by \(\hat{Y} \in \R^{N\times H}\) , with the overall objective to minimize the mean square errors between the expected outputs \(Y\) and predictions, i.e., \(\frac1H \sum_{h=1}^H \| \hat{Y}_h - Y_h \|_F^2 \).
+\textit{We consider the following problem: given a sequence of historical observations \(X \in \R^{N\times T}\)
+	consisting of \(N\) different 1-dimensional variables across \(T\) time steps, we aim to reprogram a large
+	language model \(f(\cdot)\) to understand the input time series and accurately forecast the readings at \(H\) future time steps, denoted by \(\hat{Y} \in \R^{N\times H}\) , with the overall objective to minimize the mean square errors between the expected outputs \(Y\) and predictions, i.e., \(\frac1H \sum_{h=1}^H \| \hat{Y}_h - Y_h \|_F^2 \).}
 
 % TODO: normalization, patching, embedding - explain
-The method encompasses three main components: (1) input transformation, (2) a pre-trained and frozen LLM, and (3) output projection. Initially, a multifeature time series is partitioned into \(N\) unifeature time series, which are subsequently processed independently (Nie et al., 2023) \cite{nie_et_al}.
-The i-th series is denoted as \(X(i) \in \R^{1\times T}\) , which undergoes normalization, patching, and embedding prior to being reprogrammed with learned text prototypes to align the source and target modalities.
-Then, we augment the LLM’s time series reasoning ability by prompting it together with the transformed series to generate output representations, which are projected to the final forecasts \(\hat{Y}^{(i)} \in \R^{1\times H}\) .
+\textit{The method encompasses three main components: (1) input transformation, (2) a pre-trained and frozen LLM, and (3) output projection. Initially, a multifeature time series is partitioned into \(N\) unifeature time series, which are subsequently processed independently (Nie et al., 2023) \cite{nie_et_al}.
+	The i-th series is denoted as \(X(i) \in \R^{1\times T}\) , which undergoes normalization, patching, and embedding prior to being reprogrammed with learned text prototypes to align the source and target modalities.
+	Then, we augment the LLM’s time series reasoning ability by prompting it together with the transformed series to generate output representations, which are projected to the final forecasts \(\hat{Y}^{(i)} \in \R^{1\times H}\) .}
 
-We note that only the parameters of the lightweight input transformation and output projection are updated, while the backbone language model is frozen.
-In contrast to vision-language and other multimodal language models, which usually fine-tune with paired cross-modality data, this use of model is directly optimized and becomes readily available with only a small set of time series and a few  training epochs, maintaining high efficiency and imposing fewer resource constraints compared to building large domain-specific models from scratch or fine-tuning them.
+\textit{We note that only the parameters of the lightweight input transformation and output projection are updated, while the backbone language model is frozen.
+	In contrast to vision-language and other multimodal language models, which usually fine-tune with paired cross-modality data, this use of model is directly optimized and becomes readily available with only a small set of time series and a few  training epochs, maintaining high efficiency and imposing fewer resource constraints compared to building large domain-specific models from scratch or fine-tuning them.}
 
 \section{Our methodology}
 In the current and the next few sections we will share the details of our implementation. The goal is to further elaborate on the idea presented in the previous section and describe the specifics and challenges of our approach. \\
@@ -158,14 +159,14 @@ In this study, we employed a set of distinctive parameters for our model trainin
 \begin{itemize}
 	\item \textbf{seq\_len} – This parameter defines the number of records in one prompt to the model.
 	\item \textbf{pred\_len} – This parameter specifies the number of records to predict.
-	\item \textbf{seq_step} – This parameter determines the interval at which records are selected during iteration. For example, if \textit{seq_step} is set to 4, the records would be indexed as 0, 4, 8, and so on. This means that instead of processing every single record sequentially, you only process every fourth record, like 0, 4, 8, etc., and then 1, 5, 9, etc. This method helps in reducing noise caused by hourly fluctuations, significantly improving the accuracy of the results.
+	\item \textbf{seq\_step} – This parameter determines the interval at which records are selected during iteration. For example, if \textit{seq\_step} is set to 4, the records would be indexed as 0, 4, 8, and so on. This means that instead of processing every single record sequentially, you only process every fourth record, like 0, 4, 8, etc., and then 1, 5, 9, etc. This method helps in reducing noise caused by hourly fluctuations, significantly improving the accuracy of the results.
 	\item \textbf{learning\_rate} – This parameter controls the speed of learning. Lower values mean slower, more stable learning, while higher values mean faster, but potentially unstable, learning.
 	\item \textbf{lradj} - This parameter specifies the strategy for adjusting the learning rate during training. Each strategy modifying the learning rate according to a predefined pattern or schedule.
 	\item \textbf{n\_heads} - number of heads in the multi-head attention mechanism.
 	\item \textbf{d\_ff} - number of neurons in the feed forward layer.
 \end{itemize}
 
-### Types of \textbf{lradj}:
+\subsection{Types of \textbf{lradj}}:
 - **type1**: The learning rate is halved after each epoch.
 - **type2**: The learning rate changes at specific epochs to predefined values: 2 (5e-5), 4 (1e-5), 6 (5e-6), 8 (1e-6), 10 (5e-7), 15 (1e-7), 20 (5e-8).
 - **type3**: The learning rate remains the same for the first epoch and then decreases by 30% after each subsequent epoch.
@@ -193,52 +194,52 @@ However, this approach failed during validation, as the model's accuracy drastic
 
 The foundational concept behind leveraging a Large Language Model (LLM) lies in its extensive knowledge about the world. Our objective was to determine optimal strategies to harness this knowledge, thereby enhancing our model's forecasting accuracy. Essentially, we aimed to bypass fine-tuning and instead focus on crafting the most effective task descriptions to elicit accurate predictions from the outset.
 
-Initially, we experimented with simply providing sequences of numbers, similar to our approach in other models. However, it became apparent that the model was not trained to understand numerical series in this way. Just as a random person would not understand a sequence of numbers without context, the model's responses often included random numbers, and for longer sequences, it tends to frequently repeated the last number. 
+Initially, we experimented with simply providing sequences of numbers, similar to our approach in other models. However, it became apparent that the model was not trained to understand numerical series in this way. Just as a random person would not understand a sequence of numbers without context, the model's responses often included random numbers, and for longer sequences, it tends to frequently repeated the last number.
 Recognizing the need for a more sophisticated approach, we turned to autocorrelation analysis to identify recurring patterns within the data. Here’s a detailed explanation of how it works:
 
 1. **Fourier Transformation**: We apply the Fourier transform to the input data \( x_{\text{enc}} \) to convert it from the time domain to the frequency domain. This helps in identifying patterns by analyzing the frequency components of the data.
 
-    Let \( X(f) \) be the Fourier transform of \( x_{\text{enc}} \). The transformation is defined as:
+Let \( X(f) \) be the Fourier transform of \( x_{\text{enc}} \). The transformation is defined as:
 
-    \[
-    X(f) = \sum_{t=0}^{N-1} x_{\text{enc}}(t) e^{-i 2 \pi f t / N}
-    \]
+\[
+	X(f) = \sum_{t=0}^{N-1} x_{\text{enc}}(t) e^{-i 2 \pi f t / N}
+\]
 
-    In our case, the input data is permuted and transformed:
+In our case, the input data is permuted and transformed:
 
-    \[
-    q_{\text{fft}} = \text{FFT}(x_{\text{enc}}) \quad \text{and} \quad k_{\text{fft}} = \text{FFT}(x_{\text{enc}})
-    \]
+\[
+	q_{\text{fft}} = \text{FFT}(x_{\text{enc}}) \quad \text{and} \quad k_{\text{fft}} = \text{FFT}(x_{\text{enc}})
+\]
 
 2. **Cross-Spectral Density**: We compute the cross-spectral density by multiplying the Fourier-transformed data with the complex conjugate of itself. This step helps in identifying the strength and phase relationship between different frequencies.
 
-    \[
-    R(f) = q_{\text{fft}}(f) \cdot k_{\text{fft}}^*(f)
-    \]
+\[
+	R(f) = q_{\text{fft}}(f) \cdot k_{\text{fft}}^*(f)
+\]
 
-    where \( k_{\text{fft}}^*(f) \) denotes the complex conjugate of \( k_{\text{fft}}(f) \).
+where \( k_{\text{fft}}^*(f) \) denotes the complex conjugate of \( k_{\text{fft}}(f) \).
 
 3. **Inverse Fourier Transformation**: We then apply the inverse Fourier transform to convert the data back to the time domain. This results in the autocorrelation function, which shows how the data correlates with itself at different lags.
 
-    \[
-    r(t) = \text{IFFT}(R(f))
-    \]
+\[
+	r(t) = \text{IFFT}(R(f))
+\]
 
 4. **Mean Autocorrelation**: We calculate the mean of the autocorrelation across all data points to get a single autocorrelation function that represents the overall pattern in the data.
 
-    \[
-    \bar{r}(t) = \frac{1}{M} \sum_{m=1}^{M} r_m(t)
-    \]
+\[
+	\bar{r}(t) = \frac{1}{M} \sum_{m=1}^{M} r_m(t)
+\]
 
-    where \( M \) is the number of data points.
+where \( M \) is the number of data points.
 
 5. **Top-k Features**: Finally, we select the top-k lags with the highest autocorrelation values. These lags represent the steps at which the data shows the most significant recurring patterns.
 
-    We identify the top-k lags by finding the indices of the highest values in the mean autocorrelation function:
+We identify the top-k lags by finding the indices of the highest values in the mean autocorrelation function:
 
-    \[
-    \text{lags} = \text{argsort}(\bar{r}(t))[:k]
-    \]
+\[
+	\text{lags} = \text{argsort}(\bar{r}(t))[:k]
+\]
 
 By using this method, we were able to identify and select the steps with the highest autocorrelation, effectively capturing the most significant patterns in the data.
 
@@ -251,59 +252,59 @@ To address this challenge, we explored various analytical tools commonly used in
 \subsection{Indicators Used}
 
 \begin{itemize}
-    \item \textbf{Relative Strength Index (RSI)}: This momentum oscillator measures the speed and change of price movements. It oscillates between 0 and 100 and is typically used to identify overbought or oversold conditions in a market. The RSI is calculated using the formula:
+	\item \textbf{Relative Strength Index (RSI)}: This momentum oscillator measures the speed and change of price movements. It oscillates between 0 and 100 and is typically used to identify overbought or oversold conditions in a market. The RSI is calculated using the formula:
 
-    \[
-    RSI = 100 - \frac{100}{1 + RS}
-    \]
+	      \[
+		      RSI = 100 - \frac{100}{1 + RS}
+	      \]
 
-    where \( RS \) (Relative Strength) is the average gain of up periods during the specified time frame divided by the average loss of down periods during the specified time frame:
+	      where \( RS \) (Relative Strength) is the average gain of up periods during the specified time frame divided by the average loss of down periods during the specified time frame:
 
-    \[
-    RS = \frac{\text{Average Gain}}{\text{Average Loss}}
-    \]
+	      \[
+		      RS = \frac{\text{Average Gain}}{\text{Average Loss}}
+	      \]
 
-    \item \textbf{Moving Average Convergence Divergence (MACD)}: This trend-following indicator shows the relationship between two moving averages of a security's price. The MACD is calculated by subtracting the 26-period Exponential Moving Average (EMA) from the 12-period EMA:
+	\item \textbf{Moving Average Convergence Divergence (MACD)}: This trend-following indicator shows the relationship between two moving averages of a security's price. The MACD is calculated by subtracting the 26-period Exponential Moving Average (EMA) from the 12-period EMA:
 
-    \[
-    \text{MACD} = \text{EMA}_{12} - \text{EMA}_{26}
-    \]
+	      \[
+		      \text{MACD} = \text{EMA}_{12} - \text{EMA}_{26}
+	      \]
 
-    Additionally, a 9-period EMA of the MACD, called the "signal line," is plotted on top of the MACD to function as a trigger for buy and sell signals:
+	      Additionally, a 9-period EMA of the MACD, called the "signal line," is plotted on top of the MACD to function as a trigger for buy and sell signals:
 
-    \[
-    \text{Signal Line} = \text{EMA}_{9}(\text{MACD})
-    \]
+	      \[
+		      \text{Signal Line} = \text{EMA}_{9}(\text{MACD})
+	      \]
 
-    The MACD histogram, which represents the difference between the MACD and the signal line, is often used to identify potential buy and sell points:
+	      The MACD histogram, which represents the difference between the MACD and the signal line, is often used to identify potential buy and sell points:
 
-    \[
-    \text{MACD Histogram} = \text{MACD} - \text{Signal Line}
-    \]
+	      \[
+		      \text{MACD Histogram} = \text{MACD} - \text{Signal Line}
+	      \]
 
-    \item \textbf{Bollinger Bands (BBANDS)}: These volatility bands are placed above and below a moving average. Volatility is based on the standard deviation, which changes as volatility increases and decreases. Bollinger Bands consist of three lines:
+	\item \textbf{Bollinger Bands (BBANDS)}: These volatility bands are placed above and below a moving average. Volatility is based on the standard deviation, which changes as volatility increases and decreases. Bollinger Bands consist of three lines:
 
-    \begin{itemize}
-        \item Middle Band: a simple moving average (SMA) of the security's price over \( N \) periods:
+	      \begin{itemize}
+		      \item Middle Band: a simple moving average (SMA) of the security's price over \( N \) periods:
 
-        \[
-        \text{Middle Band} = \text{SMA}_{N}
-        \]
+		            \[
+			            \text{Middle Band} = \text{SMA}_{N}
+		            \]
 
-        \item Upper Band: the middle band plus \( k \) times the standard deviation (\( \sigma \)) over the same period:
+		      \item Upper Band: the middle band plus \( k \) times the standard deviation (\( \sigma \)) over the same period:
 
-        \[
-        \text{Upper Band} = \text{SMA}_{N} + k\sigma
-        \]
+		            \[
+			            \text{Upper Band} = \text{SMA}_{N} + k\sigma
+		            \]
 
-        \item Lower Band: the middle band minus \( k \) times the standard deviation (\( \sigma \)) over the same period:
+		      \item Lower Band: the middle band minus \( k \) times the standard deviation (\( \sigma \)) over the same period:
 
-        \[
-        \text{Lower Band} = \text{SMA}_{N} - k\sigma
-        \]
+		            \[
+			            \text{Lower Band} = \text{SMA}_{N} - k\sigma
+		            \]
 
-        where \( N \) is the number of periods for the moving average and \( k \) is a multiplier, typically set to 2.
-    \end{itemize}
+		            where \( N \) is the number of periods for the moving average and \( k \) is a multiplier, typically set to 2.
+	      \end{itemize}
 
 \end{itemize}
 
