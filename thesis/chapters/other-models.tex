@@ -104,37 +104,59 @@ Below is the list of parameters that influence the growth of trees:
 
 
 
-\section{Logistic regression}
+\section{Linear regression}
 
-Logistic regression \cite{logistic_regression} is a statistical method used for binary classification problems, where the outcome variable has one of two possible values. It models the probability that a given input point belongs to a certain class.
+% Logistic regression \cite{logistic_regression} is a statistical method used for binary classification problems, where the outcome variable has one of two possible values. It models the probability that a given input point belongs to a certain class.
 
-In the below description, \(n\) denotes the size of the training dataset. For our case of predicting time series, an input vector \(x_i\) is a subseries of datapoints of length \verb|num_lags|, for which the output \(y_i\) is a prediction whether the datapoint following \(x_i\) will have a higher or lower price than the previous datapoint. Therefore, in the below description, \(d = \verb|num_lags|*k\), where \(k\) is the number of features of an individual datapoint.
+% In the below description, \(n\) denotes the size of the training dataset. For our case of predicting time series, an input vector \(x_i\) is a subseries of datapoints of length \verb|num_lags|, for which the output \(y_i\) is a prediction whether the datapoint following \(x_i\) will have a higher or lower price than the previous datapoint. Therefore, in the below description, \(d = \verb|num_lags|*k\), where \(k\) is the number of features of an individual datapoint.
 
-With that in mind, the general formulation of the logistic regression model is as follows:
+% With that in mind, the general formulation of the logistic regression model is as follows:
 
-Given a set of \(n\) observations \(\{(x_i, y_i)\}_{i=1}^n\), where \(x_i \in \mathbb{R}^d\) represents the feature vector and \(y_i \in \{0, 1\}\) represents the binary outcome, the logistic regression model predicts the probability of the outcome being 1 (positive class) as:
+% Given a set of \(n\) observations \(\{(x_i, y_i)\}_{i=1}^n\), where \(x_i \in \mathbb{R}^d\) represents the feature vector and \(y_i \in \{0, 1\}\) represents the binary outcome, the logistic regression model predicts the probability of the outcome being 1 (positive class) as:
+
+% \[
+% 	P(y = 1 \mid x) = \frac{1}{1 + e^{-(\beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots + \beta_d x_d)}}
+% \]
+
+% where \(\beta_0\) is the shift term,
+% %intercept term (i.e. representing the shift of the baseline probability)
+% and \(\beta_1, \beta_2, \ldots, \beta_d\) are the coefficients corresponding to the \(d\) features.
+
+% The model is trained by maximizing the likelihood function, which measures the probability of observing the given data as a function of \(\beta\) parameters. The likelihood function for logistic regression is given by:
+
+% \[
+% 	L(\beta) = \prod_{i=1}^n P(y_i = 1 \mid x_i)^{y_i} (1 - P(y_i = 1 \mid x_i))^{1 - y_i}
+% \]
+
+% To simplify computation, the log-likelihood function is often used:
+
+% \[
+% 	\ell(\beta) = \log(L(\beta)) = \sum_{i=1}^n \left[ y_i \log(P(y_i = 1 \mid x_i)) + (1 - y_i) \log(1 - P(y_i = 1 \mid x_i)) \right]
+% \]
+
+% The optimal parameters \(\beta\) are estimated by maximizing the log-likelihood function using numerical optimization techniques such as gradient descent.
+
+Linear regression \cite{linear_regression} is a statistical method used for predicting the value of a continuous outcome variable based on one or more input features. It models the relationship between the input features and the continuous outcome by fitting a linear equation to observed data.
+
+In the context of predicting time series, an input vector \(x_i\) is a subseries of datapoints of length \verb|num_lags|, for which the output \(y_i\) is a prediction of the actual value of the datapoint following \(x_i\). Therefore, in the description below, \(d = \verb|num_lags|*k\), where \(k\) is the number of features of an individual datapoint.
+
+With that in mind, the general formulation of the linear regression model is as follows:
+
+Given a set of \(n\) observations \(\{(x_i, y_i)\}_{i=1}^n\), where \(x_i \in \mathbb{R}^d\) represents the feature vector and \(y_i \in \mathbb{R}\) represents the continuous outcome, the linear regression model predicts the value of \(y\) as:
 
 \[
-	P(y = 1 \mid x) = \frac{1}{1 + e^{-(\beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots + \beta_d x_d)}}
+	\hat{y} = \beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2} + \cdots + \beta_d x_{id}
 \]
 
-where \(\beta_0\) is the shift term,
-%intercept term (i.e. representing the shift of the baseline probability)
-and \(\beta_1, \beta_2, \ldots, \beta_d\) are the coefficients corresponding to the \(d\) features.
+where \(\beta_0\) is the intercept term, and \(\beta_1, \beta_2, \ldots, \beta_d\) are the coefficients corresponding to the \(d\) features.
 
-The model is trained by maximizing the likelihood function, which measures the probability of observing the given data as a function of \(\beta\) parameters. The likelihood function for logistic regression is given by:
+The model is trained by minimizing the residual sum of squares (RSS), which measures the discrepancy between the observed values \(y_i\) and the predicted values \(\hat{y}_i\). The RSS is given by:
 
 \[
-	L(\beta) = \prod_{i=1}^n P(y_i = 1 \mid x_i)^{y_i} (1 - P(y_i = 1 \mid x_i))^{1 - y_i}
+	RSS(\beta) = \sum_{i=1}^n (y_i - \hat{y}_i)^2 = \sum_{i=1}^n \left(y_i - (\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2} + \cdots + \beta_d x_{id})\right)^2
 \]
 
-To simplify computation, the log-likelihood function is often used:
-
-\[
-	\ell(\beta) = \log(L(\beta)) = \sum_{i=1}^n \left[ y_i \log(P(y_i = 1 \mid x_i)) + (1 - y_i) \log(1 - P(y_i = 1 \mid x_i)) \right]
-\]
-
-The optimal parameters \(\beta\) are estimated by maximizing the log-likelihood function using numerical optimization techniques such as gradient descent.
+To find the optimal parameters \(\beta\), the RSS is minimized using analytical methods such as the normal equation or numerical optimization techniques such as gradient descent.
 
 
 
