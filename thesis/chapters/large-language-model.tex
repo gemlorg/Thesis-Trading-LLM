@@ -110,15 +110,23 @@ The Transformer (fig \autoref{fig:transformer_architecture_fig}) consists of the
 We now present the technique we've used for using a vanilla (not fine-tuned) LLaMA-2 model to predict time series data.
 The main idea involves using a framework around a frozen LLM (i.e. one that is not changed during the training process) that transforms input time series data into a text representation the LLM can then work on. Its output is then converted into a prediction. The idea is due to an article by Jin et al. (2024) \cite{reprogramming_llm}.
 
-% \begin{figure}[h!]
-% 	\includegraphics[width=\linewidth]{"pictures/prompt-embedding.png"} % TODO: poor quality of picture - should be better explained
-% 	\caption{The model framework of TIME-LLM. Given an input time series, we first tokenize and
-% 		embed it via (1) patching along with a (2) customized embedding layer. (3) These patch embeddings
-% 		are then reprogrammed with condensed text prototypes to align two modalities. To augment the
-% 		LLM’s reasoning ability, (4) additional prompt prefixes are added to the input to direct the transformation
-% 		of input patches. (5) The output patches from the LLM are projected to generate the forecasts.}
-% 	\label{fig:prompt_embedding_fig}
-% \end{figure}
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.5\linewidth]{"pictures/graph.png"}
+	\caption{Simplified model of the embedding framework.
+		The input time series is normalized and patched (broken down into chunks). These patches are reprogrammed into embeddings,
+		and concatenated with embeddings generated from additional prompts by a pre-trained LLM.
+		The combined embeddings are then processed by the LLM to produce the final forecast output. }
+
+	% An input time series is normalized, tokenized and embedded,
+	% then concatinated together with embedded text prompts. This serves as input to the frozen LLM, which outputs the prediction.}
+	% \caption{Simplified model of the embedding framework. Given an input time series, we first tokenize and
+	% 	embed it via (1) patching along with a (2) customized embedding layer. (3) These patch embeddings
+	% 	are then reprogrammed with condensed text prototypes to align two modalities. To augment the
+	% 	LLM’s reasoning ability, (4) additional prompt prefixes are added to the input to direct the transformation
+	% 	of input patches. (5) The output patches from the LLM are projected to generate the forecasts.}
+	\label{fig:prompt_embedding_fig}
+\end{figure}
 
 
 
