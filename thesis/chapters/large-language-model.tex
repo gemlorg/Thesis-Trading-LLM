@@ -148,20 +148,40 @@ The following three paragraphs come from the article.\cite{reprogramming_llm}
 \section{Our methodology}
 In the current and the next few sections we will share the details of our implementation. The goal is to further elaborate on the idea presented in the previous section and describe the specifics and challenges of our approach. \\
 
-\subsection{Data Preprocessing}
-In the previously defined model architecture, the input consists of a vector of floats that represent the prices over time. Therefore we only use a single feature of the time series data. This means that in the context of the datasets discribed earlier all but the target column are discarded. Afterwards, the data is normalised. A single entry in the updated dataset consists of two features, first one being a vector of length \textbf{seq\_len} floats representing successive prices with a step of \textbf{seq\_step} values in the original dataset, along with the target feature which is the next \textbf{pred\_len} prices using the same step size. \\
-\subsection{Embedding}
-Embedding is the part where we take the advantage of the fact that human language can be translated into a sequence of tokens which can serve as instructions to the LLM. In our case, we use the predefined methods of the LLaMa model to convert the instructions into a tensor of floats. This tensor will later be used as a part of the input to the LLM. \\
+Our model has the same architecture as the one presented in the one described in the previous section. We will expand on each of the main components of the model and explain how it is trained. 
 
-\subsection{Patching}
+\subsection{Input Transformation} 
 
-Considering that the weights of the LLM are frozen, the actual training of the model is mostly done by changing the patching. We project the feature vector into a d-dimensional vector space by repeating some of the values and apply convolution and dropout to the result. Afterwards, multi-head attention is applied using linearly modified embeddings from LLaMA. At the very end we apply a linear transformation once again. The resulting tensor is later treated as a sequence of tokens along with the output from the patching layer. \\
+\subsubsection*{Data Preprocessing}
+As it was previously mentioned, the input to the model is a vector of floating-point numbers representing prices over time. Consequently, we use only use the target feature from the time series data. This implies that, from the datasets described earlier, all columns except the target column are discarded. Following this, the data is normalized.
+
+Each entry in the updated dataset comprises two features. The first feature is a vector of length \textbf{seq\_len} consisting of consecutive prices sampled at intervals of \textbf{seq\_step} values from the original dataset. The second feature is the target feature, which represents the next \textbf{pred\_len} prices, also sampled using the same step size.
+
+\subsubsection*{Embedding}
+The embedding in LLaMa2 involves transforming human language into a format that the model can understand and process. The process converts text into a sequence of tokens and later vectors, which are essentially numerical representations of words. First, the text is tokenized. Each token is then mapped to a corresponding vector of floating-point numbers, creating the embedding. The embedding is supposed to capture semantic information about the tokens, allowing the model to understand the meaning of a word in a specific context.  
+
+We use predefined methods to perform the embedding in order to provide the model with instructions and additional information about the nature of the dataset and the upcoming input. The details about the prompt will be described in a separate section. The embedded prompt is later used as a part of the input to the model.
+
+\subsubsection*{Patching}
+Patches are small, contiguous segments of the original data sequence, representing local windows of information. By patching we mean a preprocessing of the input feature that is meant to prepare it for the model. It is composed of 2 main steps, which are Patch Embedding and Reprogramming. Considering that the weights of the LLM are frozen, patching plays a crucial role in training the model. 
+
+\paragraph{Patch Embedding}
+The method is used to transform raw input data into a format suitable for sequence modeling. It begins by padding the input through repetition to ensure that patches can be extracted without losing boundary information. Afterwards, we divide the input into overlapping patches, each capturing a segment of the sequence. The patches are then projected into a lower-dimensional space using a 1D convolutional layer, which captures local patterns within a single patch. This provides additional information about the data. Additionally, dropout is applied to the embedded patches in order to prevent overfitting. The resulting sequence, now embedded and regularized, is used as the input for subsequent layers in the model.
+
+\paragraph{Reprogramming} 
+The purpose of this step is to enchance the LLM's ability to understand the input data. At the moment the input may be seen as random to the model, so in this step we combine the input vector and the instructions embeddings mentioned in the previous section. A linear transformation with unforzen weights is applied to both. Then, multi-head attention is applied to the input using the instructions embeddings. 
+
+Finally, the reprogrammed embeddings are reshaped and passed through the output projection layer, which transforms them back into the appropriate dimensionality for the model's subsequent layers. This allows the LLM to understand the connection between the instructions and the input vector. 
 
 \subsection{Body and Output Projection}
-Two sequences of tokens received from the pathing and embedding layers are fed to the LLaMa as a single sequence of tokens. The output is then projected to the forecasted values. \\
+Two sequences of vectors received from the patching and embedding layers are concatenated and fed into the LLaMa as a single sequence. The output is then projected to the forecasted values using a linear layer. 
+
+
+\subsection{Training Process}
+
+TODO
 
 \section{Model Parameters}
-
 In this study, we employed a set of distinctive parameters for our model training:
 
 \begin{itemize}
@@ -320,11 +340,11 @@ By incorporating these indicators, we enhanced the model's ability to predict ma
 
 Incorporating these indicators yielded a substantial improvement in our model's performance. The accuracy of our predictions increased by over 2\% on certain datasets, highlighting the value of integrating domain-specific indicators and leveraging the LLM's pre-existing knowledge. Detailed results will be discussed in the subsequent sections.
 
-\subsection{Possible Improvements}
+\section{Possible Improvements}
 
 \subsection{Underlying LLM}
-The 7B LLaMa-2 model we used is significantly less powerful in comparison to 70B LLaMa-3 or even 70B LLama-2, as it follows from the official benchmarks. It would be interesting to see how the performance of the model would be affected by a more modern underlying LLM, however it would require significantly more computational resources as well as additional code that would allow us to run the program on multiple GPUs.
+There are a few different options when it comes to open source LLMs. We have used a 7 billion parameters LLaMa 2 model, however there are more powerful models available. For example, the 70b LLama 2 or the 70b LLaMa 3 score 40-60\% better on nearly all benchmarks, which could mean an inprovement in our model's performance with such models used as the underlying LLM, however it would require significantly more computational resources as well as additional code that would allow us to run the program on multiple GPUs. The problem is that a single graphic card simply wouldn't have enough memory to train the model.
 
 \subsection{Larger Training Set}
-The model was trained on datasets which contained less than 40000 records. It takes us approximately 12 hours to train the model on a dataset of this size. Training the model on a larger dataset would allow to fit more complex patterns in the datasets which could potentially be developing over a span of multiple years.
+The model was trained on datasets which contained less than 40000 records. It takes us approximately 12 hours to train the model on a dataset of this size. Training the model on a larger dataset would allow to fit more complex patterns in the data which could potentially be developing over a span of multiple years.
 \section{Results}
