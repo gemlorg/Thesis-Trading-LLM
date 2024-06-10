@@ -1,8 +1,9 @@
-% TODO: Outline that binary output is recommended by the client. It is possible to have more complicated output for Other models.
-Here we present our results from trying to use the following models to extrapolate a time series.
-Classification models output in binary categories: increase or decrease in value, and are therefore less precise.
+% TOdO: Outline that binary output is recommended by the client. It is possible to have more complicated output for Other models.
+% Here we present our results from trying to use the following models to extrapolate a time series.
+% Classification models output in binary categories: increase or decrease in value, and are therefore less precise.
+Here we describe four simpler machine learning models we used for comparison with LLM results: Linear Regression, Multilayer Perceptron, Convolutional Neural Network, Residual Neural Network. The descriptions include a short, technical overview of how the models work. In \emph{Main Results} \autoref{results} chapter we present the results of trying to use these models to extrapolate a time series.
 
-In the below descriptions, \textbf{overfitting} refers to a phenomenon when model learns from the training data too closely or exactly, thereby making it less generalisable to new data. See  figure  \autoref{fig:overfitting} for an illustration of the phenomenon. Figure and description are both due to Wikipedia \cite{overfitting}.
+In the below descriptions, \textbf{overfitting} refers to a phenomenon when model learns from the training data too closely or exactly, thereby making it less generalisable to new data. See  figure  \autoref{fig:overfitting} for an illustration of the phenomenon. Figure and description are both from Wikipedia \cite{overfitting}.
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.5\linewidth]{"pictures/overfitted_data.png"}
@@ -34,27 +35,27 @@ In the below descriptions, \textbf{overfitting} refers to a phenomenon when mode
 
 
 
-\section{Random forest}
-A random forest \cite{random_forest} is a machine learning model for classification and regression tasks introduced by Leo Breiman in 2001. A random forest is an ensemble of individual tree predictors, each of which depends on a random vector, chosen independently and with the same distribution for every tree. The results from individual trees are then aggregated into the overall result of the model - for classification tasks it is the mode of individual classifications and for prediction tasks it is the mean average of individual predictions.
+% \section{Random forest}
+% A random forest \cite{random_forest} is a machine learning model for classification and regression tasks introduced by Leo Breiman in 2001. A random forest is an ensemble of individual tree predictors, each of which depends on a random vector, chosen independently and with the same distribution for every tree. The results from individual trees are then aggregated into the overall result of the model - for classification tasks it is the mode of individual classifications and for prediction tasks it is the mean average of individual predictions.
 
-The error of forest prediction converges as such as the quantity of trees in the forest increases. The error of forest prediction depends negatively on the accuracy of individual trees and positively on the correlation between them.
+% The error of forest prediction converges as such as the quantity of trees in the forest increases. The error of forest prediction depends negatively on the accuracy of individual trees and positively on the correlation between them.
 
-An individual tree is constructed in the following way: a \textbf{sample} - random subset of the dataset - is selected. This and only this subset is used in growing the tree.
-Then, for each node, a random subset of features is chosen. A best split is chosen using the \verb|criterion| function, based on the chosen features of the sample. Then each tree is grown to maximum depth (until all leaves have one datapoint, for classifier trees).
+% An individual tree is constructed in the following way: a \textbf{sample} - random subset of the dataset - is selected. This and only this subset is used in growing the tree.
+% Then, for each node, a random subset of features is chosen. A best split is chosen using the \verb|criterion| function, based on the chosen features of the sample. Then each tree is grown to maximum depth (until all leaves have one datapoint, for classifier trees).
 
-Below is the list of parameters that influence the growth of trees:
+% Below is the list of parameters that influence the growth of trees:
 
-\begin{itemize}
+% \begin{itemize}
 
-	\item The \verb|num_lags| parameter is the number of previous datapoints taken into account for individual predictions - if \(k=\) \verb|num_lags|, then datapoints \([n-k, n)\) are used to predict price at \(n\). The larger the \verb|num_lags| the more of past data the model takes into account.
+% 	\item The \verb|num_lags| parameter is the number of previous datapoints taken into account for individual predictions - if \(k=\) \verb|num_lags|, then datapoints \([n-k, n)\) are used to predict price at \(n\). The larger the \verb|num_lags| the more of past data the model takes into account.
 
-	\item The \verb|n_estimators| parameter (number of estimators) describes the number of trees grown in the forest. Increasing the number of trees increases the accuracy of the model, but it also increases the computational cost.
+% 	\item The \verb|n_estimators| parameter (number of estimators) describes the number of trees grown in the forest. Increasing the number of trees increases the accuracy of the model, but it also increases the computational cost.
 
-	\item The \verb|max_features| parameter (number of features) specifies the the number of features of the data considered for a split at each node while growing an individual tree. A higher value of \verb|max_features| may capture more information about the data at the risk of growing more correlated trees, thereby decreasing its randomness and ability to adapt to new data, causing overfitting.
+% 	\item The \verb|max_features| parameter (number of features) specifies the the number of features of the data considered for a split at each node while growing an individual tree. A higher value of \verb|max_features| may capture more information about the data at the risk of growing more correlated trees, thereby decreasing its randomness and ability to adapt to new data, causing overfitting.
 
-	\item The \verb|criterion| parameter describes the function used by the model to calculate a quality of a split at a given node
+% 	\item The \verb|criterion| parameter describes the function used by the model to calculate a quality of a split at a given node
 
-\end{itemize}
+% \end{itemize}
 
 
 % The generalization error for forests converges a.s. to a limit
@@ -136,9 +137,9 @@ Below is the list of parameters that influence the growth of trees:
 
 % The optimal parameters \(\beta\) are estimated by maximizing the log-likelihood function using numerical optimization techniques such as gradient descent.
 
-Linear regression \cite{linear_regression} is a statistical method used for predicting the value of a continuous outcome variable based on one or more input features. It models the relationship between the input features and the continuous outcome by fitting a linear equation to observed data.
+\emph{Linear regression} \cite{linear_regression} is a statistical method used for predicting the value of a continuous outcome variable based on one or more input features. It models the relationship between the input features and the continuous outcome by fitting a linear equation to observed data.
 
-In the context of predicting time series, an input vector \(x_i\) is a subseries of datapoints of length \verb|num_lags|, for which the output \(y_i\) is a prediction of the actual value of the datapoint following \(x_i\). Therefore, in the description below, \(d = \verb|num_lags|*k\), where \(k\) is the number of features of an individual datapoint.
+In the context of predicting time series, an input vector \(x_i\) is a subseries of datapoints of length \verb|num_lags|, for which the output \(y_i\) is a prediction of the actual value of the datapoint following \(x_i\). Therefore, in the description below, the number of features of an input vector \(d = \verb|num_lags|*k\), where \(k\) is the number of features of an individual datapoint.
 
 With that in mind, the general formulation of the linear regression model is as follows:
 
@@ -224,58 +225,58 @@ To find the optimal parameters \(\beta\), the RSS is minimized using analytical 
 
 
 
-\section{Support vector machine}
+% \section{Support vector machine}
 
-% TODO: make a diagram
+% % TODO: make a diagram
 
-Support Vector Machines (SVMs) are supervised learning models used for classification and regression tasks. They are particularly well-suited for binary classification problems. The main idea behind SVMs is to find the optimal hyperplane that maximally separates the data points of different classes in the feature space.
+% Support Vector Machines (SVMs) are supervised learning models used for classification and regression tasks. They are particularly well-suited for binary classification problems. The main idea behind SVMs is to find the optimal hyperplane that maximally separates the data points of different classes in the feature space.
 
-A hyperplane is defined by the equation
-\[
-	\mathbf{w} \cdot \mathbf{x} + b = 0,
-\]
-where \( \mathbf{w} \) is the weight vector and \( b \) is the bias term. The optimal hyperplane is the one that maximizes the margin, which is the distance between the hyperplane and the nearest datapoints from either class, known as support vectors.
+% A hyperplane is defined by the equation
+% \[
+% 	\mathbf{w} \cdot \mathbf{x} + b = 0,
+% \]
+% where \( \mathbf{w} \) is the weight vector and \( b \) is the bias term. The optimal hyperplane is the one that maximizes the margin, which is the distance between the hyperplane and the nearest datapoints from either class, known as support vectors.
 
-To find this optimal hyperplane, SVM solves the following optimization problem:
-\[
-	\min_{\mathbf{w}, b} \frac{1}{2} \|\mathbf{w}\|^2
-\]
-subject to the constraint:
-\[
-	y_i (\mathbf{w} \cdot \mathbf{x}_i + b) \geq 1, \quad \forall i
-\]
-where \( y_i \in \{-1, 1\}\) is the class label of the \( i \)-th data point \( \mathbf{x}_i \).
+% To find this optimal hyperplane, SVM solves the following optimization problem:
+% \[
+% 	\min_{\mathbf{w}, b} \frac{1}{2} \|\mathbf{w}\|^2
+% \]
+% subject to the constraint:
+% \[
+% 	y_i (\mathbf{w} \cdot \mathbf{x}_i + b) \geq 1, \quad \forall i
+% \]
+% where \( y_i \in \{-1, 1\}\) is the class label of the \( i \)-th data point \( \mathbf{x}_i \).
 
-For non-linearly separable data, SVM can employ kernel functions to map the input features into a higher-dimensional space where a linear separation is possible.
-%Commonly used kernel functions include the linear, polynomial, and radial basis function (RBF) kernels.
-% Support vector machine \cite{support_vector_machine} is a model for machine learning classification problems, due to their high generalization abilities and applicability to high-dimensional data.
+% For non-linearly separable data, SVM can employ kernel functions to map the input features into a higher-dimensional space where a linear separation is possible.
+% %Commonly used kernel functions include the linear, polynomial, and radial basis function (RBF) kernels.
+% % Support vector machine \cite{support_vector_machine} is a model for machine learning classification problems, due to their high generalization abilities and applicability to high-dimensional data.
 
-% The model construes datapoints as high-dimensional vectors and finds the best hyperplane that divides the two classes the data is classified into. The goal of training is to find the hyperplane with the greatest margin - that is, the greatest distance from the closest vectors, called the support vectors.
+% % The model construes datapoints as high-dimensional vectors and finds the best hyperplane that divides the two classes the data is classified into. The goal of training is to find the hyperplane with the greatest margin - that is, the greatest distance from the closest vectors, called the support vectors.
 
-\subsection{Parameters}
-\begin{itemize}
-	\item \textbf{Kernel:}\footnote{Note that the word 'kernel' here is \textbf{not} meant in the linear algebra sense of part of the domain that is transformed to zero.} The model uses a kernel function to transform the space of data points which are not separable by a hyperplane, into one where they are separable.
+% \subsection{Parameters}
+% \begin{itemize}
+% 	\item \textbf{Kernel:}\footnote{Note that the word 'kernel' here is \textbf{not} meant in the linear algebra sense of part of the domain that is transformed to zero.} The model uses a kernel function to transform the space of data points which are not separable by a hyperplane, into one where they are separable.
 
-	      The following description is from \cite{support_vector_machine} from page 4. \( X \) and \(Z\) are, respectively, the original input space and the transformed, high-dimensional space.
+% 	      The following description is from \cite{support_vector_machine} from page 4. \( X \) and \(Z\) are, respectively, the original input space and the transformed, high-dimensional space.
 
 
-	      Roughly speaking, a kernel \( K(x, y) \) is a real-valued
-	      function \( K : X \times X \rightarrow \mathbb{R} \) for which there exists a
-	      function \( \Phi : X \rightarrow Z \), where \( Z \) is a real vector space,
-	      with the property \( K(x, y) = \Phi(x)^T \Phi(y) \). The
-	      kernel \( K(x, y) \) acts as a dot product in the space \( Z \).
-	      %In the SVM literature \( X \) and \( Z \) are called, respectively, input space and feature space. %\cite{support_vector_machine} 
+% 	      Roughly speaking, a kernel \( K(x, y) \) is a real-valued
+% 	      function \( K : X \times X \rightarrow \mathbb{R} \) for which there exists a
+% 	      function \( \Phi : X \rightarrow Z \), where \( Z \) is a real vector space,
+% 	      with the property \( K(x, y) = \Phi(x)^T \Phi(y) \). The
+% 	      kernel \( K(x, y) \) acts as a dot product in the space \( Z \).
+% 	      %In the SVM literature \( X \) and \( Z \) are called, respectively, input space and feature space. %\cite{support_vector_machine} 
 
-	\item \textbf{C value:} The \(C\) value specifies how accurate the model should be, that is how much it should avoid misclassifications, versus how wide the margins should be. A lower value of \(C\) corresponds to wider margins, but potentially more misclassifications. % TODO: in what metric: %, count?
+% 	\item \textbf{C value:} The \(C\) value specifies how accurate the model should be, that is how much it should avoid misclassifications, versus how wide the margins should be. A lower value of \(C\) corresponds to wider margins, but potentially more misclassifications. % TODO: in what metric: %, count?
 
-	      % TODO: Better describe the gamma
-	\item \textbf{Gamma:}
-	      %The gamma parameter is used by the non-linear kernel functions to specify how quickly the kernel specifies how much influence individual training datapoints should have. The \verb|scale| value of gamma means that gamma is scaled automatically to fit the size of the dataset.
-	      The \( \gamma \) parameter is a component of non-linear kernel functions, (e.g. the Radial Basis Function (RBF) kernel: \(K(\mathbf{x}_i, \mathbf{x}_j) = \exp(-\gamma \|\mathbf{x}_i - \mathbf{x}_j\|^2)\). It determines how
-	      %far the influence of a single training example reaches, effectively controlling the shape and smoothness of the decision boundary. 
-	      influential a single datapoint has in shaping the optimal boundary
-	      A high \( \gamma \) value causes the influence of each training point to be very localized, resulting in a more complex and tailored model that can capture intricate patterns in the data, but with a higher risk of overfitting. A low \( \gamma \) value means that the influence of each training point extends further, producing a smoother and simpler decision boundary that may generalize better to unseen data but be less accurate.
-\end{itemize}
+% 	      % TODO: Better describe the gamma
+% 	\item \textbf{Gamma:}
+% 	      %The gamma parameter is used by the non-linear kernel functions to specify how quickly the kernel specifies how much influence individual training datapoints should have. The \verb|scale| value of gamma means that gamma is scaled automatically to fit the size of the dataset.
+% 	      The \( \gamma \) parameter is a component of non-linear kernel functions, (e.g. the Radial Basis Function (RBF) kernel: \(K(\mathbf{x}_i, \mathbf{x}_j) = \exp(-\gamma \|\mathbf{x}_i - \mathbf{x}_j\|^2)\). It determines how
+% 	      %far the influence of a single training example reaches, effectively controlling the shape and smoothness of the decision boundary. 
+% 	      influential a single datapoint has in shaping the optimal boundary
+% 	      A high \( \gamma \) value causes the influence of each training point to be very localized, resulting in a more complex and tailored model that can capture intricate patterns in the data, but with a higher risk of overfitting. A low \( \gamma \) value means that the influence of each training point extends further, producing a smoother and simpler decision boundary that may generalize better to unseen data but be less accurate.
+% \end{itemize}
 % A model was trained to predict whether the next price will be higher or lower than the previous one.
 
 % What was used is Support Vector Regression, which is a modification of the idea of Support Vector Machine for the purposes of regression tasks, where instead of finding a hyperplane, 
@@ -326,10 +327,10 @@ For non-linearly separable data, SVM can employ kernel functions to map the inpu
 
 
 \section{Multilayer Perceptron}
-The Multilayer Perceptron (MLP) \cite{multilayer_perceptron} is a feedforward neural network, that is made up of multiple layers of nodes in a directed graph, where each node from one layer is connected to all the nodes from the previous one.
+The \emph{Multilayer Perceptron} (MLP) \cite{multilayer_perceptron} is a \emph{feedforward neural network}, that is made up of multiple layers of nodes in a directed graph, where each node from one layer is connected to all the nodes from the previous one.
 MLPs are widely used in pattern recognition, classification, and regression problems due to their ability as networks to model complex nonlinear relationships in the input data.
 An MLP consists of an input layer of neurons, one or more hidden layers, and an output layer.
-Each node, except for those in the input layer, is a neuron that uses a nonlinear activation function to combine inputs from the previous layer and an additional bias term.
+Each node, except for those in the input layer, is a neuron that uses a nonlinear activation function to combine inputs from the previous layer and an additional \emph{bias term}.
 
 \subsection{Structure of an MLP}
 
@@ -352,7 +353,7 @@ In this process, the input data is passed through each layer of the network, tra
 where
 \begin{itemize}
 	\item $a^{(l)}_j$ is the activation of the $j$-th neuron in the $l$-th layer,
-	\item $\phi$ denotes the activation function,
+	\item $\phi$ denotes the activation function, e.g. ReLU \autoref{relu}, softmax.
 	\item $w^{(l)}_{ji}$ represents the weight from the $i$-th neuron in the $(l-1)$-th layer to the $j$-th neuron in the $l$-th layer,
 	\item $b^{(l)}_j$ is the bias term for the $j$-th neuron in the $l$-th layer,
 	\item $a^{(l-1)}_i$ is the activation of the $i$-th neuron in the $(l-1)$-th layer.
@@ -420,17 +421,17 @@ Through iterative training involving forward propagation, loss calculation, and 
 
 \section{Convolutional neural network}
 Convolutional Neural Networks (CNNs) \cite{convolutional_neural_network} are a class of deep neural networks, highly effective for analyzing visual imagery. They employ a mathematical operation called convolution, which allows them to efficiently process data in a grid-like topology, such as images.
+%In the CNN the input is construed as consisting of several \emph{channels}, i.e. aspects of the input data (e.g. RGB for images).
 
 \subsection{Architecture of Convolutional Neural Networks}
-A typical CNN architecture comprises several layers that transform the input image to produce an output that represents the presence of specific features or class labels. The most common layers found in a CNN are:
+A typical CNN architecture comprises several layers that transform the input image to produce an output that represents the presence of specific features or class labels. The layers found in a CNN are:
 
 \subsubsection{Convolutional Layer}
-The convolutional layer is the fundamental building block of a CNN. It applies a set of learnable filters to the input. Each filter activates specific features at certain spatial positions in the input. Mathematically, the convolution operation is defined as follows:
-\[f(x, y) = (g * h)(x, y) = \sum_m\sum_n g(m,n) \cdot h(x-m, y-n)\]
+The convolutional layer applies a set of learnable filters to the input. Each filter activates specific features at certain spatial positions in the input. Mathematically, the convolution operation of each filter is defined as follows:
+\[f(x, y) = (g * h)(x, y) = \sum_c\sum_m\sum_n g_c(m,n) \cdot h_c(x-m, y-n)\]
 where \(f(x, y)\) is the output, \(g\) is the filter, \(h\) is the input image, and \(*\) denotes the convolution operation. \(x\) and \(y\) range over output image dimensions; \(m\) and \(n\) range over the filter dimensions.
 
-\subsubsection{Activation Function}
-Following convolution, an activation function is applied to introduce non-linearity into the model. The Rectified Linear Unit (ReLU) is commonly used:
+Following convolution, an \textbf{activation function} is applied to introduce non-linearity into the model. The Rectified Linear Unit (ReLU) \label{relu} is commonly used:
 \[f(x) = \max(0, x)\]
 
 \subsubsection{Pooling Layer}
@@ -448,7 +449,7 @@ The final layer of a CNN
 %is a softmax layer that 
 outputs a probability distribution over the classes, indicating the likelihood of the input image belonging to each class.
 
-A simple diagram of the layers can be seen on figure \autoref{fig:cnn-diagram} (due to \cite{cnn_diagram_source}).
+A simple diagram of the layers can be seen on figure \autoref{fig:cnn-diagram} (from \cite{cnn_diagram_source}). \footnote{In the image: the result of the convolution layer is a stack of output images, one for each filter.}
 
 \begin{figure}[h!]
 	\centering
@@ -478,7 +479,7 @@ A Residual Neural Network (ResNet) is a type of deep learning model specifically
 
 where $\mathbf{y}$ is the output of the layer, $\mathcal{F}$ represents the residual mapping to be learned by the layer, $\mathbf{x}$ is the input, and $\{W_i\}$ denote the weights of the layers.
 
-The primary advantage of this architecture is its ability to facilitate the training of deeper networks by preserving the gradient flow through the network during backpropagation. This is achieved by allowing the backpropagation to bypass one or more layers, reducing the risk of gradient vanishing. As a result, ResNets can be trained to much depths than CNNs, and can have more layers.
+The primary advantage of this architecture is its ability to facilitate the training of deeper networks by preserving the gradient flow through the network during backpropagation. This is achieved by allowing the backpropagation to bypass one or more layers, reducing the risk of gradient vanishing (where update gradients become exponentially small during backpropagation, slowing down training). As a result, ResNets can be trained to much depths than CNNs, and can have more layers.
 % As the number of layers in classic CNN grows, the problem of vanishing or exploding gradient appears.
 % It means that gradients become very small (or very large in case of exploding) as they are propagated
 % through the layers of the network.
