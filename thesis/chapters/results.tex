@@ -1,8 +1,8 @@
 In this chapter we present the results in the following way: for each dataset described in \autoref{chap:other-models}, we present one table. The table presents accuracies each model achieves at predicting the price \verb|Prediction Timestep| time into the future. Next to the name of each dataset is a tuple of the form (\verb|pred_len|, \verb|seq_step|) with which parameters the models were trained.
-\subsection{Method}
+\section{Method}
 For each dataset, we have experimented with a few different pairs (\verb|pred_len|, \verb|seq_step|), and chose the one, where the LLM performed best on the final epoch, i.e. had highest accuracy. Then, we've trained the other 4 smaller models with these parameters, to see how they compare.
 
-\subsection{Results}
+\section{Results}
 
 % Todo: describe parameters pred\_len and seq\_step
 
@@ -46,7 +46,7 @@ For each dataset, we have experimented with a few different pairs (\verb|pred_le
 	\end{tabular}
 \end{center}
 
-\subsection{Failed attempts}
+\section{Failed attempts}
 
 % \begin{center}
 % 	\begin{tabular}{|| c || c | c | c | c |  c||}

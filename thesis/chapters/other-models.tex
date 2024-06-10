@@ -1,7 +1,7 @@
 % TOdO: Outline that binary output is recommended by the client. It is possible to have more complicated output for Other models.
 % Here we present our results from trying to use the following models to extrapolate a time series.
 % Classification models output in binary categories: increase or decrease in value, and are therefore less precise.
-Here we describe four simpler machine learning models we used for comparison with LLM results: Linear Regression, Multilayer Perceptron, Convolutional Neural Network, Residual Neural Network. The descriptions include a short, technical overview of how the models work. In \emph{Main Results} \autoref{results} chapter we present the results of trying to use these models to extrapolate a time series.
+Here we describe four simpler machine learning models we used for comparison with LLM results: Linear Regression, Multilayer Perceptron, Convolutional Neural Network, Residual Neural Network. The descriptions include a short, technical overview of how the models work. In \autoref{chap:results} we present the results of trying to use these models to extrapolate a time series.
 
 In the below descriptions, \textbf{overfitting} refers to a phenomenon when model learns from the training data too closely or exactly, thereby making it less generalisable to new data. See  figure  \autoref{fig:overfitting} for an illustration of the phenomenon. Figure and description are both from Wikipedia \cite{overfitting}.
 \begin{figure}[h!]
@@ -139,14 +139,14 @@ In the below descriptions, \textbf{overfitting} refers to a phenomenon when mode
 
 \emph{Linear regression} \cite{linear_regression} is a statistical method used for predicting the value of a continuous outcome variable based on one or more input features. It models the relationship between the input features and the continuous outcome by fitting a linear equation to observed data.
 
-In the context of predicting time series, an input vector \(x_i\) is a subseries of datapoints of length \verb|num_lags|, for which the output \(y_i\) is a prediction of the actual value of the datapoint following \(x_i\). Therefore, in the description below, the number of features of an input vector \(d = \verb|num_lags|*k\), where \(k\) is the number of features of an individual datapoint.
+In the context of predicting time series, an input vector \(x_i\) is a subseries of datapoints of length \textit{seq\_len}, for which the output \(y_i\) is a prediction of the actual value of the datapoint following \(x_i\). Therefore, in the description below, the number of features of an input vector is \(d = \textit{seq\_len} \cdot k\), where \(k\) is the number of features of an individual datapoint.
 
 With that in mind, the general formulation of the linear regression model is as follows:
 
 Given a set of \(n\) observations \(\{(x_i, y_i)\}_{i=1}^n\), where \(x_i \in \mathbb{R}^d\) represents the feature vector and \(y_i \in \mathbb{R}\) represents the continuous outcome, the linear regression model predicts the value of \(y\) as:
 
 \[
-	\hat{y} = \beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2} + \cdots + \beta_d x_{id}
+	\hat{y} = \beta_0 + \beta_1 x_{i,1} + \beta_2 x_{i,2} + \cdots + \beta_d x_{i,d}
 \]
 
 where \(\beta_0\) is the intercept term, and \(\beta_1, \beta_2, \ldots, \beta_d\) are the coefficients corresponding to the \(d\) features.
@@ -154,7 +154,7 @@ where \(\beta_0\) is the intercept term, and \(\beta_1, \beta_2, \ldots, \beta_d
 The model is trained by minimizing the residual sum of squares (RSS), which measures the discrepancy between the observed values \(y_i\) and the predicted values \(\hat{y}_i\). The RSS is given by:
 
 \[
-	RSS(\beta) = \sum_{i=1}^n (y_i - \hat{y}_i)^2 = \sum_{i=1}^n \left(y_i - (\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2} + \cdots + \beta_d x_{id})\right)^2
+	RSS(\beta) = \sum_{i=1}^n (y_i - \hat{y}_i)^2 = \sum_{i=1}^n \left(y_i - (\beta_0 + \beta_1 x_{i,1} + \beta_2 x_{i,2} + \cdots + \beta_d x_{i,d})\right)^2
 \]
 
 To find the optimal parameters \(\beta\), the RSS is minimized using analytical methods such as the normal equation or numerical optimization techniques such as gradient descent.
@@ -353,7 +353,7 @@ In this process, the input data is passed through each layer of the network, tra
 where
 \begin{itemize}
 	\item $a^{(l)}_j$ is the activation of the $j$-th neuron in the $l$-th layer,
-	\item $\phi$ denotes the activation function, e.g. ReLU \autoref{relu}, softmax.
+	\item $\phi$ denotes the activation function, e.g. ReLU (\autoref{relu}), softmax.
 	\item $w^{(l)}_{ji}$ represents the weight from the $i$-th neuron in the $(l-1)$-th layer to the $j$-th neuron in the $l$-th layer,
 	\item $b^{(l)}_j$ is the bias term for the $j$-th neuron in the $l$-th layer,
 	\item $a^{(l-1)}_i$ is the activation of the $i$-th neuron in the $(l-1)$-th layer.
@@ -432,7 +432,10 @@ The convolutional layer applies a set of learnable filters to the input. Each fi
 where \(f(x, y)\) is the output, \(g\) is the filter, \(h\) is the input image, and \(*\) denotes the convolution operation. \(x\) and \(y\) range over output image dimensions; \(m\) and \(n\) range over the filter dimensions.
 
 Following convolution, an \textbf{activation function} is applied to introduce non-linearity into the model. The Rectified Linear Unit (ReLU) \label{relu} is commonly used:
-\[f(x) = \max(0, x)\]
+\[\phi(x) = \max(0, x)\]
+
+For time series forecasting, we use 1D-convolutional neural network, which means that filter has \(1\) row.
+
 
 \subsubsection{Pooling Layer}
 The pooling layer reduces the spatial dimensions (width and height) of the input volume for the next convolutional layer.
@@ -442,12 +445,7 @@ The pooling layer reduces the spatial dimensions (width and height) of the input
 % where \(D\) is the set of coordinates in the input, and \(g\) is the input image.
 
 \subsubsection{Fully Connected Layer}
-Towards the end of the network, fully connected layers are used, where each input node is connected to each output by a learnable weight. This layer classifies the image into various classes based on the learned high-level features.
-
-\subsubsection{Output Layer}
-The final layer of a CNN
-%is a softmax layer that 
-outputs a probability distribution over the classes, indicating the likelihood of the input image belonging to each class.
+Towards the end of the network, fully connected layers are used, where each input node is connected to each output by a learnable weight.
 
 A simple diagram of the layers can be seen on figure \autoref{fig:cnn-diagram} (from \cite{cnn_diagram_source}). \footnote{In the image: the result of the convolution layer is a stack of output images, one for each filter.}
 
