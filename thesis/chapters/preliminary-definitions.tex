@@ -72,7 +72,7 @@ In all experiments, the dataset used was divided into 3 parts: the first 70\% wa
 The \emph{Mean Squared Error} (MSE) is a metric used during training of machine learning model, especially in regression tasks. It quantifies how close a model's predictions are to the actual values.
 
 \subsubsection{Definition}
-MSE calculates the average of the squares of the errors. The error is the difference between the values (\(\hat{y}_i\)) predicted by the model and the values (\(y_i\)) it should have predicted.
+MSE calculates the average of the squares of the errors. The error is the difference between the values (\(\hat{y}_i\)) predicted by the model and the actual values (\(y_i\)).
 
 \subsubsection{Calculation Steps}
 The metric is computed as follows.
@@ -111,13 +111,13 @@ When we predict the value \(a_{i+k}\) based on values \([a_{i-n}, a_i]\) in a ti
 	      \[
 		      \mathsf{class}(\hat{a}_{i+k}) =
 		      \begin{cases}
-			      1, & \text{if } \hat{a}_{i+k} >= a_i \\
+			      1, & \text{if } \hat{a}_{i+k} \ge a_i \\
 			      0, & \text{otherwise}
 		      \end{cases}
 	      \]
-	\item We then classify the value actually observed \(a_{i_x}\) in the same way.
+	\item We then classify the value actually observed \(a_{i+k}\) in the same way.
 	\item Subsequently we calculate the fraction of the times when such predictions were correct, i.e. \(\mathsf{class}(\hat{a}_{i+k}) = \mathsf{class}(a_{i+k})\).
-	\item This yields an \emph{accuracy} score, between 0 and 1: \(0 \leq \frac{\sum_{i=1}^N[\mathsf{class}(\hat{a}_{i+k}) = \mathsf{class}(a_{i+k})]}{N} \leq 1\). \footnote{Here for \(N\) predictions}
+	\item This yields an \emph{accuracy} score, between 0 and 1: \(0 \leq \frac{\sum_{i=1}^N[\mathsf{class}(\hat{a}_{i+k}) = \mathsf{class}(a_{i+k})]}{N} \leq 1\). \footnote{Here for \(N\) predictions.}
 \end{enumerate}
 
 % TODO: more elaborate description
