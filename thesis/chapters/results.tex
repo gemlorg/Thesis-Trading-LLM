@@ -4,47 +4,58 @@ For each dataset, we have experimented with a few different pairs (\verb|pred_le
 
 \section{Results}
 
-% Todo: describe parameters pred\_len and seq\_step
-
-% Datasets were tested with the following parameters:
-% AAPL, 40, 1, (ostatni)
-% BTCUSD, 5, 2, (ostatni)
-% EURUSD, 7, 7, (ostatni)
-% GBPCAD,  10, 7, (czwarty)
-% GBPTRY, 5,  2, (pierwszy)
-% Electricity, 6, 11,  (czwarty)
-% US500, 10, 1, (dziewiąty)
-
-% Todo: describe the process of preparing datasets.
-
-% Todo: describe measuring accuracy, the loss function.
-
-(x is a result that has not yet been filled in)
 \begin{center}
 	\begin{tabular}{|| c || c | c | c | c | c | c ||}
 		\hline
-		\multicolumn{6}{|c|}{Dataset model results}                                                                                                                         \\
+		\multicolumn{6}{|c|}{Dataset model results}                                                                                                                               \\
 		\hline
-		Dataset name        & \vtop{\hbox{\strut Prediction}\hbox{\strut timestep}} & \vtop{\hbox{\strut Linear}\hbox{\strut regression}} & MLP & CNN & ResNet & LLM        \\ [0.5ex]
+		Dataset name        & \vtop{\hbox{\strut Prediction}\hbox{\strut timestep}} & \vtop{\hbox{\strut Linear}\hbox{\strut regression}} & MLP     & CNN     & ResNet  & LLM     \\ [0.5ex]
 		\hline\hline
-		AAPL (40, 1)        & 40 days                                               & x                                                   & x   & x   & x      & 0.54985207 \\
+		AAPL (40, 1)        & 40 days                                               & 63.55\%                                             & 65.42\% & 34.92\% & 34.92\% & 54.98\% \\
 		\hline
-		BTCUSD (5, 2)       & 10 hours                                              & x                                                   & x   & x   & x      & 0.50540897 \\
+		BTCUSD (5, 2)       & 10 hours                                              & 48.54\%                                             & 46.66\% & 45.31\% & 45.56\% & 50.54\% \\
 		\hline
-		EURUSD (7,7)        & 49 hours                                              & x                                                   & x   & x   & x      & 0.55466238 \\
+		EURUSD (7,7)        & 49 hours                                              & 49.27\%                                             & 47.47\% & 53.48\% & 49.87\% & 55.46\% \\
 		\hline
-		GBPCAD (10, 7)      & 70 hours                                              & x                                                   & x   & x   & x      & 0.5145734  \\
+		GBPCAD (10, 7)      & 70 hours                                              & 53.03\%                                             & 49.08\% & 53.67\% & 43.93\% & 51.45\% \\
 		\hline
-		GBPTRY (5, 2)       & 10 hours                                              & x                                                   & x   & x   & x      & 0.54656085 \\
+		GBPTRY (5, 2)       & 10 hours                                              & 54.79\%                                             & 58.64\% & 41.97\% & 40.93\% & 54.65\% \\
 		\hline
-		Electricity (6, 11) & 66 hours                                              & x                                                   & x   & x   & x      & 0.68783967 \\
+		Electricity (6, 11) & 66 hours                                              & 57.81\%                                             & 66.87\% & 65.31\% & 50.62\% & 68.78\% \\
 		\hline
-		US500 (10, 1)       & 10 hours                                              & x                                                   & x   & x   & x      & 0.53370221 \\
+		US500 (10, 1)       & 10 hours                                              & 42.54\%                                             & 44.00\% & 43.49\% & 41.12\% & 53.37\% \\
 		\hline
 
 		\hline
 	\end{tabular}
 \end{center}
+
+%  (x is a result that has not yet been filled in)
+% \begin{center}
+% 	\begin{tabular}{|| c || c | c | c | c | c | c ||}
+% 		\hline
+% 		\multicolumn{6}{|c|}{Dataset model results}                                                                                                                                                                      \\
+% 		\hline
+% 		Dataset name        & \vtop{\hbox{\strut Prediction}\hbox{\strut timestep}} & \vtop{\hbox{\strut Linear}\hbox{\strut regression}} & MLP                 & CNN                 & ResNet              & LLM        \\ [0.5ex]
+% 		\hline\hline
+% 		AAPL (40, 1)        & 40 days                                               & 0.6355846774193549                                  & 0.6542338709677419  & 0.3492943548387097  & 0.3492943548387097  & 0.54985207 \\
+% 		\hline
+% 		BTCUSD (5, 2)       & 10 hours                                              & 0.48541666666666666                                 & 0.4666666666666667  & 0.453125            & 0.45564516129032256 & 0.50540897 \\
+% 		\hline
+% 		EURUSD (7,7)        & 49 hours                                              & 0.49278846153846156                                 & 0.47475961538461536 & 0.5348557692307693  & 0.4987980769230769  & 0.55466238 \\
+% 		\hline
+% 		GBPCAD (10, 7)      & 70 hours                                              & 0.5303308823529411                                  & 0.49080882352941174 & 0.5367647058823529  & 0.43933823529411764 & 0.5145734  \\
+% 		\hline
+% 		GBPTRY (5, 2)       & 10 hours                                              & 0.5479166666666667                                  & 0.5864583333333333  & 0.4197916666666667  & 0.409375            & 0.54656085 \\
+% 		\hline
+% 		Electricity (6, 11) & 66 hours                                              & 0.578125                                            & 0.66875             & 0.653125            & 0.50625             & 0.68783967 \\
+% 		\hline
+% 		US500 (10, 1)       & 10 hours                                              & 0.4254032258064516                                  & 0.44002016129032256 & 0.43497983870967744 & 0.4112903225806452  & 0.53370221 \\
+% 		\hline
+
+% 		\hline
+% 	\end{tabular}
+% \end{center}
 
 \section{Failed attempts}
 
