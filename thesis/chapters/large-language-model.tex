@@ -395,4 +395,27 @@ There are a few different options when it comes to open source LLMs. We have use
 
 \subsection{Larger Training Set}
 The model was trained on datasets which contained less than 40000 records. It takes us approximately 12 hours to train the model on a dataset of this size. Training the model on a larger dataset would allow to fit more complex patterns in the data which could potentially be developing over a span of multiple years.
+
 \section{Results}
+
+The predictability of datasets varied significantly. Moreover, splitting the datasets into different periods for training, validation, and testing purposes also influenced the performance outcomes. Models trained on smaller datasets often yielded the most interesting results, as the data to be predicted was temporally closer to the oldest training data.
+
+Due to limited resources, specifically two computers with high-performance graphics cards, training a dataset of 100,000 records took approximately 2-3 days. Given the substantial size and resource demands of large language models, we were unable to test all interesting combinations, leaving room for further exploration.
+
+One key observation was that using a short prediction length (pred\_len) of 4 or fewer, despite the goal of predicting price increases or decreases, proved suboptimal. The mean squared error (MSE)-based loss function did not optimize well compared to longer sequences. Conversely, with very long prediction lengths (over 60), the model struggled due to the complexity of the task. The best results were obtained with a pred\_len around 10.
+
+Another noteworthy point was the use of hourly datasets. Predicting values for the upcoming hours was nearly impossible due to a high degree of randomness, likely influenced by speculative decisions and the actions of individuals who may not fully understand market dynamics. However, predictions over longer periods showed more promise, leading to the introduction of the seq\_step parameter. By skipping several records, we achieved more predictable sequences.
+
+The learning rate (\textit{lr}) between 0.01 and 0.0001, with the \textit{lradj} parameter set to type1 or type3, yielded the best results. Starting with values too low prevented the model from achieving good results, while too high a learning rate damaged the pretrained LLM’s performance from the outset. Additionally, not decreasing the learning rate over epochs resulted in suboptimal training outcomes.
+
+In summary, several key insights emerged from our experiments:
+
+\begin{itemize}
+    \item \textbf{Dataset Size and Temporal Proximity}: Models trained on smaller datasets, where prediction data was temporally closer to the training data, performed better.
+    \item \textbf{Prediction Length (pred\_len)}: A pred\_len around 10 was optimal. Shorter lengths did not allow the MSE-based loss function to optimize well, while longer lengths were too complex for the model.
+    \item \textbf{Hourly Data Prediction}: Predicting hourly values was challenging due to randomness, but longer periods with seq\_step parameter adjustments improved predictability.
+    \item \textbf{Learning Rate and Adjustment (lradj)}: Learning rates between 0.01 and 0.0001 with type1 or type3 \textit{lradj} settings were most effective. Lower starting rates hindered performance, and higher rates damaged pretrained capabilities without proper reduction over epochs.
+\end{itemize}
+
+These findings highlight the importance of tuning prediction length, learning rates, and the use of appropriate parameters for different datasets to achieve optimal forecasting performance. Further exploration of combinations and settings is necessary to fully understand and leverage the capabilities of large language models in predictive tasks.
+
