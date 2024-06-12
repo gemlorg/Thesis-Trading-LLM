@@ -179,7 +179,7 @@ Two sequences of vectors received from the patching and embedding layers are con
 
 \subsection{Training Process}
 
-TODO
+The model is trained to minimize the MSE between the predicted and actual values. It is trained and evaluated in epochs. After each epoch if the model's performance has improved compared to all previous epochs, the weights are saved. The training process is stopped once the model has not improved over a given number of epochs.
 
 \section{Model Parameters}
 In this study, we employed a set of distinctive parameters for our model training:
@@ -190,8 +190,9 @@ In this study, we employed a set of distinctive parameters for our model trainin
 	\item \textbf{seq\_step} – This parameter determines the interval at which records are selected during iteration. For example, if \textit{seq\_step} is set to 4, the records would be indexed as 0, 4, 8, and so on. This means that instead of processing every single record sequentially, you only process every fourth record, like 0, 4, 8, etc., and then 1, 5, 9, etc. This method helps in reducing noise caused by hourly fluctuations, significantly improving the accuracy of the results.
 	\item \textbf{learning\_rate} – This parameter controls the speed of learning. Lower values mean slower, more stable learning, while higher values mean faster, but potentially unstable, learning.
 	\item \textbf{lradj} - This parameter specifies the strategy for adjusting the learning rate during training. Each strategy modifying the learning rate according to a predefined pattern or schedule.
+  \item \textbf{patience}   This parameter is used to determine the number of epochs with no improvement after which training will be stopped.
 	\item \textbf{n\_heads} - number of heads in the multi-head attention mechanism.
-	\item \textbf{d\_ff} - number of neurons in the feed forward layer.
+	\item \textbf{d\_ff} - number of neurons in the Reprogramming layer.
 \end{itemize}
 
 \subsection{Types of \textbf{lradj}}
@@ -381,6 +382,43 @@ There are a few different options when it comes to open source LLMs. We have use
 The model was trained on datasets which contained less than 40000 records. It takes us approximately 12 hours to train the model on a dataset of this size. Training the model on a larger dataset would allow to fit more complex patterns in the data which could potentially be developing over a span of multiple years.
 
 \section{Results}
+
+\begin{figure}[h!]
+  \centering
+	\includegraphics[width=\linewidth]{"pictures/aapl_40h_results.png"} 
+	\caption{}
+	\label{fig:aapl_fig}
+\end{figure}
+
+\begin{figure}[h!]
+
+  \centering
+  \includegraphics[width=\linewidth]{"pictures/eurusd_49h_results.png"}
+	\caption{}
+	\label{fig:eurusud_fig}
+\end{figure}
+
+\begin{figure}[h!]
+
+  \centering
+  \includegraphics[width=\linewidth]{"pictures/gbpcad_70h_results.png"} 
+	\caption{}
+	\label{fig:gbpcad_fig}
+\end{figure}
+
+\begin{figure}[h!]
+
+  \centering
+
+	\includegraphics[width=\linewidth]{"pictures/electricity_66h_results.png"} 
+	\caption{}
+
+	\label{fig:electricity_fig}
+
+\end{figure}
+
+\FloatBarrier
+
 
 The predictability of datasets varied significantly. Moreover, splitting the datasets into different periods for training, validation, and testing purposes also influenced the performance outcomes. Models trained on smaller datasets often yielded the most interesting results, as the data to be predicted was temporally closer to the oldest training data.
 
