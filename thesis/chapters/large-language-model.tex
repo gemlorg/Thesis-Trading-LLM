@@ -104,7 +104,7 @@ The Transformer (fig \autoref{fig:transformer_architecture_fig}) consists of the
 \end{itemize}
 
 \subsection{LLaMA-2}
-\textbf{LLaMA-2} \cite{llama2} is an improved version of LLaMA, with similar model sizes. It has the same architecture as LLaMA-1, but was trained on a much larger set of data (~2 trillion tokens). It also has doubled context length of 4096 tokens. For our experiments, we were using LLaMA-2.
+\textbf{LLaMA-2} \cite{llama2} is an improved version of LLaMA, with similar model sizes. It has the same architecture as LLaMA-1, but was trained on a much larger set of data (approximately 2 trillion tokens). It also has doubled context length of 4096 tokens. For our experiments, we were using LLaMA-2.
 
 \section{Time-series Embedding}
 We now present the technique we've used for using a vanilla (not fine-tuned) LLaMA-2 model to predict time series data.
@@ -135,18 +135,18 @@ The following three paragraphs come from the article.\cite{reprogramming_llm}
 % TODO: This paragraph/problem may also be described earlier, e.g. in introduction.
 \textit{We consider the following problem: given a sequence of historical observations \(X \in \R^{N\times T}\)
 	consisting of \(N\) different 1-dimensional variables across \(T\) time steps, we aim to reprogram a large
-	language model \(f(\cdot)\) to understand the input time series and accurately forecast the readings at \(H\) future time steps, denoted by \(\hat{Y} \in \R^{N\times H}\) , with the overall objective to minimize the mean square errors between the expected outputs \(Y\) and predictions, i.e., \(\frac1H \sum_{h=1}^H \| \hat{Y}_h - Y_h \|_F^2 \).}
+	language model \(f(\cdot)\) to understand the input time series and accurately forecast the readings at \(H\) future time steps, denoted by \(\hat{Y} \in \R^{N\times H}\), with the overall objective to minimize the mean square errors between the expected outputs \(Y\) and predictions, i.e., \(\frac1H \sum_{h=1}^H \| \hat{Y}_h - Y_h \|_F^2 \).}
 
 % TODO: normalization, patching, embedding - explain
 \textit{The method encompasses three main components: (1) input transformation, (2) a pre-trained and frozen LLM, and (3) output projection. Initially, a multifeature time series is partitioned into \(N\) unifeature time series, which are subsequently processed independently (Nie et al., 2023) \cite{nie_et_al}.
-	The i-th series is denoted as \(X(i) \in \R^{1\times T}\) , which undergoes normalization, patching, and embedding prior to being reprogrammed with learned text prototypes to align the source and target modalities.
-	Then, we augment the LLM’s time series reasoning ability by prompting it together with the transformed series to generate output representations, which are projected to the final forecasts \(\hat{Y}^{(i)} \in \R^{1\times H}\) .}
+	The i-th series is denoted as \(X(i) \in \R^{1\times T}\), which undergoes normalization, patching, and embedding prior to being reprogrammed with learned text prototypes to align the source and target modalities.
+	Then, we augment the LLM’s time series reasoning ability by prompting it together with the transformed series to generate output representations, which are projected to the final forecasts \(\hat{Y}^{(i)} \in \R^{1\times H}\).}
 
 \textit{We note that only the parameters of the lightweight input transformation and output projection are updated, while the backbone language model is frozen.
 	In contrast to vision-language and other multimodal language models, which usually fine-tune with paired cross-modality data, this use of model is directly optimized and becomes readily available with only a small set of time series and a few  training epochs, maintaining high efficiency and imposing fewer resource constraints compared to building large domain-specific models from scratch or fine-tuning them.}
 
 \section{Our methodology}
-In the current and the next few sections we will share the details of our implementation. The goal is to further elaborate on the idea presented in the previous section and describe the specifics and challenges of our approach. \\
+In the current and the next few sections we will share the details of our implementation. The goal is to further elaborate on the idea presented in the previous section and describe the specifics and challenges of our approach.
 
 Our model has the same architecture as the one presented in the one described in the previous section. We will expand on each of the main components of the model and explain how it is trained.
 
@@ -240,46 +240,38 @@ Recognizing the need for a more sophisticated approach, we turned to autocorrela
 
 1. \textbf{Fourier Transformation}: We apply the Fourier transform to the input data \( x_{\text{enc}} \) to convert it from the time domain to the frequency domain. This helps in identifying patterns by analyzing the frequency components of the data.
 
-Let \( X(f) \) be the Fourier transform of \( x_{\text{enc}} \). The transformation is defined as:
-
+Let \( X(f) \) be the Fourier transform of \( x_{\text{enc}} \). The transformation is defined as
 \[
-	X(f) = \sum_{t=0}^{N-1} x_{\text{enc}}(t) e^{-i 2 \pi f t / N}
+	X(f) = \sum_{t=0}^{N-1} x_{\text{enc}}(t) e^{-i 2 \pi f t / N}.
 \]
 
 In our case, the input data is permuted and transformed:
-
 \[
-	q_{\text{fft}} = \text{FFT}(x_{\text{enc}}) \quad \text{and} \quad k_{\text{fft}} = \text{FFT}(x_{\text{enc}})
+	q_{\text{fft}} = \text{FFT}(x_{\text{enc}}) \quad \text{and} \quad k_{\text{fft}} = \text{FFT}(x_{\text{enc}}).
 \]
 
 2. \textbf{Cross-Spectral Density}: We compute the cross-spectral density by multiplying the Fourier-transformed data with the complex conjugate of itself. This step helps in identifying the strength and phase relationship between different frequencies.
-
 \[
-	R(f) = q_{\text{fft}}(f) \cdot k_{\text{fft}}^*(f)
+	R(f) = q_{\text{fft}}(f) \cdot k_{\text{fft}}^*(f),
 \]
-
 where \( k_{\text{fft}}^*(f) \) denotes the complex conjugate of \( k_{\text{fft}}(f) \).
 
-3. \textbf{Inverse Fourier Transformation}: We then apply the inverse Fourier transform to convert the data back to the time domain. This results in the autocorrelation function, which shows how the data correlates with itself at different lags (time shifts).
-
+3. \textbf{Inverse Fourier Transformation}: We then apply the inverse Fourier transform to convert the data back to the time domain. This results in the autocorrelation function, which shows how the data correlates with itself at different lags (time shifts):
 \[
-	r(t) = \text{IFFT}(R(f))
+	r(t) = \text{IFFT}(R(f)).
 \]
 
-4. \textbf{Mean Autocorrelation}: We calculate the mean of the autocorrelation across all data points to get a single autocorrelation function that represents the overall pattern in the data.
-
+4. \textbf{Mean Autocorrelation}: We calculate the mean of the autocorrelation across all data points to get a single autocorrelation function that represents the overall pattern in the data:
 \[
-	\bar{r}(t) = \frac{1}{M} \sum_{m=1}^{M} r_m(t)
+	\bar{r}(t) = \frac{1}{M} \sum_{m=1}^{M} r_m(t),
 \]
-
 where \( M \) is the number of data points and \( r_m(t) \) represents the autocorrelation for each data point \( m \).
 
 5. \textbf{Top-k Features}: Finally, we select the top-k lags with the highest autocorrelation values. These lags represent the steps at which the data shows the most significant recurring patterns.
 
 We identify the top-k lags by finding the indices of the highest values in the mean autocorrelation function:
-
 \[
-	\text{lags} = \text{argsort}(\bar{r}(t))[:k]
+	\text{lags} = \text{argsort}(\bar{r}(t))[:\!k].
 \]
 
 By using this method, we were able to identify and select the steps with the highest autocorrelation, effectively capturing the most significant patterns in the data.
@@ -294,27 +286,22 @@ To address this challenge, we explored various analytical tools commonly used in
 \subsection{Indicators Used}
 
 \begin{itemize}
-	\item \textbf{Relative Strength Index (RSI)}: This momentum oscillator measures the speed and change of price movements. It oscillates between 0 and 100 and is typically used to identify overbought or oversold conditions in a market. The RSI is calculated using the formula:
-
+	\item \textbf{Relative Strength Index (RSI)}: This momentum oscillator measures the speed and change of price movements. It oscillates between 0 and 100 and is typically used to identify overbought or oversold conditions in a market. The RSI is calculated using the following formula:
 	      \[
-		      RSI = 100 - \frac{100}{1 + RS}
+		      RSI = 100 - \frac{100}{1 + RS},
 	      \]
-
 	      where \( RS \) (Relative Strength) is the average gain of "up" periods during the specified time frame divided by the average loss of "down" periods during the specified time frame:
-
 	      \[
-		      RS = \frac{\text{Average Gain}}{\text{Average Loss}}
+		      RS = \frac{\text{Average Gain}}{\text{Average Loss}}.
 	      \]
 
 	      Here, the \textbf{average gain} refers to the mean of all positive price changes over the specified period, while the \textbf{average loss} refers to the mean of all negative price changes over the same period. These are calculated as follows:
-
 	      \begin{itemize}
 		      \item \textbf{Up Periods}: Time intervals during which the price increases from the previous closing price.
 		      \item \textbf{Down Periods}: Time intervals during which the price decreases from the previous closing price.
 	      \end{itemize}
 
 	      The calculations are as follows:
-
 	      \begin{itemize}
 		      \item \textbf{Average Gain}: The average of all gains (positive changes in price) during the up periods within the specified time frame.
 		      \item \textbf{Average Loss}: The average of all losses (negative changes in price) during the down periods within the specified time frame.
@@ -322,48 +309,41 @@ To address this challenge, we explored various analytical tools commonly used in
 
 	      For example, with a time frame of 14 days, the average gain is calculated by summing all the gains over the 14 days and dividing by 14. Similarly, the average loss is calculated by summing all the losses over the 14 days and dividing by 14.
 
-	      These values are then used to calculate the RS, and subsequently the RSI, to determine whether the market is potentially overbought (typically RSI > 70) or oversold (typically RSI < 30).
+	      These values are then used to calculate the RS, and subsequently the RSI, to determine whether the market is potentially overbought (typically RSI $> 70$) or oversold (typically RSI < 30).
 
 
 	\item \textbf{Moving Average Convergence Divergence (MACD)}: This trend-following indicator shows the relationship between two moving averages of a security's price. The MACD is calculated by subtracting the 26-period Exponential Moving Average (EMA) from the 12-period EMA:
-
 	      \[
-		      \text{MACD} = \text{EMA}_{12} - \text{EMA}_{26}
+		      \text{MACD} = \text{EMA}_{12} - \text{EMA}_{26}.
 	      \]
 
 	      Additionally, a 9-period EMA of the MACD, called the "signal line," is plotted on top of the MACD to function as a trigger for buy and sell signals:
-
 	      \[
-		      \text{Signal Line} = \text{EMA}_{9}(\text{MACD})
+		      \text{Signal Line} = \text{EMA}_{9}(\text{MACD}).
 	      \]
 
 	      The MACD histogram, which represents the difference between the MACD and the signal line, is often used to identify potential buy and sell points:
-
 	      \[
-		      \text{MACD Histogram} = \text{MACD} - \text{Signal Line}
+		      \text{MACD Histogram} = \text{MACD} - \text{Signal Line}.
 	      \]
 
 	\item \textbf{Bollinger Bands (BBANDS)}: These volatility bands are placed above and below a moving average. Volatility is based on the standard deviation, which changes as volatility increases and decreases. Bollinger Bands consist of three lines:
 
 	      \begin{itemize}
 		      \item Middle Band: a simple moving average (SMA) of the security's price over \( N \) periods:
-
 		            \[
-			            \text{Middle Band} = \text{SMA}_{N}
+			            \text{Middle Band} = \text{SMA}_{N}.
 		            \]
 
 		      \item Upper Band: the middle band plus \( k \) times the standard deviation (\( \sigma \)) over the same period:
-
 		            \[
-			            \text{Upper Band} = \text{SMA}_{N} + k\sigma
+			            \text{Upper Band} = \text{SMA}_{N} + k\sigma.
 		            \]
 
 		      \item Lower Band: the middle band minus \( k \) times the standard deviation (\( \sigma \)) over the same period:
-
 		            \[
-			            \text{Lower Band} = \text{SMA}_{N} - k\sigma
+			            \text{Lower Band} = \text{SMA}_{N} - k\sigma,
 		            \]
-
 		            where \( N \) is the number of periods for the moving average and \( k \) is a multiplier, typically set to 2.
 	      \end{itemize}
 
@@ -428,7 +408,7 @@ One key observation was that using a short prediction length (pred\_len) of 4 or
 
 Another noteworthy point was the use of hourly datasets. Predicting values for the upcoming hours was nearly impossible due to a high degree of randomness, likely influenced by speculative decisions and the actions of individuals who may not fully understand market dynamics. However, predictions over longer periods showed more promise, leading to the introduction of the seq\_step parameter. By skipping several records, we achieved more predictable sequences.
 
-The learning rate (\textit{lr}) between 0.01 and 0.0001, with the \textit{lradj} parameter set to type1 or type3, yielded the best results. Starting with values too low prevented the model from achieving good results, while too high a learning rate damaged the pretrained LLM’s performance from the outset. Additionally, not decreasing the learning rate over epochs resulted in suboptimal training outcomes.
+The learning rate (\textit{lr}) between 0.0001 and 0.01, with the \textit{lradj} parameter set to type1 or type3, yielded the best results. Starting with values too low prevented the model from achieving good results, while too high a learning rate damaged the pretrained LLM’s performance from the outset. Additionally, not decreasing the learning rate over epochs resulted in suboptimal training outcomes.
 
 In summary, several key insights emerged from our experiments:
 
@@ -436,7 +416,7 @@ In summary, several key insights emerged from our experiments:
 	\item \textbf{Dataset Size and Temporal Proximity}: Models trained on smaller datasets, where prediction data was temporally closer to the training data, performed better.
 	\item \textbf{Prediction Length (pred\_len)}: A pred\_len around 10 was optimal. Shorter lengths did not allow the MSE-based loss function to optimize well, while longer lengths were too complex for the model.
 	\item \textbf{Hourly Data Prediction}: Predicting hourly values was challenging due to randomness, but longer periods with seq\_step parameter adjustments improved predictability.
-	\item \textbf{Learning Rate and Adjustment (lradj)}: Learning rates between 0.01 and 0.0001 with type1 or type3 \textit{lradj} settings were most effective. Lower starting rates hindered performance, and higher rates damaged pretrained capabilities without proper reduction over epochs.
+	\item \textbf{Learning Rate and Adjustment (lradj)}: Learning rates between 0.0001 and 0.01 with type1 or type3 \textit{lradj} settings were most effective. Lower starting rates hindered performance, and higher rates damaged pretrained capabilities without proper reduction over epochs.
 \end{itemize}
 
 These findings highlight the importance of tuning prediction length, learning rates, and the use of appropriate parameters for different datasets to achieve optimal forecasting performance. Further exploration of combinations and settings is necessary to fully understand and leverage the capabilities of large language models in predictive tasks.
