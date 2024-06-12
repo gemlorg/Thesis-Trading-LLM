@@ -112,9 +112,9 @@ The main idea involves using a framework around a frozen LLM (i.e. one that is n
 
 \begin{figure}[h!]
 	\centering
-	\includegraphics[width=0.5\linewidth]{"pictures/graph.png"}
+	\includegraphics[width=0.8\linewidth]{"pictures/graph.png"}
 	\caption{Simplified model of the embedding framework.
-		The input time series is normalized and patched (broken down into chunks). These patches are reprogrammed into embeddings,
+		The input time series is normalized and patched (broken down into chunks). These patches are reprogrammed into embeddings using multi-head attention,
 		and concatenated with embeddings generated from additional prompts by a pre-trained LLM.
 		The combined embeddings are then processed by the LLM to produce the final forecast output. }
 
