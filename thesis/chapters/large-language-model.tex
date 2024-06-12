@@ -188,11 +188,11 @@ In this study, we employed a set of distinctive parameters for our model trainin
 	\item \textbf{seq\_len} – This parameter defines the number of records in one prompt to the model.
 	\item \textbf{pred\_len} – This parameter specifies the number of records to predict.
 	\item \textbf{seq\_step} – This parameter determines the interval at which records are selected during iteration. For example, if \textit{seq\_step} is set to 4, the records would be indexed as 0, 4, 8, and so on. This means that instead of processing every single record sequentially, you only process every fourth record, like 0, 4, 8, etc., and then 1, 5, 9, etc. This method helps in reducing noise caused by hourly fluctuations, significantly improving the accuracy of the results.
+	\item \textbf{d\_ff} - number of neurons in a Patch Reprogramming feed forward layer.
 	\item \textbf{learning\_rate} – This parameter controls the speed of learning. Lower values mean slower, more stable learning, while higher values mean faster, but potentially unstable, learning.
 	\item \textbf{lradj} - This parameter specifies the strategy for adjusting the learning rate during training. Each strategy modifying the learning rate according to a predefined pattern or schedule.
-  \item \textbf{patience}   This parameter is used to determine the number of epochs with no improvement after which training will be stopped.
+	\item \textbf{patience}   This parameter is used to determine the number of epochs with no improvement after which training will be stopped.
 	\item \textbf{n\_heads} - number of heads in the multi-head attention mechanism.
-	\item \textbf{d\_ff} - number of neurons in the Reprogramming layer.
 \end{itemize}
 
 \subsection{Types of \textbf{lradj}}
@@ -364,33 +364,33 @@ The model was trained on datasets which contained less than 40000 records. It ta
 \section{Results}
 
 \begin{figure}[h!]
-  \centering
-	\includegraphics[width=\linewidth]{"pictures/aapl_40h_results.png"} 
+	\centering
+	\includegraphics[width=\linewidth]{"pictures/aapl_40h_results.png"}
 	\caption{}
 	\label{fig:aapl_fig}
 \end{figure}
 
 \begin{figure}[h!]
 
-  \centering
-  \includegraphics[width=\linewidth]{"pictures/eurusd_49h_results.png"}
+	\centering
+	\includegraphics[width=\linewidth]{"pictures/eurusd_49h_results.png"}
 	\caption{}
 	\label{fig:eurusud_fig}
 \end{figure}
 
 \begin{figure}[h!]
 
-  \centering
-  \includegraphics[width=\linewidth]{"pictures/gbpcad_70h_results.png"} 
+	\centering
+	\includegraphics[width=\linewidth]{"pictures/gbpcad_70h_results.png"}
 	\caption{}
 	\label{fig:gbpcad_fig}
 \end{figure}
 
 \begin{figure}[h!]
 
-  \centering
+	\centering
 
-	\includegraphics[width=\linewidth]{"pictures/electricity_66h_results.png"} 
+	\includegraphics[width=\linewidth]{"pictures/electricity_66h_results.png"}
 	\caption{}
 
 	\label{fig:electricity_fig}
