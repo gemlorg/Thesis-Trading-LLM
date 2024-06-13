@@ -210,14 +210,13 @@ In this study, we employed a set of distinctive parameters for our model trainin
 	      \end{itemize}
 	\item \textbf{type3}: The learning rate remains the same for the first epoch and then decreases by 30\% after each subsequent epoch.
 	\item \textbf{PEMS}: The learning rate decreases by 10\% after each epoch.
-	\item \textbf{TST}: The learning rate is adjusted according to the scheduler’s last learning rate.
 	\item \textbf{constant}: The learning rate remains constant throughout the training process.
 \end{itemize}
 
 \subsection{Impact on Results}
 The effectiveness of these parameters is highly contingent upon the specific dataset in use. For datasets characterized by high volatility and a high frequency of records, a smaller \textit{seq\_step} is preferable. Conversely, for data that remains relatively stable over time, a larger \textit{seq\_step} is necessary to prevent the model from merely replicating the last observed value.
 
-Our experimentation with various proportions between \textit{seq\_len} and \textit{pred\_len} revealed that optimal results were achieved when \textit{pred\_len} was approximately one-fourth of \textit{seq\_len}. This finding is intuitive, as it ensures the indicators retain their significance. A more detailed discussion on this can be found in the Prompt Engineering section.
+Our experimentation with various proportions between \textit{seq\_len} and \textit{pred\_len} revealed that optimal results were achieved when \textit{pred\_len} was approximately one-fourth of \textit{seq\_len}. This finding is intuitive, as it ensures the indicators retain their significance. This proportion likely results from the mean squared error (MSE) loss function used in the model, which effectively optimizes longer sequences, allowing the model to learn underlying patterns more accurately. Furthermore, maintaining this ratio helps achieve better accuracy in predicting whether the price will rise or fall, aligning the loss function's optimization process with the ultimate goal of directional accuracy. A more detailed discussion on this can be found in the Prompt Engineering section.
 
 Due to constraints in time and resources, we were unable to identify a universally optimal ratio for all datasets. Nevertheless, we believe that such a golden ratio exists and can be discovered with further research. More detailed information on this can be found in the Results and Conclusion section.
 
@@ -249,6 +248,7 @@ In our case, the input data is permuted and transformed:
 \[
 	q_{\text{fft}} = \text{FFT}(x_{\text{enc}}) \quad \text{and} \quad k_{\text{fft}} = \text{FFT}(x_{\text{enc}}).
 \]
+In this fragment, \( q_{\text{fft}} \) and \( k_{\text{fft}} \) are computed in the same way, but they are presented separately for clarity.
 
 2. \textbf{Cross-Spectral Density}: We compute the cross-spectral density by multiplying the Fourier-transformed data with the complex conjugate of itself. This step helps in identifying the strength and phase relationship between different frequencies.
 \[
