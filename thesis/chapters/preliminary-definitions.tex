@@ -63,7 +63,7 @@ Our target column was the \textbf{close} column. All others were discarded.
 The Electricity dataset in addition to the \textbf{date} column has 370 columns, which correspond to different energy consumption clients. Every datapoint records the energy consumption for the timestep period at each of these clients. For the target column, we chose the 127th column.
 This dataset serves to check whether the approach to market time-series generalises to other types of time-series.
 
-In all experiments, the dataset used was divided into 3 parts: the first 70\% was used in the testing of the model, then 10\% was used in its validation, and 20\% was used for testing.
+In all experiments, the dataset used was divided into 3 parts: the first 70\% was used in the training of the model, then 10\% was used in its validation, and 20\% was used for testing.
 
 
 \section{Metrics}
@@ -74,13 +74,13 @@ The \emph{Mean Squared Error} (MSE) is a metric used during training of machine 
 \subsubsection{Definition}
 MSE calculates the average of the squares of the errors. The error is the difference between the values (\(\hat{y}_i\)) predicted by the model and the actual values (\(y_i\)).
 
-\subsubsection{Calculation Steps}
-The metric is computed as follows:
-\begin{enumerate}
-	\item for each prediction the error is computed by subtracting the predicted value from the actual value;
-	\item each error is then squared in order to ensure that positive and negative errors do not cancel each other out and in order to emphasize larger errors;
-	\item the average of these squared errors is then computed to obtain the MSE.
-\end{enumerate}
+% \subsubsection{Calculation Steps}
+% The metric is computed as follows:
+% \begin{enumerate}
+% 	\item for each prediction the error is computed by subtracting the predicted value from the actual value;
+% 	\item each error is then squared in order to ensure that positive and negative errors do not cancel each other out and in order to emphasize larger errors;
+% 	\item the average of these squared errors is then computed to obtain the MSE.
+% \end{enumerate}
 
 \subsubsection{Mathematical Formulation}
 The mathematical formula for MSE is given by
@@ -94,27 +94,29 @@ where:
 	\item \(\hat{y}_i\) is the predicted value for the \(i\)th datapoint.
 \end{itemize}
 
-\subsubsection{Interpretation}
-\begin{itemize}
-	\item MSE is a non-negative number where a value of 0 indicates perfect predictions.
-	\item Larger MSE values indicate worse model performance.
-	\item MSE emphasizes larger errors due to the squaring of each term, which can be both advantageous and disadvantageous depending on the application.
-\end{itemize}
+% \subsubsection{Interpretation}
+% \begin{itemize}
+% 	\item MSE is a non-negative number where a value of 0 indicates perfect predictions.
+% 	\item Larger MSE values indicate worse model performance.
+% 	\item MSE emphasizes larger errors due to the squaring of each term, which can be both advantageous and disadvantageous depending on the application.
+% \end{itemize}
 
 
 \subsection{Accuracy metric}
-The \emph{Accuracy} metric measures correctness of class predictions of a model. In the context of time series prediction, it is measured as follows.
+The \emph{Accuracy}\cite{accuracy} metric measures correctness of class predictions of a model. In the context of time series prediction, it is measured as follows.
 
 When we predict the value \(a_{i+k}\) based on values \([a_{i-n}, a_i]\) in a time series, we
 \begin{enumerate}
-	\item classify the prediction \(\hat{a}_{i+k}\) into a binary up/down class, based on whether the predicted value is higher or lower then the last known one:
+	\item classify the prediction \(\hat{a}_{i+k}\) into a binary up/down class:
+	      %based on whether the predicted value is higher or lower then the last known one:
 	      \[
 		      \mathsf{class}(\hat{a}_{i+k}) =
 		      \begin{cases}
-			      1, & \text{if } \hat{a}_{i+k} \ge a_i \\
+			      1, & \text{if } \hat{a}_{i+k} \ge f([a_{i-n}, a_i], k) \\
 			      0, & \text{otherwise}
 		      \end{cases}
 	      \]
+	      where in this thesis \(f([a_{i-n}, a_i], k)\) is always \(a_i\), i.e. we classify based on last known datapoint.
 	\item We then classify the value actually observed \(a_{i+k}\) in the same way.
 	\item Subsequently we calculate the fraction of the times when such predictions were correct, i.e. \(\mathsf{class}(\hat{a}_{i+k}) = \mathsf{class}(a_{i+k})\).
 	\item This yields an \emph{accuracy} score, between 0 and 1: \(0 \leq \frac{\sum_{i=1}^N[\mathsf{class}(\hat{a}_{i+k}) = \mathsf{class}(a_{i+k})]}{N} \leq 1\). \footnote{Here for \(N\) predictions.}
