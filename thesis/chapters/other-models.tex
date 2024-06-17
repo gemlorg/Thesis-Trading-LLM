@@ -152,7 +152,8 @@ where \(\beta_0\) is the intercept term, and \(\beta_1, \beta_2, \ldots, \beta_d
 The model is trained by minimizing the residual sum of squares (RSS), which measures the discrepancy between the observed values \(y_i\) and the predicted values \(\hat{y}_i\). The RSS is given by
 \[
 	RSS(\beta) = \sum_{i=1}^n (y_i - \hat{y}_i)^2 = \sum_{i=1}^n \left(y_i - (\beta_0 + \beta_1 x_{i,1} + \beta_2 x_{i,2} + \cdots + \beta_d x_{i,d})\right)^2.
-\]
+\],
+where \(n\) denotes the number of predicted values.
 
 To find the optimal parameters \(\beta\), the RSS is minimized using analytical methods such as the normal equation or numerical optimization techniques such as gradient descent.
 
