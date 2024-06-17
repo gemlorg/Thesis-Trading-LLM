@@ -63,7 +63,7 @@ The Transformer (fig \autoref{fig:transformer_architecture_fig}) consists of the
 		      \item Consists of \(N = 6\) layers\footnote{\cite{attention_is_all_you_need}, section 3.1}.
 		      \item Each layer has two sub-layers:
 		            \begin{itemize}
-			            \item \textbf{Multi-Head Attention}: Applies attention mechanism over the input. For each token calculates the weight or importance of over tokens in the surrounding context (\textit{Attention}). Does so independently with \(h\) 'heads'\footnote{In \cite{attention_is_all_you_need}, \(h = 6\)}, each calculating different semantic relantionships (\textit{Multi-Head}). The results are concatenated and linearly transformed into size of one output (as if from one head).
+			            \item \textbf{Multi-Head Attention}: Applies attention mechanism over the input. For each token calculates the weight or importance of other tokens in the surrounding context (\textit{Attention}). Does so independently with \(h\) 'heads'\footnote{In \cite{attention_is_all_you_need}, \(h = 6\)}, each calculating different semantic relantionships (\textit{Multi-Head}). The results are concatenated and linearly transformed into size of one output (as if from one head).
 			            \item \textbf{Feed Forward}: Applies a fully connected feed-forward neural network.
 		            \end{itemize}
 		      \item \textbf{Add \& Norm}: Residual connections followed by layer normalization after each sub-layer.
@@ -73,13 +73,13 @@ The Transformer (fig \autoref{fig:transformer_architecture_fig}) consists of the
 		      \item Also consists of \(N = 6\) layers\footnote{\cite{attention_is_all_you_need}, section 3.1}.
 		      \item Each layer has three sub-layers:
 		            \begin{itemize}
-			            \item \textbf{Masked Multi-Head Attention}: As in Encoder, but masked, i.e. attention results for future tokens are disarded - .
+			            \item \textbf{Masked Multi-Head Attention}: As in Encoder, but masked, i.e. attention results for future tokens are discarded.
 			            \item \textbf{Multi-Head Attention}: Applies the multi-head attention mechanism to encoder output.
 			            \item \textbf{Feed Forward}: Applies a fully connected feed-forward neural network.
 		            \end{itemize}
 		      \item \textbf{Add \& Norm}: Residual connections followed by layer normalization after each sub-layer.
 	      \end{itemize}
-	\item \textbf{Output Embedding}: Converts decoder output tokens into semantic vector space.
+	      % \item \textbf{Output Embedding}: Converts decoder output tokens into semantic vector space.
 	\item \textbf{Linear \& Softmax Layer}: Maps the decoder’s output to the probability distribution over the target vocabulary. The most probable token is the output. \footnote{This may seem contrary to popular experience using e.g. ChatGPT, where given the same input, it may not necessarily output the same result. However, such tools may have random seeds for each interaction session and also may take into account the context of the conversation. }
 \end{enumerate}
 
@@ -160,7 +160,7 @@ Each entry in the updated dataset comprises two features. The first feature is a
 \subsubsection*{Prompt Embedding}
 The embedding in LLaMa2 involves transforming human language into a format that the model can understand and process. The process converts text into a sequence of tokens and later vectors, which are essentially numerical representations of words. First, the text is tokenized. Each token is then mapped to a corresponding vector of floating-point numbers, creating the embedding. The embedding is supposed to capture semantic information about the tokens, allowing the model to understand the meaning of a word in a specific context.
 
-We use predefined methods to perform the embedding in order to provide the model with instructions and additional information about the nature of the dataset and the upcoming input. It is important to note that the tokens are used exclusively within the functions provided by LLaMa-2, meaning at any point in time we have to work either with text or vectors.  The details about the structure of the prompt will be described in a separate section. 
+We use predefined methods to perform the embedding in order to provide the model with instructions and additional information about the nature of the dataset and the upcoming input. It is important to note that the tokens are used exclusively within the functions provided by LLaMa-2, meaning at any point in time we have to work either with text or vectors.  The details about the structure of the prompt will be described in a separate section.
 \subsubsection*{Patching}
 Patches are small, contiguous segments of the original data sequence, representing local windows of information. By patching we mean a method of preprocessing the input feature that is meant to prepare it for the underlying LLM. It is composed of 2 main steps, which are Patch Embedding and Reprogramming. Considering that the weights of the underlying LLM are frozen, patching plays a crucial role in training the model.
 
@@ -198,16 +198,16 @@ In this study, we employed a set of distinctive parameters for our model trainin
 \begin{itemize}
 	\item \textbf{type1}: The learning rate is halved after each epoch.
 	\item \textbf{type2}: The learning rate changes at specific epochs to predefined values:
-      \begin{itemize}
-          \item Epochs 1-2: $5 \times 10^{-5}$
-          \item Epochs 3-4: $1 \times 10^{-5}$
-          \item Epochs 5-6: $5 \times 10^{-6}$
-          \item Epochs 7-8: $1 \times 10^{-6}$
-          \item Epochs 9-10: $5 \times 10^{-7}$
-          \item Epochs 11-15: $1 \times 10^{-7}$
-          \item Epochs 16-20: $5 \times 10^{-8}$
-          \item Epochs 21 and onwards: $1 \times 10^{-8}$
-      \end{itemize}
+	      \begin{itemize}
+		      \item Epochs 1-2: $5 \times 10^{-5}$
+		      \item Epochs 3-4: $1 \times 10^{-5}$
+		      \item Epochs 5-6: $5 \times 10^{-6}$
+		      \item Epochs 7-8: $1 \times 10^{-6}$
+		      \item Epochs 9-10: $5 \times 10^{-7}$
+		      \item Epochs 11-15: $1 \times 10^{-7}$
+		      \item Epochs 16-20: $5 \times 10^{-8}$
+		      \item Epochs 21 and onwards: $1 \times 10^{-8}$
+	      \end{itemize}
 	\item \textbf{type3}: The learning rate remains the same for the first 2 epochs and then decreases by 30\% after each subsequent epoch.
 	\item \textbf{PEMS}: The learning rate decreases by 10\% after each epoch.
 	\item \textbf{constant}: The learning rate remains constant throughout the training process.
@@ -286,19 +286,19 @@ To address this challenge, we explored various analytical tools commonly used in
 
 \begin{itemize}
 	\item \textbf{Relative Strength Index (RSI)}: This momentum oscillator measures the speed and change of price movements. It oscillates between 0 and 100 and is typically used to identify overbought or oversold conditions in a market. The RSI is calculated using the following formula:
-		  \[
-			  RSI = 100 - \frac{100}{1 + RS},
-		  \]
-		  where \( RS \) (Relative Strength) is the average gain of "up" periods during the specified time frame divided by the average loss of "down" periods during the specified time frame:
-		  \[
-			  RS = \frac{\text{Average Gain}}{\text{Average Loss}}.
-		  \]
+	      \[
+		      RSI = 100 - \frac{100}{1 + RS},
+	      \]
+	      where \( RS \) (Relative Strength) is the average gain of "up" periods during the specified time frame divided by the average loss of "down" periods during the specified time frame:
+	      \[
+		      RS = \frac{\text{Average Gain}}{\text{Average Loss}}.
+	      \]
 
-		  Here, the \textbf{average gain} is the mean of all positive price changes over the specified period, and the \textbf{average loss} is the mean of all negative price changes over the same period. Let \( x_i \) represent the price change in period \( i \). These are calculated as follows:
-		  \[
-			  \text{Average Gain} = \frac{\sum_{i=1}^{n} x_i^+}{n}, \quad \text{Average Loss} = \frac{\sum_{i=1}^{n} x_i^-}{n},
-		  \]
-		  where \( x_i^+ \) is the positive price change (gain) and \( x_i^- \) is the absolute value of the negative price change (loss) in period \( i \), and \( n \) is the number of periods considered.
+	      Here, the \textbf{average gain} is the mean of all positive price changes over the specified period, and the \textbf{average loss} is the mean of all negative price changes over the same period. Let \( x_i \) represent the price change in period \( i \). These are calculated as follows:
+	      \[
+		      \text{Average Gain} = \frac{\sum_{i=1}^{n} x_i^+}{n}, \quad \text{Average Loss} = \frac{\sum_{i=1}^{n} x_i^-}{n},
+	      \]
+	      where \( x_i^+ \) is the positive price change (gain) and \( x_i^- \) is the absolute value of the negative price change (loss) in period \( i \), and \( n \) is the number of periods considered.
 
 	      These values are then used to calculate the RS, and subsequently the RSI, to determine whether the market is potentially overbought (typically RSI $> 70$) or oversold (typically RSI < 30).
 
