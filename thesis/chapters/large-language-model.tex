@@ -198,16 +198,17 @@ In this study, we employed a set of distinctive parameters for our model trainin
 \begin{itemize}
 	\item \textbf{type1}: The learning rate is halved after each epoch.
 	\item \textbf{type2}: The learning rate changes at specific epochs to predefined values:
-	      \begin{itemize}
-		      \item Epoch 2: $5 \times 10^{-5}$
-		      \item Epoch 4: $1 \times 10^{-5}$
-		      \item Epoch 6: $5 \times 10^{-6}$
-		      \item Epoch 8: $1 \times 10^{-6}$
-		      \item Epoch 10: $5 \times 10^{-7}$
-		      \item Epoch 15: $1 \times 10^{-7}$
-		      \item Epoch 20: $5 \times 10^{-8}$
-	      \end{itemize}
-	\item \textbf{type3}: The learning rate remains the same for the first epoch and then decreases by 30\% after each subsequent epoch.
+      \begin{itemize}
+          \item Epochs 1-2: $5 \times 10^{-5}$
+          \item Epochs 3-4: $1 \times 10^{-5}$
+          \item Epochs 5-6: $5 \times 10^{-6}$
+          \item Epochs 7-8: $1 \times 10^{-6}$
+          \item Epochs 9-10: $5 \times 10^{-7}$
+          \item Epochs 11-15: $1 \times 10^{-7}$
+          \item Epochs 16-20: $5 \times 10^{-8}$
+          \item Epochs 21 and onwards: $1 \times 10^{-8}$
+      \end{itemize}
+	\item \textbf{type3}: The learning rate remains the same for the first 2 epochs and then decreases by 30\% after each subsequent epoch.
 	\item \textbf{PEMS}: The learning rate decreases by 10\% after each epoch.
 	\item \textbf{constant}: The learning rate remains constant throughout the training process.
 \end{itemize}
@@ -238,22 +239,21 @@ Recognizing the need for a more sophisticated approach, we turned to autocorrela
 
 1. \textbf{Fourier Transformation}: We apply the Fourier transform to the input data \( x_{\text{enc}} \) to convert it from the time domain to the frequency domain. This helps in identifying patterns by analyzing the frequency components of the data.
 
-Let \( X(f) \) be the Fourier transform of \( x_{\text{enc}} \). The transformation is defined as
+Let \( X(f) \) be the Fast Fourier transform of \( x_{\text{enc}} \). The transformation is defined as
 \[
 	X(f) = \sum_{t=0}^{N-1} x_{\text{enc}}(t) e^{-i 2 \pi f t / N}.
 \]
 
 In our case, the input data is permuted and transformed:
 \[
-	q_{\text{fft}} = \text{FFT}(x_{\text{enc}}) \quad \text{and} \quad k_{\text{fft}} = \text{FFT}(x_{\text{enc}}).
+	q_{\text{fft}} = \text{FFT}(x_{\text{enc}}).
 \]
-In this fragment, \( q_{\text{fft}} \) and \( k_{\text{fft}} \) are computed in the same way, but they are presented separately for clarity.
 
 2. \textbf{Cross-Spectral Density}: We compute the cross-spectral density by multiplying the Fourier-transformed data with the complex conjugate of itself. This step helps in identifying the strength and phase relationship between different frequencies.
 \[
-	R(f) = q_{\text{fft}}(f) \cdot k_{\text{fft}}^*(f),
+	R(f) = q_{\text{fft}}(f) \cdot q_{\text{fft}}^*(f),
 \]
-where \( k_{\text{fft}}^*(f) \) denotes the complex conjugate of \( k_{\text{fft}}(f) \).
+where \( q_{\text{fft}}^*(f) \) denotes the complex conjugate of \( q_{\text{fft}}(f) \).
 
 3. \textbf{Inverse Fourier Transformation}: We then apply the inverse Fourier transform to convert the data back to the time domain. This results in the autocorrelation function, which shows how the data correlates with itself at different lags (time shifts):
 \[
@@ -286,32 +286,24 @@ To address this challenge, we explored various analytical tools commonly used in
 
 \begin{itemize}
 	\item \textbf{Relative Strength Index (RSI)}: This momentum oscillator measures the speed and change of price movements. It oscillates between 0 and 100 and is typically used to identify overbought or oversold conditions in a market. The RSI is calculated using the following formula:
-	      \[
-		      RSI = 100 - \frac{100}{1 + RS},
-	      \]
-	      where \( RS \) (Relative Strength) is the average gain of "up" periods during the specified time frame divided by the average loss of "down" periods during the specified time frame:
-	      \[
-		      RS = \frac{\text{Average Gain}}{\text{Average Loss}}.
-	      \]
+		  \[
+			  RSI = 100 - \frac{100}{1 + RS},
+		  \]
+		  where \( RS \) (Relative Strength) is the average gain of "up" periods during the specified time frame divided by the average loss of "down" periods during the specified time frame:
+		  \[
+			  RS = \frac{\text{Average Gain}}{\text{Average Loss}}.
+		  \]
 
-	      Here, the \textbf{average gain} refers to the mean of all positive price changes over the specified period, while the \textbf{average loss} refers to the mean of all negative price changes over the same period. These are calculated as follows:
-	      \begin{itemize}
-		      \item \textbf{Up Periods}: Time intervals during which the price increases from the previous closing price.
-		      \item \textbf{Down Periods}: Time intervals during which the price decreases from the previous closing price.
-	      \end{itemize}
-
-	      The calculations are as follows:
-	      \begin{itemize}
-		      \item \textbf{Average Gain}: The average of all gains (positive changes in price) during the up periods within the specified time frame.
-		      \item \textbf{Average Loss}: The average of all losses (negative changes in price) during the down periods within the specified time frame.
-	      \end{itemize}
-
-	      For example, with a time frame of 14 days, the average gain is calculated by summing all the gains over the 14 days and dividing by 14. Similarly, the average loss is calculated by summing all the losses over the 14 days and dividing by 14.
+		  Here, the \textbf{average gain} is the mean of all positive price changes over the specified period, and the \textbf{average loss} is the mean of all negative price changes over the same period. Let \( x_i \) represent the price change in period \( i \). These are calculated as follows:
+		  \[
+			  \text{Average Gain} = \frac{\sum_{i=1}^{n} x_i^+}{n}, \quad \text{Average Loss} = \frac{\sum_{i=1}^{n} x_i^-}{n},
+		  \]
+		  where \( x_i^+ \) is the positive price change (gain) and \( x_i^- \) is the absolute value of the negative price change (loss) in period \( i \), and \( n \) is the number of periods considered.
 
 	      These values are then used to calculate the RS, and subsequently the RSI, to determine whether the market is potentially overbought (typically RSI $> 70$) or oversold (typically RSI < 30).
 
 
-	\item \textbf{Moving Average Convergence Divergence (MACD)}: This trend-following indicator shows the relationship between two moving averages of a security's price. The MACD is calculated by subtracting the 26-period Exponential Moving Average (EMA) from the 12-period EMA:
+	\item \textbf{Moving Average Convergence Divergence (MACD)}: This trend-following indicator shows the relationship between two moving averages of an observed price. The MACD is calculated by subtracting the 26-period Exponential Moving Average (EMA) from the 12-period EMA:
 	      \[
 		      \text{MACD} = \text{EMA}_{12} - \text{EMA}_{26}.
 	      \]
