@@ -7,7 +7,7 @@ In the below descriptions, \textbf{overfitting} refers to a phenomenon when mode
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.5\linewidth]{"pictures/overfitted_data.png"}
-	\caption{Noisy (roughly linear) data is fitted to a linear function and a polynomial function. Although the polynomial function is a perfect fit, the linear function can be expected to generalize better: if the two functions were used to extrapolate beyond the fitted data, the linear function should make better predictions.}
+	\caption{\textit{Noisy (roughly linear) data is fitted to a linear function and a polynomial function. Although the polynomial function is a perfect fit, the linear function can be expected to generalize better: if the two functions were used to extrapolate beyond the fitted data, the linear function should make better predictions.}}
 	\label{fig:overfitting}
 \end{figure}
 % \section{How we describe models}
@@ -139,7 +139,7 @@ In the below descriptions, \textbf{overfitting} refers to a phenomenon when mode
 
 \emph{Linear regression} \cite{linear_regression} is a statistical method used for predicting the value of a continuous outcome variable based on one or more input features. It models the relationship between the input features and the continuous outcome by fitting a linear equation to observed data.
 
-In the context of predicting time series, an input vector \(x_i\) is a subseries of datapoints of length \textit{seq\_len}, for which the output \(y_i\) is a prediction of the actual value of the datapoint following \(x_i\). Therefore, in the description below, the number of features of an input vector is \(d = \textit{seq\_len} \cdot k\), where \(k\) is the number of features of an individual datapoint.
+In the context of predicting time series, an input vector \(x_i\) is a subseries of datapoints of length \textit{seq\_len}, for which the output \(y_i\) is a prediction of the actual value of the datapoint following \(x_i\). Therefore, in the description below, the number of features of an input vector is \(d = \textit{seq\_len}\).
 
 With that in mind, the general formulation of the linear regression model is as follows:
 
@@ -358,8 +358,8 @@ where
 
 To train an MLP, the backpropagation algorithm is used.
 This algorithm adjusts the weights and biases of the network to minimize the difference between the actual output and the expected output.
-The process involves computing the gradient of a loss function with respect to each weight and bias in the network, and then using these gradients to update the weights and biases in the direction that minimizes the loss.
-The loss function measures the error between the predicted output and the actual output. The update rule for the weights is given by
+The process involves computing the gradient of a \emph{loss function} with respect to each weight and bias in the network, and then using these gradients to update the weights and biases in the direction that minimizes the loss.
+The loss function measures the error between the predicted output and the actual output. In our experiments, we used MSE as a loss function. The update rule for the weights is given by
 \begin{equation}
 	w^{(l)}_{j,i} \leftarrow w^{(l)}_{j,i} - \eta \frac{\partial \mathcal{L}}{\partial w^{(l)}_{j,i}},
 \end{equation}
@@ -421,13 +421,13 @@ A typical CNN architecture comprises several layers that transform the input ima
 
 \subsubsection{Convolutional Layer}
 The convolutional layer applies a set of learnable filters to the input. Each filter activates specific features at certain spatial positions in the input. Mathematically, the convolution operation of each filter is defined as follows:
-\[f(x, y) = (g * h)(x, y) = \sum_c\sum_m\sum_n g_c(m,n) \cdot h_c(x-m, y-n)\]
+\[f(x, y) = (g * h)(x, y) = \sum_m\sum_n g(m,n) \cdot h(x-m, y-n),\]
 where \(f(x, y)\) is the output, \(g\) is the filter, \(h\) is the input image, and \(*\) denotes the convolution operation. \(x\) and \(y\) range over output image dimensions; \(m\) and \(n\) range over the filter dimensions.
 
 Following convolution, an \textbf{activation function} is applied to introduce non-linearity into the model. The Rectified Linear Unit (ReLU) \label{relu} is commonly used:
 \[\phi(x) = \max(0, x).\]
 
-For time series forecasting, we use 1D-convolutional neural network, which means that filter has \(1\) row.
+For time series forecasting, we use 1-dimensional convolutional neural network, which means that filter has \(1\) row.
 
 
 \subsubsection{Pooling Layer}
