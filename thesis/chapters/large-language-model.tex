@@ -165,15 +165,15 @@ We use predefined methods to perform the embedding in order to provide the model
 Patches are small, contiguous segments of the original data sequence, representing local windows of information. By patching we mean a method of preprocessing the input feature that is meant to prepare it for the underlying LLM. It is composed of 2 main steps, which are Patch Embedding and Reprogramming. Considering that the weights of the underlying LLM are frozen, patching plays a crucial role in training the model.
 
 \paragraph{Patch Embedding}
-The method is used to transform raw input data into a format suitable for sequence modeling. It begins by padding the input through repetition to ensure that patches can be extracted without losing boundary information. Afterwards, the input is devided into overlapping patches, each capturing a segment of the sequence. The patches are then projected into a lower-dimensional space using a one-dimensional convolutional layer, which captures local patterns within a single patch. This provides additional information about the data. Additionally, dropout is applied to the embedded patches in order to prevent overfitting. The resulting sequence, now embedded and regularized, is used as the input for subsequent layers in the model.
+The method is used to transform raw input data into a format suitable for sequence modeling. It begins by padding the input through repetition to ensure that patches can be extracted without losing boundary information. Afterwards, the input is devided into overlapping patches, each capturing a segment of the sequence. The patches are then projected into a lower-dimensional space using a one-dimensional convolutional layer, which captures local patterns within a single patch. This provides additional information about the data. Additionally, random insignificant noise is added to the embedded patches in order to prevent overfitting. The resulting sequence, is used as the input for subsequent layers in the model.
 
 \paragraph{Reprogramming}
-The purpose of this step is to enchance the LLM's ability to understand the input data. At the moment the input may be seen as random to the model, so in this step we combine the input vector and the instructions embeddings mentioned in the previous section. A linear transformation with unforzen weights is applied to both. Then, multi-head attention is applied to the input using the instructions embeddings.
+The purpose of this step is to enchance the LLM's ability to understand the input data. At the moment the input may be seen as random to the model, so in this step we combine the input vector and the instructions embeddings mentioned in the previous section. A linear transformation is applied to both. Then, multi-head attention is applied to the input using the instructions embeddings.
 
 Finally, the reprogrammed embeddings are transformed back into the appropriate dimensionality for the model's subsequent layers. This layer allows the LLM to understand the connection between the instructions and the input vector.
 
 \subsection{Body and Output Projection}
-Two sequences of vectors received from the Patching and Prompt Embedding layers are concatenated and fed into the underlying LLM as a single sequence. The output is then projected to the forecasted values using a linear transformation.
+Two sequences of vectors received from the Patching and Prompt Embedding layers are accordingly reshaped, concatenated and fed into the underlying LLM as a single sequence. The output is then projected to the forecasted values using a linear transformation.
 
 
 \subsection{Training Process}
