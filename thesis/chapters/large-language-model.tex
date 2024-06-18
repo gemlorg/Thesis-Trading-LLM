@@ -1,4 +1,4 @@
-In this chapter we present the basic theory behind Large Language Models. We then introduce the LLaMA family of models, which we've been using. Subsequently, we describe the embedding technique we've used and we present our results.
+In this chapter we present the basic theory behind Large Language Models. We then introduce the LLaMa family of models, which were used as a basis for our model. Subsequently, we describe the embedding technique and present the results.
 
 \section{Vocabulary}
 
@@ -8,9 +8,9 @@ The following vocabulary is used:
 
 	\item \textbf{Tokenization} is a process of breaking down input data into tokens.
 
-	\item \textbf{Language model} is a \textit{probabilistic model} of a natural language. Probabilistic - meaning that given some input text data, it's job is to predict the future token. \cite{language_models}
+	\item \textbf{Language model} is a \textit{probabilistic model} that processes natural language, where probabilistic means that given input text data, its job is to predict the likelihood of each word appearing next. \cite{language_models}
 
-	\item \textbf{Supervised learning} is a type of a method of training machine learning models where every input is supplied with the output the model is expected to produce. The model then matches its own output with the expected output to correct its own behaviour.
+	\item \textbf{Supervised learning} is a method of training machine learning models where every input is supplied with the output that the model is expected to produce. The model then matches its own output with the expected output to correct its own behaviour.
 
 	\item \textbf{Pretraining} is a process of training the language model on a corpus of data.
 
@@ -18,9 +18,9 @@ The following vocabulary is used:
 
 	\item \textbf{Token embedding} is a mapping of tokens to high-dimensional vectors of real numbers. This mapping is expected to have the property that tokens similar in meaning are close in the output space. See \cite{token_embeddings}.
 
-	\item \textbf{Context length} is the maximal size of input tokens a large language model can process at any one time.
+	\item \textbf{Context length} is the maximal size of the input tokens a large language model can process at a single time.
 
-	\item \textbf{Cross-modality data} is data that combines multiple modalities, i.e. text, image, audio, video, etc. In particuliar, combination of text description and time series is cross-modality data.
+	\item \textbf{Cross-modality data} is data that combines multiple modalities, i.e. text, image, audio, video, etc. In particular, combination of text description and time series is cross-modality data.
 
 \end{itemize}
 % CLEAN
@@ -29,7 +29,7 @@ The following vocabulary is used:
 
 A Large Language Model (LLM) \cite{llmintro} is a language model that is pretrained on a large collection of data (usually billions of tokens).
 %an advanced artificial intelligence system designed to understand and generate human-like text based on patterns it learns from enormous amounts of textual data.
-These models utilize deep learning techniques, particularly neural networks, which consist of interconnected neuron layers that process information sequentially, one by one.
+Such model utilizes deep learning techniques, particularly neural networks, which consist of interconnected neuron layers that process information sequentially.
 The predominant architecture underpinning most contemporary LLMs is the Transformer (see below), notable for its self-attention mechanism that enables the model to assess the importance of different tokens in a sentence irrespective of the order the tokens are in.
 
 The training of an LLM involves pretraining it with a large, diverse corpus of text, during which it adjusts its internal parameters to minimize the difference between its predictions and the actual data. This process of supervised learning equips the model with a probabilistic understanding of the language (its patterns, semantics, syntax, knowledge of the world inherent in a language), enabling it to predict a continuation of a given piece of input text.
@@ -37,12 +37,12 @@ The training of an LLM involves pretraining it with a large, diverse corpus of t
 Once trained, LLMs can perform a variety of language-based tasks such as translation, summarization, question answering, and text generation.
 It can then be fine-tuned to perform better on a specific task, e.g. write poetry, give cooking advice, write programming code, etc.
 %Their capability to generate coherent and contextually relevant text makes them invaluable for applications in natural language processing (NLP), including conversational agents, content creation tools, and sophisticated text analysis. 
-We will see how such a model deals with analysing and predicting time series data.
+We will see how such a model deals with analyzing and predicting time series data.
 
 
 \section{The Transformer}
 
-The Transformer is a type of neural network architecture introduced in the seminal 2017 paper \textit{"Attention is All You Need"} by Vaswani et al. \cite{attention_is_all_you_need}. It has since become foundational for many natural language processing (NLP) models due to its efficiency and effectiveness in handling data sequences, such as text.
+The Transformer is a type of neural network architecture introduced in the seminal 2017 paper \textit{"Attention is All You Need"} by Vaswani et al. \cite{attention_is_all_you_need}. It has since become foundational for many natural language processing (NLP) models due to its effectiveness at handling data sequences, such as text.
 
 % In this section, \(N\) denotes the number of sublayers in the Transformer model (see description below).
 
@@ -50,7 +50,7 @@ The Transformer is a type of neural network architecture introduced in the semin
 
 \begin{figure}[h!]
 	\includegraphics[width=\linewidth]{"pictures/the-transformer-model-architecture.png"} % TODO: better diagram
-	\caption{The Transformer model architecture (figure from \cite{attention_is_all_you_need}). Both inputs and outputs are embedded and concatenated (\(\oplus\)) with their positional encodings - those are then fed into encoder and decoder respectively. The left part is one encoder layer. The whole encoder is made up of \(N\) of these layers stacked (output of one is input of the next). The output of the last encoder layer is used in all \(N\) decoder layers (on the right), which are likewise stacked. The output of the decoder (stack of decoder layers) is used for prediction.}
+	\caption{The Transformer model architecture (figure from \cite{attention_is_all_you_need}). Both inputs and outputs are embedded and concatenated (\(\oplus\)) with their positional encodings - those are then fed into encoder and decoder respectively. The left part is a single encoder layer. The whole encoder is made up of \(N\) of these layers stacked (output of one is input of the next). The output of the last encoder layer is used in all \(N\) decoder layers (on the right), which are stacked likewise. The output of the decoder (stack of decoder layers) is used for prediction.}
 
 	\label{fig:transformer_architecture_fig}
 \end{figure}
@@ -109,7 +109,7 @@ The Transformer (fig \autoref{fig:transformer_architecture_fig}) consists of the
 \textbf{LLaMA-2} \cite{llama2} is an improved version of LLaMA, with similar model sizes. It has the same architecture as LLaMA-1, but was trained on a much larger set of data (approximately 2 trillion tokens). It also has doubled context length of 4096 tokens. For our experiments, we were using LLaMA-2.
 
 \section{Time-series Embedding}
-We now present the technique we've used for using a vanilla (not fine-tuned) LLaMA-2 model to predict time series data.
+We now present the technique we've used for using the LLaMA-2 model to predict time series data.
 The main idea involves using a framework around a frozen LLM (i.e. one that is not changed during the training process) that transforms input time series data into a text representation the LLM can then work on. Its output is then converted into a prediction. The idea is due to an article by Jin et al. (2024) \cite{reprogramming_llm}.
 
 \begin{figure}[h!]

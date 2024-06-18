@@ -1,9 +1,9 @@
 % TOdO: Outline that binary output is recommended by the client. It is possible to have more complicated output for Other models.
 % Here we present our results from trying to use the following models to extrapolate a time series.
 % Classification models output in binary categories: increase or decrease in value, and are therefore less precise.
-Here we describe four simpler machine learning models we used for comparison with LLM results: Linear Regression, Multilayer Perceptron, Convolutional Neural Network, Residual Neural Network. The descriptions include a short, technical overview of how the models work. In \autoref{chap:results} we present the results of trying to use these models to extrapolate a time series.
+Here we describe four simpler machine learning models we used for comparison with LLM results: Linear Regression, Multilayer Perceptron, Convolutional Neural Network, Residual Neural Network. The descriptions include a short, technical overview of how the models work. In \autoref{chap:results} we present the results of time series extrapolation using those models.
 
-In the below descriptions, \textbf{overfitting} refers to a phenomenon when a model learns from the training data too closely or exactly, thereby making it less generalisable to new data. See  figure  \autoref{fig:overfitting} for an illustration of the phenomenon. Figure and description are both from Wikipedia \cite{overfitting}.
+In the below descriptions, \textbf{overfitting} refers to a phenomenon when a model learns from the training data too closely or exactly, thereby making it less generalizable to new data. See  figure  \autoref{fig:overfitting} for an illustration of the phenomenon. Both the figure and the description are taken from Wikipedia \cite{overfitting}.
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.5\linewidth]{"pictures/overfitted_data.png"}
@@ -139,7 +139,7 @@ In the below descriptions, \textbf{overfitting} refers to a phenomenon when a mo
 
 \emph{Linear regression} \cite{linear_regression} is a statistical method used for predicting the value of a continuous outcome variable based on one or more input features. It models the relationship between the input features and the continuous outcome by fitting a linear function to observed data.
 
-In the context of predicting time series, an input vector \(x_i\) is a subseries of datapoints of length \textit{seq\_len}, for which the output \(y_i\) is a prediction of the actual value of the datapoint following \(x_i\). Therefore, in the description below, the number of features of an input vector is \(d = \textit{seq\_len}\).
+In the context of predicting time series, an input vector \(x_i\) is a subseries of data points of length \textit{seq\_len}, for which the output \(y_i\) is a prediction of the actual value of the data point following \(x_i\). Therefore, in the description below, the number of features of an input vector is \(d = \textit{seq\_len}\).
 
 With that in mind, the general formulation of the linear regression model is as follows:
 
@@ -349,7 +349,7 @@ In this process, the input data is passed through each layer of the network, tra
 where
 \begin{itemize}
 	\item $a^{(l)}_j$ is the activation of the $j$-th neuron in the $l$-th layer;
-	\item $\phi$ denotes the activation function, e.g. ReLU (\autoref{relu}), softmax;
+	\item $\phi$ denotes the activation function, e.g. ReLU (\autoref{relu}), Softmax;
 	\item $w^{(l)}_{j,i}$ represents the weight from the $i$-th neuron in the $(l-1)$-th layer to the $j$-th neuron in the $l$-th layer;
 	\item $b^{(l)}_j$ is the bias term for the $j$-th neuron in the $l$-th layer;
 	\item $a^{(l-1)}_i$ is the activation of the $i$-th neuron in the $(l-1)$-th layer.
@@ -425,7 +425,7 @@ The convolutional layer applies a set of learnable filters to the input. Each fi
 \[f(x, y) = (g * h)(x, y) = \sum_m\sum_n g(m,n) \cdot h(x-m, y-n),\]
 where \(f(x, y)\) is the output, \(g\) is the filter, \(h\) is the input image, and \(*\) denotes the convolution operation. \(x\) and \(y\) range over output image dimensions; \(m\) and \(n\) range over the filter dimensions.
 
-Following convolution, an \textbf{activation function} is applied to introduce non-linearity into the model. The Rectified Linear Unit (ReLU) \label{relu} is commonly used:
+Following convolution, an \textbf{activation function} is applied to introduce nonlinearity into the model. The Rectified Linear Unit (ReLU) \label{relu} is commonly used:
 \[\phi(x) = \max(0, x).\]
 
 For time series forecasting, we use 1-dimensional convolutional neural network, which means that filter has \(1\) row.
@@ -469,7 +469,7 @@ A Residual Neural Network (ResNet) is a type of deep learning model specifically
 \]
 where $\mathbf{y}$ is the output of the layer, $\mathcal{F}$ represents the residual mapping to be learned by the layer, $\mathbf{x}$ is the input, and $\{W_i\}$ denote the weights of the layers.
 
-The primary advantage of this architecture is its ability to facilitate the training of deeper networks by preserving the gradient flow through the network during backpropagation. This is achieved by allowing the backpropagation to bypass one or more layers, reducing the risk of gradient vanishing (where update gradients become exponentially small during backpropagation, slowing down training). As a result, ResNets can be trained to much depths than CNNs, and can have more layers.
+The primary advantage of this architecture is its ability to facilitate the training of deeper networks by preserving the gradient flow through the network during backpropagation. This is achieved by allowing the backpropagation to bypass one or more layers, reducing the risk of gradient vanishing (where update gradients become exponentially small during backpropagation, slowing down training). As a result, ResNets can be trained to greater depths than CNNs, and can have more layers.
 % As the number of layers in classic CNN grows, the problem of vanishing or exploding gradient appears.
 % It means that gradients become very small (or very large in case of exploding) as they are propagated
 % through the layers of the network.
