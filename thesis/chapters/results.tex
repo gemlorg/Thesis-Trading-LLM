@@ -2,9 +2,9 @@ In this chapter we present the comparison in performance between our results usi
 
 For each dataset, we have experimented with a few different pairs (\verb|pred_len|, \verb|seq_step|), and chose the one, where the LLM performed best on the final epoch, i.e. had highest accuracy. Then, we've trained the other 4 simpler models with these parameters, to see how they compare.
 
-In this chapter we present the results in the following way: for each dataset described in \autoref{chap:other-models}, we present one table. The table presents accuracies each model achieves at predicting the price \verb|Prediction Timestep| time into the future. Next to the name of each dataset is a tuple of the form (\verb|pred_len|, \verb|seq_step|) with which parameters the models were trained.
+In this chapter we present the results in the following way: for each dataset described in \autoref{chap:other-models}, we have one row. The table presents accuracies each model achieves at predicting the price \verb|Prediction Timestep| time into the future. Next to the name of each dataset is a tuple of the form (\verb|pred_len|, \verb|seq_step|) with which parameters the models were trained.
 
-For each dataset, the best accuracy score has been emphasized.
+For each dataset, the best accuracy score has been bolded.
 
 \section{Results}
 
@@ -35,7 +35,7 @@ For each dataset, the best accuracy score has been emphasized.
 \end{center}
 
 
-Overall, as can be seen from the above summary, the LLM performs quite well when compared to over models. It is not however consistently best. MLP and CNN models sometimes manage to achieve higher accuracy than LLM.
+Overall, as can be seen from the above summary, the LLM performs quite well when compared to other models. It is not however consistently best. MLP and CNN models sometimes manage to achieve higher accuracy than LLM.
 
 In AAPL dataset, the advantage is quite clearly in favour of MLP, where Linear Regression also does very well. The AAPL dataset is distinguished by its relatively small size and longer timestep, indicating that perhaps MLP and Linear Regression do better with such datasets.
 
