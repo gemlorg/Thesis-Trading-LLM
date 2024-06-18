@@ -3,7 +3,7 @@
 % Classification models output in binary categories: increase or decrease in value, and are therefore less precise.
 Here we describe four simpler machine learning models we used for comparison with LLM results: Linear Regression, Multilayer Perceptron, Convolutional Neural Network, Residual Neural Network. The descriptions include a short, technical overview of how the models work. In \autoref{chap:results} we present the results of trying to use these models to extrapolate a time series.
 
-In the below descriptions, \textbf{overfitting} refers to a phenomenon when model learns from the training data too closely or exactly, thereby making it less generalisable to new data. See  figure  \autoref{fig:overfitting} for an illustration of the phenomenon. Figure and description are both from Wikipedia \cite{overfitting}.
+In the below descriptions, \textbf{overfitting} refers to a phenomenon when a model learns from the training data too closely or exactly, thereby making it less generalisable to new data. See  figure  \autoref{fig:overfitting} for an illustration of the phenomenon. Figure and description are both from Wikipedia \cite{overfitting}.
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.5\linewidth]{"pictures/overfitted_data.png"}
@@ -137,7 +137,7 @@ In the below descriptions, \textbf{overfitting} refers to a phenomenon when mode
 
 % The optimal parameters \(\beta\) are estimated by maximizing the log-likelihood function using numerical optimization techniques such as gradient descent.
 
-\emph{Linear regression} \cite{linear_regression} is a statistical method used for predicting the value of a continuous outcome variable based on one or more input features. It models the relationship between the input features and the continuous outcome by fitting a linear equation to observed data.
+\emph{Linear regression} \cite{linear_regression} is a statistical method used for predicting the value of a continuous outcome variable based on one or more input features. It models the relationship between the input features and the continuous outcome by fitting a linear function to observed data.
 
 In the context of predicting time series, an input vector \(x_i\) is a subseries of datapoints of length \textit{seq\_len}, for which the output \(y_i\) is a prediction of the actual value of the datapoint following \(x_i\). Therefore, in the description below, the number of features of an input vector is \(d = \textit{seq\_len}\).
 

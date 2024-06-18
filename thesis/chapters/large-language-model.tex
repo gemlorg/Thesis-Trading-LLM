@@ -12,7 +12,7 @@ The following vocabulary is used:
 
 	\item \textbf{Supervised learning} is a type of a method of training machine learning models where every input is supplied with the output the model is expected to produce. The model then matches its own output with the expected output to correct its own behaviour.
 
-	\item \textbf{Pretraining} is a process of training the language model on a corpus of data
+	\item \textbf{Pretraining} is a process of training the language model on a corpus of data.
 
 	\item \textbf{Fine-tuning} is a process of adapting a pretrained language model to a specific task (e.g. mathematics, poetry) by training it on a smaller, task-specific dataset.
 
@@ -43,6 +43,8 @@ We will see how such a model deals with analysing and predicting time series dat
 \section{The Transformer}
 
 The Transformer is a type of neural network architecture introduced in the seminal 2017 paper \textit{"Attention is All You Need"} by Vaswani et al. \cite{attention_is_all_you_need}. It has since become foundational for many natural language processing (NLP) models due to its efficiency and effectiveness in handling data sequences, such as text.
+
+% In this section, \(N\) denotes the number of sublayers in the Transformer model (see description below).
 
 \subsection{Components}
 
@@ -148,7 +150,7 @@ The following three paragraphs come from the article.\cite{reprogramming_llm}
 \section{Our methodology}
 In the current and the next few sections we will share the details of our implementation. The goal is to further elaborate on the idea presented in the previous section and describe the specifics and challenges of our approach.
 
-Our model has the same architecture as the one presented in the one described in the previous section. We will expand on each of the main components of the model and explain how it is trained.
+Our model has the same architecture as the one described in the previous section. We will expand on each of the main components of the model and explain how it is trained.
 
 \subsection{Input Transformation}
 
@@ -165,7 +167,7 @@ We use predefined methods to perform the embedding in order to provide the model
 Patches are small, contiguous segments of the original data sequence, representing local windows of information. By patching we mean a method of preprocessing the input feature that is meant to prepare it for the underlying LLM. It is composed of 2 main steps, which are Patch Embedding and Reprogramming. Considering that the weights of the underlying LLM are frozen, patching plays a crucial role in training the model.
 
 \paragraph{Patch Embedding}
-The method is used to transform raw input data into a format suitable for sequence modeling. It begins by padding the input through repetition to ensure that patches can be extracted without losing boundary information. Afterwards, the input is devided into overlapping patches, each capturing a segment of the sequence. The patches are then projected into a lower-dimensional space using a one-dimensional convolutional layer, which captures local patterns within a single patch. This provides additional information about the data. Additionally, random insignificant noise is added to the embedded patches in order to prevent overfitting. The resulting sequence, is used as the input for subsequent layers in the model.
+The method is used to transform raw input data into a format suitable for sequence modeling. It begins by padding the input through repetition to ensure that patches can be extracted without losing boundary information. Afterwards, the input is divided into overlapping patches, each capturing a segment of the sequence. The patches are then projected into a lower-dimensional space using a one-dimensional convolutional layer, which captures local patterns within a single patch. This provides additional information about the data. Additionally, random insignificant noise is added to the embedded patches in order to prevent overfitting. The resulting sequence, is used as the input for subsequent layers in the model.
 
 \paragraph{Reprogramming}
 The purpose of this step is to enchance the LLM's ability to understand the input data. At the moment the input may be seen as random to the model, so in this step we combine the input vector and the instructions embeddings mentioned in the previous section. A linear transformation is applied to both. Then, multi-head attention is applied to the input using the instructions embeddings.
@@ -190,7 +192,7 @@ In this study, we employed a set of distinctive parameters for our model trainin
 	\item \textbf{d\_ff} - number of neurons in a Patch Reprogramming feed forward layer.
 	\item \textbf{learning\_rate} – This parameter controls the speed of learning. Lower values mean slower, more stable learning, while higher values mean faster, but potentially unstable, learning.
 	\item \textbf{lradj} - This parameter specifies the strategy for adjusting the learning rate during training. Each strategy modifying the learning rate according to a predefined pattern or schedule.
-	\item \textbf{patience}   This parameter is used to determine the number of epochs with no improvement after which training will be stopped.
+	\item \textbf{patience} - This parameter is used to determine the number of epochs with no improvement after which training will be stopped.
 	\item \textbf{n\_heads} - number of heads in the multi-head attention mechanism.
 \end{itemize}
 
