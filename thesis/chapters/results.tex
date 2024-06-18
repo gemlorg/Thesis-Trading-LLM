@@ -2,7 +2,7 @@ In this chapter we present the comparison in performance between our results usi
 
 For each dataset, we have experimented with a few different pairs (\verb|pred_len|, \verb|seq_step|), and chose the one, where the LLM performed best on the final epoch, i.e. had highest accuracy. Then, we've trained the other 4 simpler models with these parameters, to see how they compare.
 
-In this chapter we present the results in the following way: for each dataset described in \autoref{chap:other-models}, we have one row. The table presents accuracies each model achieves at predicting the price \verb|Prediction Timestep| time into the future. Next to the name of each dataset is a tuple of the form (\verb|pred_len|, \verb|seq_step|) with which parameters the models were trained.
+In this chapter we present the results in the following way: for each dataset described in \autoref{chap:preliminary-definitions}, we have one row. The table presents accuracies each model achieves at predicting the price \verb|Prediction Timestep| time into the future. Next to the name of each dataset is a tuple of the form (\verb|pred_len|, \verb|seq_step|) with which parameters the models were trained.
 
 For each dataset, the best accuracy score has been bolded.
 
@@ -15,7 +15,7 @@ For each dataset, the best accuracy score has been bolded.
 		\hline
 		Dataset name        & \vtop{\hbox{\strut Prediction}\hbox{\strut timestep}} & \vtop{\hbox{\strut Linear}\hbox{\strut Regression}} & MLP              & CNN              & ResNet  & LLM              \\ [0.5ex]
 		\hline\hline
-		AAPL (40, 1)        & 40 days                                               & 63.55\%                                             & \textbf{65.42}\% & 34.92\%          & 34.92\% & 60.12\%           \\
+		AAPL (40, 1)        & 40 days                                               & 63.55\%                                             & \textbf{65.42}\% & 34.92\%          & 34.92\% & 60.12\%          \\
 		\hline
 		BTCUSD (5, 2)       & 10 hours                                              & 48.54\%                                             & 46.66\%          & 45.31\%          & 45.56\% & \textbf{50.54}\% \\
 		\hline
@@ -25,7 +25,7 @@ For each dataset, the best accuracy score has been bolded.
 		\hline
 		GBPTRY (5, 2)       & 10 hours                                              & 54.79\%                                             & \textbf{58.64}\% & 41.97\%          & 40.93\% & 54.65\%          \\
 		\hline
-		Electricity (6, 11) & 66 hours                                              & 57.81\%                                             & 66.87\%          & 65.31\%          & 50.62\% & \textbf{68.78}\% \\
+		Electricity (6, 11) & 990 minutes                                           & 57.81\%                                             & 66.87\%          & 65.31\%          & 50.62\% & \textbf{68.78}\% \\
 		\hline
 		US500 (10, 1)       & 10 hours                                              & 42.54\%                                             & 44.00\%          & 43.49\%          & 41.12\% & \textbf{53.37}\% \\
 		\hline
@@ -42,7 +42,7 @@ In AAPL dataset, the advantage is quite clearly in favour of MLP, where Linear R
 In GBPCAD and GBPTRY datasets, the advantage of Linear Regression, MLP and CNN is less pronounced, though still noticable.
 
 In other datasets our LLM construction takes the lead, with at least 2\% of an advantage over the second best model. This is most pronounced in the US500 dataset, where the accuracy of other models is below 45\%, whereas LLM achieves a score of over 53\%. As US500 is an aggregated index of US top 500 companies, this may mean, that LLM is better able to capture the more complex nature of such a dataset.
-
+\\[100pt]
 %  (x is a result that has not yet been filled in)
 % \begin{center}
 % 	\begin{tabular}{|| c || c | c | c | c | c | c ||}
