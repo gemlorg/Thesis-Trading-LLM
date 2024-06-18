@@ -1,22 +1,22 @@
 \section{Overview}
-In the world of stock markets a major problem is the apparent incalculability of the complex network of factors e.g. how stock prices of one company affect those of another. As the environment of stock markets becomes more and more complex, the ability to analise and confidently predict its future becomes of crucial importance for traders, investors and researchers.
+In the world of stock markets a major problem is the apparent difficulty of calculating the influence of the network factors on one another e.g. how stock prices of one company affect those of another. As the environment of stock markets becomes more and more complex, the ability to analyze and predict its future becomes of crucial importance for traders, investors and researchers.
 
-With the recent advent of generative AI and the demonstrable power of Large Language Models a question arises of if and how these can be used to accurately analise and predict time series market prices in different environments. This thesis presents our work on the subject.
+With the recent advances in the field of generative AI and the demonstrable power of Large Language Models(LLMs) a question arises of if and how these models can be used to accurately analyze and predict time series data and market prices in particular. This thesis presents our work on the subject.
 
 The main technical challenge is the following.
 
 % TODO: reformulate the following paragraph
 \textit{Given a sequence of historical observations \(X \in \R^{N\times T}\)
 	consisting of \(N\) different 1-dimensional variables across \(T\) time steps, we aim to reprogram a large
-	language model \(f(\cdot)\) to understand the input time series and accurately forecast the readings at \(H\) future time steps, denoted by \(\hat{Y} \in \R^{N\times H}\),
-	with the overall objective to minimize the mean square errors between the expected outputs \(Y\) and predictions, i.e., \(\frac1H \sum_{h=1}^H \| \hat{Y}_h - Y_h \|_F^2 \).} \cite{reprogramming_llm}
+	language model \(f(\cdot)\) to accurately forecast the readings at \(H\) succeeding time steps, denoted by \(\hat{Y} \in \R^{N\times H}\),
+	with the overall objective to minimize the mean square error between the expected outputs \(Y\) and predictions, i.e., \(\frac1H \sum_{h=1}^H \| \hat{Y}_h - Y_h \|_F^2 \).} \cite{reprogramming_llm}
 
 % \section{Contributions}
 \section{Outline} %TODO: correct outline
 % First, we look at what work has already been done in the field of LLM time series prediction, in particular what techniques of fine-tuning and input data transformation were used. 
-First we describe what datasets we were using in our experiments and how we measured the results.
-
-Then we look at how different, simpler machine learning models deal with time series prediction.
+% First, we describe what datasets were used in our experiments and how we measured the results.
+First, we provide a detailed description of the datasets used in our experiments and the methodologies used for measuring the results.
+Next, we look at how different, simpler machine learning models deal with time series prediction.
 
 % We describe the datasets we used for testing small models and LLMs.
 
@@ -24,10 +24,9 @@ Then we look at how different, simpler machine learning models deal with time se
 % \section{Outline}
 % First, we look at what work has already been done in the field of LLM time series prediction, in particular what techniques of fine-tuning and input data transformation were used. Then we look at how different, simpler machine learning models deal with time series prediction.
 
-We then describe how an LLM works and how it might be used for our purposes.
+% better be rewriteen, just not a good way of saying it ig. (Heorhii)
+We then describe how an LLM works and how it is used for our purposes.
 
-Subsequently, we discuss our own methodology; different aplied methods and techniques of input reprogramming and the use of prompts and context.
+Subsequently, we discuss our own methodology, explaining different methods and techniques we used for input reprogramming, as well as the usage of prompts and context.
 
-Next, we present the results we have achieved on the chosen datasets (and compare them to some other known solutions).
-
-Finally, we speculate on the significance of our work, its potential applications in forecasting price time-series.
+Finally, we present the results we have achieved on the chosen datasets and speculate on the significance of our work and its potential applications in forecasting price time-series.
