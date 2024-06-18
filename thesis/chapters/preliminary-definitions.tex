@@ -8,18 +8,19 @@
 % \item 
 % \end{itemize}
 
-Throughout the thesis, by \emph{goal} or \emph{problem} or \emph{task} we mean the overall task of the thesis, which is develop a machine learning model suitable for predicting prices on the financial market, based on a history of data.
+Throughout the thesis, by \emph{goal} or \emph{problem} or \emph{task} we mean the overall task of the thesis, which is to develop a machine learning model suitable for predicting prices on the financial market, based on a sequence of observations.
 
 \section{Datasets}
-Here we describe the various time series datasets we used for the training and testing of our models. In the below table, the columns describe the following:
+Here we describe the various time series datasets used for the training and testing of the models. In the below table, the columns describe the following:
 \begin{itemize}
 	\item \textbf{Name:} the name of the dataset.
-	\item \textbf{Source:} the source from where we took the dataset - most we received from AI Investments company. For others we include a link or a way to access and download the dataset.
+	\item \textbf{Source:} the source of the data - most was received from our project sponsor, AI Investments. For some a link or a way to access and download the data is provided.
 	      % \item \textbf{Collection method:} a description of how the data in the dataset was gathered and over what time span.
 	      % \item \textbf{Motivation:} a description of what the data in the dataset represent, what their purpose is, how they were gathered and why it is valuable to our research.
-	\item \textbf{Number of datapoints:} a description of how many datapoints the dataset contains, how many features each datapoints has and the overall size of the file.
-	\item \textbf{Datapoints used:} how many of these datapoints were used in model training (these are taken from the end of the dataset).
-	\item \textbf{Time step:} what is the time difference in the Date column between subsequent datapoints.
+	\item \textbf{Number of data points:} a description of how many data points the dataset contains, how many features each data points has and the overall size of the file.
+	\item \textbf{Data points used:} how many of the data points were used in model training (these are taken from the end of the dataset).
+	% \item \textbf{Time step:} what is the time difference in the Date column between subsequent data points.
+	\item \textbf{Time step:} time delta between subsequent data points.
 	      % \item \textbf{Features:} a description of the features each datapoint of the dataset has and what the features represent.
 	      % \item \textbf{Additional characteristics:} a description of the features and drawbacks of the overall dataset e.g. how dependent are the features between themselves.
 	      % \item \textbf{Plot:} a plot of the numeric features of the dataset, its visual representation.
@@ -52,29 +53,28 @@ Here we describe the various time series datasets we used for the training and t
 \end{center}
 
 \subsection{Explanation of the datasets}
-All except for the Electricity dataset are market time series - they have the following features:
+All above except the Electricity dataset represent market time series data - they have the following features:
 \begin{itemize}
-	\item \textbf{date} - The time at which the datapoint was recorded.
-	\item \textbf{close} - Closing price within given time interval.
-	\item \textbf{high} - Highest price within given time interval.
-	\item \textbf{low} - Lowest Price within given time interval.
-	\item \textbf{open} - Opening price within given time interval.
-	\item \textbf{volume} - Volume of stock traded.
-	\item \textbf{adjClose} - Closing price within given time interval, modified to account for dividends, stock splits, etc., to better reflect stock value.
+	\item \textbf{date} - The time at which the data point was recorded.
+	\item \textbf{close} - The closing price within the given time interval.
+	\item \textbf{high} - The highest price within the given time interval.
+	\item \textbf{low} - The lowest Price within the given time interval.
+	\item \textbf{open} - The opening price within the given time interval.
+	\item \textbf{volume} - the Volume of the traded stock.
+	\item \textbf{adjClose} - The closing price within the given time interval, modified to account for dividends, stock splits, etc., used to better reflect stock value.
 \end{itemize}
-Our target column was the \textbf{close} column. All others were discarded.
+The target column was the \textbf{close} column.
 
+The Electricity dataset in addition to the \textbf{date} column has 370 other columns, which correspond to different energy consumption clients. Every data point records the energy consumption throughout a constant period for each of those clients. For the target column, we chose the 127th column, since it had the highest coefficient of variation.
+This dataset serves to check whether the approach to market time-series generalizes to other types of time-series.
 
-The Electricity dataset in addition to the \textbf{date} column has 370 columns, which correspond to different energy consumption clients. Every datapoint records the energy consumption for the timestep period at each of these clients. For the target column, we chose the 127th column.
-This dataset serves to check whether the approach to market time-series generalises to other types of time-series.
-
-In all experiments, the dataset used was divided into 3 parts: the first 70\% was used in the training of the model, then 10\% was used in its validation, and 20\% was used for testing.
+In each experiment, the dataset was divided into 3 parts: the first 70\% of the data were used for the training of the model, then 10\% were used in its validation, and 20\% were used for testing.
 
 
 \section{Metrics}
 
 \subsection{Mean Squared Error}
-The \emph{Mean Squared Error} (MSE) is a metric used during training of machine learning model, especially in regression tasks. It quantifies how close a model's predictions are to the actual values.
+The \emph{Mean Squared Error} (MSE) is a metric used in the training of machine learning models, especially in regression tasks. It quantifies how close the predictions of a model are to the actual values.
 
 \subsubsection{Definition}
 MSE calculates the average of the squares of the errors. The error is the difference between the values (\(\hat{y}_i\)) predicted by the model and the actual values (\(y_i\)).
@@ -121,9 +121,9 @@ When we predict the value \(a_{i+k}\) based on values \([a_{i-n}, a_i]\) in a ti
 			      0, & \text{otherwise}
 		      \end{cases}
 	      \]
-	      where in this thesis \(f([a_{i-n}, a_i], k)\) is always \(a_i\), i.e. we classify based on last known datapoint.
+	      where in this thesis \(f([a_{i-n}, a_i], k)\) is always \(a_i\), i.e. we classify based on last known data point.
 	\item We then classify the value actually observed \(a_{i+k}\) in the same way.
-	\item Subsequently we calculate the fraction of the times when such predictions were correct, i.e. \(\mathsf{class}(\hat{a}_{i+k}) = \mathsf{class}(a_{i+k})\).
+	\item Subsequently, we calculate the fraction of the times when such predictions were correct, i.e. \(\mathsf{class}(\hat{a}_{i+k}) = \mathsf{class}(a_{i+k})\).
 	\item This yields an \emph{accuracy} score, between 0 and 1: \(0 \leq \frac{\sum_{i=1}^N[\mathsf{class}(\hat{a}_{i+k}) = \mathsf{class}(a_{i+k})]}{N} \leq 1\). \footnote{Here for \(N\) predictions.}
 \end{enumerate}
 
