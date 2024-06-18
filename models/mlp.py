@@ -4,9 +4,9 @@ import torch.nn.functional as F
 import matplotlib.pyplot as plt
 
 
-class Net(nn.Module):
+class MLP(nn.Module):
     def __init__(self, layers, activation_fn=torch.sigmoid):
-        super(Net, self).__init__()
+        super(MLP, self).__init__()
         self.layers = nn.ModuleList(
             [nn.Linear(a, b) for a, b in zip(layers[:-1], layers[1:])]
         )
@@ -18,8 +18,7 @@ class Net(nn.Module):
             x = l(x)
             x = F.relu(x)
         x = self.layers[-1](x)
-        output = self.activation_fn(x)
-        return output
+        return x
 
 
 def train(
@@ -111,3 +110,4 @@ def plot_results(train_history, acc_history):
     plt.plot(acc_history, label="test")
     plt.legend()
     plt.show()
+

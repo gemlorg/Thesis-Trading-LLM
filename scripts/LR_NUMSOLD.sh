@@ -4,8 +4,9 @@ learning_rate=0.02
 
 master_port=1234
 num_process=1
-batch_size=8
-num_entries=40000 # TODO num_entries
+batch_size=64
+num_entries=40000
+num_lags=20
 
 comment='LR-testing'
 
@@ -15,9 +16,12 @@ accelerate launch --mixed_precision bf16 --num_processes $num_process --main_pro
     --model_id NUMSOLD \
     --model $model_name \
     --data numsold \
-    --num_lags 20 \
+    --num_lags $num_lags \
     --target "number_sold" \
     --batch_size $batch_size \
     --learning_rate $learning_rate \
     --train_epochs $train_epochs \
-    --model_comment $comment
+    --model_comment $comment \
+    --num_entries $num_entries \
+    --lradj 'type3' \
+    --pct_start 0.3

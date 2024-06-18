@@ -29,16 +29,9 @@ def get_args():
                         'options:[s:secondly, t:minutely, h:hourly, d:daily, b:business days, w:weekly, m:monthly], '
                         'you can also use more detailed freq like 15min or 3h')
     parser.add_argument('--num_lags', type=int, default=5, help='number of lags columns')
-
-    # SVM
-    parser.add_argument('--kernel', type=str)
-    parser.add_argument('--gamma', type=str)
-    parser.add_argument('--C', type=float)
-
-    # Random forest
-    parser.add_argument('--n_estimators', type=int)
-    parser.add_argument('--max_features', type=int)
-    parser.add_argument('--criterion', type=str)
+    parser.add_argument('--num_entries', type=int, help='number of entries to take from dataset')
+    parser.add_argument('--pred_len', type=int)
+    parser.add_argument('--seq_step', type=int)
 
     # optimization
     parser.add_argument('--num_workers', type=int,
@@ -51,5 +44,9 @@ def get_args():
                         default=8, help='batch size of model evaluation')
     parser.add_argument('--learning_rate', type=float,
                         default=0.0001, help='optimizer learning rate')
+    parser.add_argument('--lradj', type=str, default='type1',
+                        help='adjust learning rate')
+    parser.add_argument('--pct_start', type=float,
+                        default=0.2, help='pct_start')
 
     return parser.parse_args()

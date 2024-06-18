@@ -8,6 +8,7 @@ class CNN(nn.Module):
     def __init__(
         self,
         input_channels,
+        output_channels,
         conv_layers,
         conv_out_channels,
         conv_kernel_sizes,
@@ -39,7 +40,7 @@ class CNN(nn.Module):
             )
             self.dense_layers.append(layer)
 
-        self.output_layer = nn.Linear(dense_units[-1], 1)
+        self.output_layer = nn.Linear(dense_units[-1], output_channels)
         self.activation_fn = activation_fn
         self.architecture_string = (
             "Conv_config = ("
@@ -70,8 +71,7 @@ class CNN(nn.Module):
 
         # Output layer
         x = self.output_layer(x)
-        output = torch.sigmoid(x)
-        return output
+        return x
 
     def __str__(self):
         return self.architecture_string
