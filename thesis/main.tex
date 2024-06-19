@@ -1,0 +1,75 @@
+\documentclass[licencjacka, en]{pracamgr}
+
+% Dane magistrantów:
+\autor{Damian Dąbrowski}{439954}
+\autori{Heorhii Lopatin}{456366}
+\autorii{Ivan Gechu}{439665}
+\autoriii{Krzysztof Szostek}{440011}
+
+\title{Large language models for forecasting market behaviour}
+\titlepl{Duże modele językowe w przewidywaniu zmian rynkowych}
+
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{placeins}
+\usepackage{subcaption}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{xurl}
+
+\kierunek{Computer Science}
+
+\opiekun{dr Piotr Hofman\\
+  Institute of Informatics\\
+  }
+
+\date{June 2024}
+
+\dziedzina{ 
+11.4 Artificial Intelligence\\ 
+}
+
+\klasyfikacja{Computing methodologies$\,\to\,$Neural networks}
+
+
+% Słowa kluczowe:
+\keywords{machine learning, large language models, time series forecasting, market prices}
+
+\newtheorem{defi}{Definicja}[section]
+\newcommand{\R}{\mathbb{R}}
+
+% Our own chapter definition
+\begin{document}
+\newcommand{\rozdzial}[2]{
+	\chapter{#1}
+	\label{chap:#2}
+	\input{chapters/#2}
+}
+
+\maketitle
+
+%tu idzie streszczenie na strone poczatkowa
+\begin{abstract}
+	This thesis concerns research into the use of machine learning
+	and large language models in market analysis, focusing on market
+	predictions.
+\end{abstract}
+
+\tableofcontents
+
+\rozdzial{Introduction}{introduction}
+\rozdzial{Datasets \& Metrics}{preliminary-definitions}
+\rozdzial{Other models}{other-models}
+\rozdzial{Large Language Model}{large-language-model}
+\rozdzial{Main results}{results}
+\rozdzial{Conclusion}{conclusion}
+\rozdzial{Credits}{credits}
+\input{chapters/bibliography.tex}
+\end{document}
+
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% coding: latin-2
+%%% End:
