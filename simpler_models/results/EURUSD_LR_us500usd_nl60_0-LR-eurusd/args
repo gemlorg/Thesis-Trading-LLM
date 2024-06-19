@@ -1,0 +1,23 @@
+{
+  "model_id": "EURUSD",
+  "model_comment": "LR-eurusd",
+  "model": "LR",
+  "seed": 2021,
+  "data": "us500usd",
+  "root_path": "../data/",
+  "data_path": "EURUSD_ONE_HOUR.csv",
+  "target": "close",
+  "loader": "modal",
+  "freq": "h",
+  "num_lags": 60,
+  "num_entries": 30000,
+  "pred_len": 7,
+  "seq_step": 7,
+  "num_workers": 10,
+  "train_epochs": 100,
+  "batch_size": 64,
+  "eval_batch_size": 8,
+  "learning_rate": 0.02,
+  "lradj": "type3",
+  "pct_start": 0.2
+}

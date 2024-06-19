@@ -1,0 +1,23 @@
+{
+  "model_id": "AAPL",
+  "model_comment": "CNN-aapl",
+  "model": "CNN",
+  "seed": 2021,
+  "data": "aapl",
+  "root_path": "../data/",
+  "data_path": "AAPL.csv",
+  "target": "Close",
+  "loader": "modal",
+  "freq": "h",
+  "num_lags": 20,
+  "num_entries": 10000,
+  "pred_len": 40,
+  "seq_step": 1,
+  "num_workers": 10,
+  "train_epochs": 100,
+  "batch_size": 64,
+  "eval_batch_size": 8,
+  "learning_rate": 0.02,
+  "lradj": "type3",
+  "pct_start": 0.2
+}
