@@ -1,5 +1,3 @@
-% dodaj opcję [licencjacka] dla pracy licencjackiej
-% dodaj opcję [en] dla wersji angielskiej (mogą być obie: [licencjacka,en])
 \documentclass[licencjacka, en]{pracamgr}
 
 % Dane magistrantów:
@@ -18,52 +16,29 @@
 \usepackage{amssymb}
 \usepackage{amsmath}
 \usepackage{xurl}
-%\tytulang{An implementation of a difference blabalizer based on the theory of $\sigma$ -- $\rho$ phetors}
 
-%kierunek: 
-% - matematyka, informatyka, ...
-% - Mathematics, Computer Science, ...
 \kierunek{Computer Science}
 
-% Praca wykonana pod kierunkiem:
-% (podać tytuł/stopień imię i nazwisko opiekuna
-% Instytut
-% ew. Wydział ew. Uczelnia (jeżeli nie MIM UW))
 \opiekun{dr Piotr Hofman\\
   Institute of Informatics\\
   }
 
-% miesiąc i~rok:
 \date{June 2024}
 
-%Podać dziedzinę wg klasyfikacji Socrates-Erasmus:
 \dziedzina{ 
-%11.0 Matematyka, Informatyka:\\ 
-%11.1 Matematyka\\ 
-% 11.2 Statystyka\\ 
-%11.3 Informatyka\\ 
 11.4 Artificial Intelligence\\ 
-%11.5 Nauki aktuarialne\\
-%11.9 Inne nauki matematyczne i informatyczne
 }
 
-%Klasyfikacja tematyczna wedlug AMS (matematyka) lub ACM (informatyka)
 \klasyfikacja{Computing methodologies$\,\to\,$Neural networks}
-% Full:
-% Computing methodologies
-% Machine learning
-% Machine learning approaches
-% Neural networks
 
 
 % Słowa kluczowe:
 \keywords{machine learning, large language models, time series forecasting, market prices}
 
-% Tu jest dobre miejsce na Twoje własne makra i~środowiska:
 \newtheorem{defi}{Definicja}[section]
 \newcommand{\R}{\mathbb{R}}
 
-% koniec definicji
+% Our own chapter definition
 \begin{document}
 \newcommand{\rozdzial}[2]{
 	\chapter{#1}
@@ -81,28 +56,15 @@
 \end{abstract}
 
 \tableofcontents
-%\listoffigures
-%\listoftables
 
 \rozdzial{Introduction}{introduction}
 \rozdzial{Datasets \& Metrics}{preliminary-definitions}
-% \rozdzial{Literature review}{literature}
-% \rozdzial{Related work}{related-work}
 \rozdzial{Other models}{other-models}
 \rozdzial{Large Language Model}{large-language-model}
-% \rozdzial{Methodology }{methodology}
 \rozdzial{Main results}{results}
-% \rozdzial{Forecasting applications}{forecasting-application}
 \rozdzial{Conclusion}{conclusion}
-% \appendix
-% \rozdzial{Visualisation}{visualisation}
-%here appendix
 \rozdzial{Credits}{credits}
-% \chapter*{Credits}
-% \addcontentsline{toc}{chapter}{Credits}
-% \input{chapters/credits.tex}
 \input{chapters/bibliography.tex}
-%\rozdzial{Bibliography}{bibliography}
 \end{document}
 
 

@@ -28,7 +28,6 @@ The following vocabulary is used:
 \section{Overview}
 
 A Large Language Model (LLM) \cite{llmintro} is a language model that is pretrained on a large collection of data (usually billions of tokens).
-%an advanced artificial intelligence system designed to understand and generate human-like text based on patterns it learns from enormous amounts of textual data.
 Such model utilizes deep learning techniques, particularly neural networks, which consist of interconnected neuron layers that process information sequentially.
 The predominant architecture underpinning most contemporary LLMs is the Transformer (see below), notable for its self-attention mechanism that enables the model to assess the importance of different tokens in a sentence irrespective of the order the tokens are in.
 
@@ -36,7 +35,6 @@ The training of an LLM involves pretraining it with a large, diverse corpus of t
 
 Once trained, LLMs can perform a variety of language-based tasks such as translation, summarization, question answering, and text generation.
 It can then be fine-tuned to perform better on a specific task, e.g. write poetry, give cooking advice, write programming code, etc.
-%Their capability to generate coherent and contextually relevant text makes them invaluable for applications in natural language processing (NLP), including conversational agents, content creation tools, and sophisticated text analysis. 
 We will see how such a model deals with analyzing and predicting time series data.
 
 
@@ -44,7 +42,6 @@ We will see how such a model deals with analyzing and predicting time series dat
 
 The Transformer is a type of neural network architecture introduced in the seminal 2017 paper \textit{"Attention is All You Need"} by Vaswani et al. \cite{attention_is_all_you_need}. It has since become foundational for many natural language processing (NLP) models due to its effectiveness at handling data sequences, such as text.
 
-% In this section, \(N\) denotes the number of sublayers in the Transformer model (see description below).
 
 \subsection{Components}
 
@@ -58,31 +55,32 @@ The Transformer is a type of neural network architecture introduced in the semin
 The Transformer (fig \autoref{fig:transformer_architecture_fig}) consists of the following components:
 
 \begin{enumerate}
-	\item \textbf{Input Embedding}: Converts input tokens into vectors.
-	\item \textbf{Positional Encoding}: Adds positional information to the embeddings to retain the order of the sequence. This encoding is another high-dimensional vector.
-	\item \textbf{Encoder} (\autoref{fig:transformer_architecture_fig} the left):
-	      \begin{itemize}
-		      \item Consists of \(N = 6\) layers\footnote{\cite{attention_is_all_you_need}, section 3.1.}.
-		      \item Each layer has two sub-layers:
-		            \begin{itemize}
-			            \item \textbf{Multi-Head Attention}: Applies attention mechanism over the input. For each token calculates the weight or importance of other tokens in the surrounding context (\textit{Attention}). Does so independently with \(h\) 'heads'\footnote{In \cite{attention_is_all_you_need}, \(h = 6\).}, each calculating different semantic relantionships (\textit{Multi-Head}). The results are concatenated and linearly transformed into size of one output (as if from one head).
-			            \item \textbf{Feed Forward}: Applies a fully connected feed-forward neural network.
-		            \end{itemize}
-		      \item \textbf{Add \& Norm}: Residual connections followed by layer normalization after each sub-layer.
-	      \end{itemize}
-	\item \textbf{Decoder} (\autoref{fig:transformer_architecture_fig}, on the right):
-	      \begin{itemize}
-		      \item Also consists of \(N = 6\) layers\footnote{\cite{attention_is_all_you_need}, section 3.1.}.
-		      \item Each layer has three sub-layers:
-		            \begin{itemize}
-			            \item \textbf{Masked Multi-Head Attention}: As in Encoder, but masked, i.e. attention results for future tokens are discarded.
-			            \item \textbf{Multi-Head Attention}: Applies the multi-head attention mechanism to encoder output.
-			            \item \textbf{Feed Forward}: Applies a fully connected feed-forward neural network.
-		            \end{itemize}
-		      \item \textbf{Add \& Norm}: Residual connections followed by layer normalization after each sub-layer.
-	      \end{itemize}
-	      % \item \textbf{Output Embedding}: Converts decoder output tokens into semantic vector space.
-	\item \textbf{Linear \& Softmax Layer}: Maps the decoder’s output to the probability distribution over the target vocabulary. The most probable token is the output. \footnote{This may seem contrary to popular experience using e.g. ChatGPT, where given the same input, it may not necessarily output the same result. However, such tools may have random seeds for each interaction session and also may take into account the context of the conversation. }
+	\begin{samepage}
+		\item \textbf{Input Embedding}: Converts input tokens into vectors.
+		\item \textbf{Positional Encoding}: Adds positional information to the embeddings to retain the order of the sequence. This encoding is another high-dimensional vector.
+		\item \textbf{Encoder} (\autoref{fig:transformer_architecture_fig} the left):
+		\begin{itemize}
+			\item Consists of \(N = 6\) layers\footnote{\cite{attention_is_all_you_need}, section 3.1.}.
+			\item Each layer has two sub-layers:
+			      \begin{itemize}
+				      \item \textbf{Multi-Head Attention}: Applies attention mechanism over the input. For each token calculates the weight or importance of other tokens in the surrounding context (\textit{Attention}). Does so independently with \(h\) 'heads'\footnote{In \cite{attention_is_all_you_need}, \(h = 6\).}, each calculating different semantic relantionships (\textit{Multi-Head}). The results are concatenated and linearly transformed into size of one output (as if from one head).
+				      \item \textbf{Feed Forward}: Applies a fully connected feed-forward neural network.
+			      \end{itemize}
+			\item \textbf{Add \& Norm}: Residual connections followed by layer normalization after each sub-layer.
+		\end{itemize}
+		\item \textbf{Decoder} (\autoref{fig:transformer_architecture_fig}, on the right):
+		\begin{itemize}
+			\item Also consists of \(N = 6\) layers\footnote{\cite{attention_is_all_you_need}, section 3.1.}.
+			\item Each layer has three sub-layers:
+			      \begin{itemize}
+				      \item \textbf{Masked Multi-Head Attention}: As in Encoder, but masked, i.e. attention results for future tokens are discarded.
+				      \item \textbf{Multi-Head Attention}: Applies the multi-head attention mechanism to encoder output.
+				      \item \textbf{Feed Forward}: Applies a fully connected feed-forward neural network.
+			      \end{itemize}
+			\item \textbf{Add \& Norm}: Residual connections followed by layer normalization after each sub-layer.
+		\end{itemize}
+		\item \textbf{Linear \& Softmax Layer}: Maps the decoder’s output to the probability distribution over the target vocabulary. The most probable token is the output. \footnote{This may seem contrary to popular experience using e.g. ChatGPT, where given the same input, it may not necessarily output the same result. However, such tools may have random seeds for each interaction session and also may take into account the context of the conversation. }
+	\end{samepage}
 \end{enumerate}
 
 
@@ -99,8 +97,6 @@ The Transformer (fig \autoref{fig:transformer_architecture_fig}) consists of the
 	\item \textbf{Model Variants:} LLaMA is available in various sizes, offering flexibility for deployment in different environments. These variants range from models of 7 billion parameters in size up to models of 65 billion parameters in size. \footnote{LLaMa-3, which came out in April 2024, has size possibilities of 8 billion and 70 billion parameters.}
 
 	\item \textbf{Training Data:} The model has been trained on 1.4 trillion tokens of data from several sources, including CommonCrawl and Github, Wikipedia (Table 1. in \cite{llama}). It therefore has an enormous and domain diverse range of input data.
-
-	      % \item \textbf{Application Scope:} Due to the possibility of using different sizes, LLaMA is suited for a variety of applications, such as conversational agents, content generation, summarization, and more advanced tasks like sentiment analysis and machine translation.
 
 	\item \textbf{Accessibility:} The code that can be used to run the model has been publicly released under the open-source GPLv3 license \cite{llama_code}.
 \end{itemize}
@@ -119,14 +115,6 @@ The main idea involves using a framework around a frozen LLM (i.e. one that is n
 		The input time series is normalized and patched (broken down into chunks). These patches are reprogrammed into embeddings using multi-head attention,
 		and concatenated with embeddings generated from additional prompts by a pre-trained LLM.
 		The combined embeddings are then processed by the LLM to produce the final forecast output. }
-
-	% An input time series is normalized, tokenized and embedded,
-	% then concatinated together with embedded text prompts. This serves as input to the frozen LLM, which outputs the prediction.}
-	% \caption{Simplified model of the embedding framework. Given an input time series, we first tokenize and
-	% 	embed it via (1) patching along with a (2) customized embedding layer. (3) These patch embeddings
-	% 	are then reprogrammed with condensed text prototypes to align two modalities. To augment the
-	% 	LLM’s reasoning ability, (4) additional prompt prefixes are added to the input to direct the transformation
-	% 	of input patches. (5) The output patches from the LLM are projected to generate the forecasts.}
 	\label{fig:prompt_embedding_fig}
 \end{figure}
 
@@ -134,12 +122,10 @@ The main idea involves using a framework around a frozen LLM (i.e. one that is n
 
 The following three paragraphs come from the article.\cite{reprogramming_llm}
 
-% TODO: This paragraph/problem may also be described earlier, e.g. in introduction.
 \textit{We consider the following problem: given a sequence of historical observations \(X \in \R^{N\times T}\)
 	consisting of \(N\) different 1-dimensional variables across \(T\) time steps, we aim to reprogram a large
 	language model \(f(\cdot)\) to understand the input time series and accurately forecast the readings at \(H\) future time steps, denoted by \(\hat{Y} \in \R^{N\times H}\), with the overall objective to minimize the mean square errors between the expected outputs \(Y\) and predictions, i.e., \(\frac1H \sum_{h=1}^H \| \hat{Y}_h - Y_h \|_F^2 \).}
 
-% TODO: normalization, patching, embedding - explain
 \textit{The method encompasses three main components: (1) input transformation, (2) a pre-trained and frozen LLM, and (3) output projection. Initially, a multifeature time series is partitioned into \(N\) unifeature time series, which are subsequently processed independently (Nie et al., 2023) \cite{nie_et_al}.
 	The i-th series is denoted as \(X(i) \in \R^{1\times T}\), which undergoes normalization, patching, and embedding prior to being reprogrammed with learned text prototypes to align the source and target modalities.
 	Then, we augment the LLM’s time series reasoning ability by prompting it together with the transformed series to generate output representations, which are projected to the final forecasts \(\hat{Y}^{(i)} \in \R^{1\times H}\).}
@@ -347,7 +333,7 @@ Incorporating these indicators yielded a substantial improvement in our model's 
 \section{Possible Improvements}
 
 \subsection{Underlying LLM}
-There are a few different options when it comes to open-source LLMs. We have used a 7-billion-parameter LLaMa 2 model, however there are more powerful models available. For example, the 70b LLama 2 or the 70b LLaMa 3 score 40-60\% better on nearly all benchmarks, which could mean an inprovement in our model's performance with such models used as the underlying LLM, however it would require significantly more computational resources as well as additional code that would allow us to run the program on multiple GPUs. The problem is that a single graphic card simply wouldn't have enough memory to train the model.
+There are a few different options when it comes to open-source LLMs. We have used a 7-billion-parameter LLaMa 2 model, however there are more powerful models available. For example, the 70b LLama 2 or the 70b LLaMa 3 score 40-60\% better on nearly all benchmarks, which could mean an improvement in our model's performance with such models used as the underlying LLM, however it would require significantly more computational resources as well as additional code that would allow us to run the program on multiple GPUs. The problem is that a single graphic card simply wouldn't have enough memory to train the model.
 
 \subsection{Larger Training Set}
 The model was trained on datasets which contained less than 40000 records. It takes us approximately 12 hours to train the model on a dataset of this size. Training the model on a larger dataset would allow to fit more complex patterns in the data which could potentially be developing over a span of multiple years.
@@ -395,7 +381,7 @@ The predictability of datasets varied significantly. Moreover, splitting the dat
 
 Due to limited resources, specifically two computers with high-performance graphics cards, training a dataset of 100,000 records took approximately 2-3 days. Given the substantial size and resource demands of large language models, we were unable to test all interesting combinations, leaving room for further exploration.
 
-One key observation was that using a short prediction length (pred\_len) of 4 or fewer, despite the goal of predicting price increases or decreases, proved suboptimal. The mean squared error (MSE)-based loss function did not optimize well compared to longer sequences. Conversely, with very long prediction lengths (over 60), the model struggled due to the complexity of the task. The best results were obtained with a pred\_len around 10.
+One key observation was that using a short prediction length (pred\_len) of 4 or fewer, despite the goal of predicting price increases or decreases, proved suboptimal. The mean squared error (MSE)-based loss function did not optimize well compared to longer sequences. Conversely, with very long prediction lengths (over 60), the model struggled due to the complexity of the task. The best results were obtained with a pred\_len of around 10.
 
 Another noteworthy point was the use of hourly datasets. Predicting values for the upcoming hours was nearly impossible due to a high degree of randomness, likely influenced by speculative decisions and the actions of individuals who may not fully understand market dynamics. However, predictions over longer periods showed more promise, leading to the introduction of the seq\_step parameter. By skipping several records, we achieved more predictable sequences.
 
