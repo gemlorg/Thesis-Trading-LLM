@@ -1,3 +1,4 @@
 [submodule "final_project"]
 	path = final_project
 	url = https://github.com/damiad/Trading-LLM
+	branch = main
